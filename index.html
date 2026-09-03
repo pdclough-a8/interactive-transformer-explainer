@@ -379,6 +379,24 @@ footer a{color:#C9CBD0}
 .el-v{width:10px;height:18px;border-radius:2px;display:inline-block}
 .el-ellip{font-family:var(--mono);font-size:11px;color:var(--muted);padding:0 4px}
 .el-note{font-size:12.5px;color:var(--muted);margin-top:10px;max-width:70ch}
+
+/* real/simplified/illustrative tier badges - reuses .mode-note shape, recolours the tag */
+.mode-note.tier-real{background:#E6F2EA;color:#0F3D22}
+.mode-note.tier-real .tag{background:#2E7D46}
+.mode-note.tier-simplified{background:#FFF3D6;color:#4A3600}
+.mode-note.tier-simplified .tag{background:#B67F00}
+/* .tier-illustrative uses the default .mode-note (blue) styling unchanged */
+
+/* "what it doesn't do" list inside a .primer box */
+.primer ul{margin:10px 0 0 1.15em}
+.primer li{margin:5px 0}
+
+/* mobile "you are here" progress bar - replaces the sticky nav rail below 920px */
+.mob-progress{display:none}
+@media(max-width:920px){
+  .mob-progress{display:block;position:sticky;top:60px;z-index:45;background:var(--surface);border-bottom:1px solid var(--border);padding:9px 16px;font-family:var(--mono);font-size:12px;color:var(--muted);font-weight:600}
+  .mob-progress b{color:var(--orange-deep)}
+}
 </style>
 </head>
 <body class="mode-inference">
@@ -394,6 +412,8 @@ footer a{color:#C9CBD0}
   </div>
 </div>
 
+<div class="mob-progress" id="mob-progress" aria-hidden="true">Overview</div>
+
 <header class="hero" id="top">
   <svg class="signal" viewBox="0 0 400 400" fill="none" aria-hidden="true">
     <line x1="60" y1="30" x2="60" y2="370" stroke="#F94E1E" stroke-width="2" opacity=".6"/>
@@ -406,7 +426,7 @@ footer a{color:#C9CBD0}
   <div class="wrap">
     <span class="eyebrow">Data &amp; AI, explained · A8 learning tool</span>
     <h1>See how a <span class="u">transformer</span> actually works.</h1>
-    <p class="lede">Transformers are the engine behind ChatGPT, Claude and Gemini. Type a sentence and follow it, step by step, through the model - first as the model <b style="color:#fff">uses</b> what it knows to predict the next word, then as it <b style="color:#fff">learns</b> in the first place. Start with a plain English explanation. No maths required. Flip on the technical detail when you want it.</p>
+    <p class="lede">Transformers are the engine behind ChatGPT, Claude and Gemini. <b style="color:#fff">Your mission:</b> take the sentence below and watch the model turn it into a prediction for whatever comes next - then follow every step it takes to get there, first as the model <b style="color:#fff">uses</b> what it knows to predict the next word, then as it <b style="color:#fff">learns</b> in the first place. Start with a plain English explanation. No maths required. Flip on the technical detail when you want it.</p>
 
     <div class="controls">
       <div class="inbox">
@@ -464,7 +484,7 @@ footer a{color:#C9CBD0}
       <!-- 0 BIG PICTURE -->
       <section class="station" id="overview">
         <div class="st-head"><span class="st-num">00</span><h2>The big picture - the whole transformer in one page</h2></div>
-          <p class="lead-in">Before the details, here's the whole journey. A transformer turns your text into tokens, lets those tokens exchange information and refine each other many times over, then predicts the next word - and repeats. Scaled up and trained on huge amounts of text, that simple loop produces surprisingly rich language ability. Every stage below is one stop on the line. <b>Click a stage to jump to it.</b></p>
+          <p class="lead-in">Here's the whole thesis in one line: <b>a transformer repeatedly transforms a sequence of numbers until the result can predict the next token.</b> Text becomes tokens, tokens become numbers, those numbers exchange information and get refined many times over, then get turned into a prediction - and the loop repeats. Every stage below answers one question in that process; scaled up and trained on huge amounts of text, it produces surprisingly rich language ability. <b>Click a stage to jump to it.</b></p>
         <div class="flow">
           <button class="fstep" type="button" data-target="tokens"><span class="fn">01</span><span class="ft">Tokenise</span><span class="fd">split your text into pieces and give each an ID number</span></button>
           <span class="farr">→</span>
@@ -475,6 +495,17 @@ footer a{color:#C9CBD0}
           <button class="fstep" type="button" data-target="output"><span class="fn">08</span><span class="ft">Predict next word</span><span class="fd">score every possible token, pick one, add it - then loop back and do it all again</span></button>
         </div>
         <p class="note" style="margin-top:2px">↩︎ That last step loops: each new token is fed back in to predict the next. That's the entire generation loop: predict one token, append it, then repeat.</p>
+        <div class="primer">
+          <span class="k">Worth knowing before you start</span>
+          A transformer does <b>not</b>, by default:
+          <ul>
+            <li>look facts up in a database - it recalls patterns from training, not references</li>
+            <li>know whether its own answer is true - it can sound equally confident either way</li>
+            <li>"think" in English internally - it operates on numbers throughout, start to finish</li>
+            <li>update its weights from talking to you - every reply comes from the same frozen numbers</li>
+            <li>remember anything between separate conversations, unless it's resent to it</li>
+          </ul>
+        </div>
         <div class="primer">
           <span class="k">Neural networks?</span>
           A neural network is a large collection of simple mathematical operations: numbers go in, get multiplied by adjustable numbers called <span class="term" data-def="Weights (or parameters) are the adjustable numbers inside the model - what training changes. Frontier models have hundreds of billions of them." role="button" tabindex="0">weights</span>, and numbers come out. <b>Training</b> is the process of slowly tuning those weights until the output is useful. A <b>transformer</b> is one particular arrangement of these operations, designed so tokens can exchange information with each other - which turns out to be remarkably good at language. Worth keeping straight: <b>a transformer is the architecture; an LLM is a specific trained model built from it</b> - usually, as on this page, a <b>decoder-only</b> transformer (more on that distinction in “Where it came from”, below).
@@ -491,6 +522,7 @@ footer a{color:#C9CBD0}
         </div>
         <div class="demo">
           <div class="demo-lab">Live - your sentence as tokens</div>
+          <div class="mode-note tier-real" id="tok-tier" style="display:block"><span class="tag">🟢 Real</span> Checking for a live connection to OpenAI's tokeniser…</div>
           <div class="tok-row" id="tok-display"></div>
           <p class="note" id="tok-count"></p>
           <p class="note">Want to try it on your own text? <a href="https://tiktokenizer.vercel.app/" target="_blank" rel="noopener">TikTokenizer</a> is a free interactive tokeniser that shows the same splits, live.</p>
@@ -520,13 +552,14 @@ footer a{color:#C9CBD0}
           <div class="mat-rows" id="mat-rows"></div>
           <p class="mat-cap" id="mat-cap"></p>
         </div>
-<div class="embed-lookup" id="embed-lookup"><span class="el-title">How one ID becomes a vector - a single table lookup</span><div class="el-row"><span class="el-tok">The&nbsp;(464)</span><span class="el-op">→ row 464 of embedding table →</span><span class="el-vec"><span class="el-v" style="background:rgb(255,255,255)"></span><span class="el-v" style="background:rgb(59,69,83)"></span><span class="el-v" style="background:rgb(253,201,186)"></span><span class="el-v" style="background:rgb(200,203,207)"></span><span class="el-v" style="background:rgb(252,173,151)"></span><span class="el-v" style="background:rgb(250,111,72)"></span><span class="el-v" style="background:rgb(250,94,50)"></span><span class="el-v" style="background:rgb(127,134,143)"></span><span class="el-v" style="background:rgb(223,224,227)"></span><span class="el-v" style="background:rgb(250,106,65)"></span></span><span class="el-ellip">…&thinsp;<em style="font-style:normal">(768 total)</em></span></div><div class="el-row"><span class="el-tok">·engineer&nbsp;(8884)</span><span class="el-op">→ row 8884 of embedding table →</span><span class="el-vec"><span class="el-v" style="background:rgb(184,188,193)"></span><span class="el-v" style="background:rgb(95,103,115)"></span><span class="el-v" style="background:rgb(192,195,199)"></span><span class="el-v" style="background:rgb(86,94,106)"></span><span class="el-v" style="background:rgb(144,149,157)"></span><span class="el-v" style="background:rgb(249,83,37)"></span><span class="el-v" style="background:rgb(156,161,168)"></span><span class="el-v" style="background:rgb(152,157,165)"></span><span class="el-v" style="background:rgb(75,84,97)"></span><span class="el-v" style="background:rgb(250,101,59)"></span></span><span class="el-ellip">…&thinsp;<em style="font-style:normal">(768 total)</em></span></div><div class="el-row"><span class="el-tok">·finished&nbsp;(5201)</span><span class="el-op">→ row 5201 of embedding table →</span><span class="el-vec"><span class="el-v" style="background:rgb(188,191,196)"></span><span class="el-v" style="background:rgb(252,181,161)"></span><span class="el-v" style="background:rgb(250,115,77)"></span><span class="el-v" style="background:rgb(251,147,118)"></span><span class="el-v" style="background:rgb(69,78,92)"></span><span class="el-v" style="background:rgb(144,149,157)"></span><span class="el-v" style="background:rgb(252,180,159)"></span><span class="el-v" style="background:rgb(250,102,61)"></span><span class="el-v" style="background:rgb(250,109,69)"></span><span class="el-v" style="background:rgb(251,129,95)"></span></span><span class="el-ellip">…&thinsp;<em style="font-style:normal">(768 total)</em></span></div><div class="el-row"><span class="el-tok">·the&nbsp;(279)</span><span class="el-op">→ row 279 of embedding table →</span><span class="el-vec"><span class="el-v" style="background:rgb(249,79,31)"></span><span class="el-v" style="background:rgb(254,219,209)"></span><span class="el-v" style="background:rgb(250,94,50)"></span><span class="el-v" style="background:rgb(229,230,232)"></span><span class="el-v" style="background:rgb(253,200,184)"></span><span class="el-v" style="background:rgb(254,212,200)"></span><span class="el-v" style="background:rgb(252,162,137)"></span><span class="el-v" style="background:rgb(251,150,121)"></span><span class="el-v" style="background:rgb(253,205,191)"></span><span class="el-v" style="background:rgb(255,246,244)"></span></span><span class="el-ellip">…&thinsp;<em style="font-style:normal">(768 total)</em></span></div><p class="el-note">Each row is a learned list of 768 numbers - the token's coordinates in meaning-space. The full table has ~100,000 rows (one per vocabulary entry). Orange cells are positive values; dark cells are negative.</p></div>
+        <div class="mode-note" style="display:block;margin:14px 0"><span class="tag">🔵 Illustrative</span> The dimension counts here (768, 12,288) are real published architecture sizes. The actual colours/values below are a stand-in pattern, not a real trained embedding table.</div>
+<div class="embed-lookup" id="embed-lookup"><span class="el-title">How one ID becomes a vector - a single table lookup</span><div class="el-row"><span class="el-tok">The&nbsp;(464)</span><span class="el-op">→ row 464 of embedding table →</span><span class="el-vec"><span class="el-v" style="background:rgb(255,255,255)"></span><span class="el-v" style="background:rgb(59,69,83)"></span><span class="el-v" style="background:rgb(253,201,186)"></span><span class="el-v" style="background:rgb(200,203,207)"></span><span class="el-v" style="background:rgb(252,173,151)"></span><span class="el-v" style="background:rgb(250,111,72)"></span><span class="el-v" style="background:rgb(250,94,50)"></span><span class="el-v" style="background:rgb(127,134,143)"></span><span class="el-v" style="background:rgb(223,224,227)"></span><span class="el-v" style="background:rgb(250,106,65)"></span></span><span class="el-ellip">…&thinsp;<em style="font-style:normal">(768 total)</em></span></div><div class="el-row"><span class="el-tok">·engineer&nbsp;(8884)</span><span class="el-op">→ row 8884 of embedding table →</span><span class="el-vec"><span class="el-v" style="background:rgb(184,188,193)"></span><span class="el-v" style="background:rgb(95,103,115)"></span><span class="el-v" style="background:rgb(192,195,199)"></span><span class="el-v" style="background:rgb(86,94,106)"></span><span class="el-v" style="background:rgb(144,149,157)"></span><span class="el-v" style="background:rgb(249,83,37)"></span><span class="el-v" style="background:rgb(156,161,168)"></span><span class="el-v" style="background:rgb(152,157,165)"></span><span class="el-v" style="background:rgb(75,84,97)"></span><span class="el-v" style="background:rgb(250,101,59)"></span></span><span class="el-ellip">…&thinsp;<em style="font-style:normal">(768 total)</em></span></div><div class="el-row"><span class="el-tok">·finished&nbsp;(5201)</span><span class="el-op">→ row 5201 of embedding table →</span><span class="el-vec"><span class="el-v" style="background:rgb(188,191,196)"></span><span class="el-v" style="background:rgb(252,181,161)"></span><span class="el-v" style="background:rgb(250,115,77)"></span><span class="el-v" style="background:rgb(251,147,118)"></span><span class="el-v" style="background:rgb(69,78,92)"></span><span class="el-v" style="background:rgb(144,149,157)"></span><span class="el-v" style="background:rgb(252,180,159)"></span><span class="el-v" style="background:rgb(250,102,61)"></span><span class="el-v" style="background:rgb(250,109,69)"></span><span class="el-v" style="background:rgb(251,129,95)"></span></span><span class="el-ellip">…&thinsp;<em style="font-style:normal">(768 total)</em></span></div><div class="el-row"><span class="el-tok">·the&nbsp;(279)</span><span class="el-op">→ row 279 of embedding table →</span><span class="el-vec"><span class="el-v" style="background:rgb(249,79,31)"></span><span class="el-v" style="background:rgb(254,219,209)"></span><span class="el-v" style="background:rgb(250,94,50)"></span><span class="el-v" style="background:rgb(229,230,232)"></span><span class="el-v" style="background:rgb(253,200,184)"></span><span class="el-v" style="background:rgb(254,212,200)"></span><span class="el-v" style="background:rgb(252,162,137)"></span><span class="el-v" style="background:rgb(251,150,121)"></span><span class="el-v" style="background:rgb(253,205,191)"></span><span class="el-v" style="background:rgb(255,246,244)"></span></span><span class="el-ellip">…&thinsp;<em style="font-style:normal">(768 total)</em></span></div><p class="el-note">Each row would normally be a learned list of 768 numbers - a token's coordinates in meaning-space (shown here as an illustrative stand-in pattern, not real trained values). The full table has ~100,000 rows (one per vocabulary entry). Orange cells are positive values; dark cells are negative.</p></div>
         <div class="tech-block"><span class="tb-lab">Technical layer</span>
           <p>The embedding layer is a learned matrix <code>E ∈ ℝ^(V×d)</code>; token <code>i</code> selects row <code>E[i]</code>. Typical <code>d</code>: 768 (GPT-2 small) up to ~12,288 (GPT-3). The map below is a real, hand-curated 2-D projection - enough for the intuition; a live model uses hundreds of dimensions.</p>
         </div>
         <div class="demo">
           <div class="demo-lab">Live - the map of meaning</div>
-          <div class="mode-note" style="display:block"><span class="tag">Hand-placed, not learned</span> Every position on this map was chosen by us to illustrate the idea clearly - it is <b>not</b> computed from a real embedding model. A real model's map is learned from data, sits in hundreds of dimensions, and would look far messier if flattened to 2D like this.</div>
+          <div class="mode-note" style="display:block"><span class="tag">🔵 Illustrative</span> Every position on this map was hand-placed by us to illustrate the idea clearly - it is <b>not</b> computed from a real embedding model. A real model's map is learned from data, sits in hundreds of dimensions, and would look far messier if flattened to 2D like this.</div>
           <p class="note" style="margin-top:10px">A curated set of everyday words, placed to illustrate how usage-based clustering works. Type a word to find its nearest neighbours, or try the analogy.</p>
           <div class="mapwrap"><canvas id="emb-canvas" width="900" height="470"></canvas></div>
           <div class="mapctl">
@@ -538,7 +571,8 @@ footer a{color:#C9CBD0}
         </div>
         <div class="demo">
           <div class="demo-lab">Live - feel the size (your sentence)</div>
-          <p class="note" style="margin-top:0">Small models like GPT-2 have a few hundred million adjustable numbers. Frontier models have hundreds of billions - that jump in size is a big part of why they're so much more capable.</p>
+          <div class="mode-note tier-real" style="display:block"><span class="tag">🟢 Real</span> GPT-2 small's published dimensions (768, 12 layers, 50,257 vocab, 124M weights) - the numbers below use your sentence's real token count against them.</div>
+          <p class="note">Small models like GPT-2 have a few hundred million adjustable numbers. Frontier models have hundreds of billions - that jump in size is a big part of why they're so much more capable.</p>
           <div id="sizes"></div>
           <table class="sztable">
             <thead><tr><th>&nbsp;</th><th>GPT-2 small</th><th>GPT-3</th><th>Frontier (2026)</th></tr></thead>
@@ -639,6 +673,7 @@ footer a{color:#C9CBD0}
         </div>
         <div class="demo">
           <div class="demo-lab">Live - position fingerprints</div>
+          <div class="mode-note tier-simplified" style="display:block"><span class="tag">🟡 Simplified</span> The real sinusoidal formula, computed live - just fewer dimensions and positions shown than a full-scale model, to keep it readable.</div>
           <div class="posviz">
             <div class="col">
               <p class="note" style="margin-top:0"><b>Every position gets a unique stripe.</b> Rows are positions 0–9, columns are dimensions. Nearby positions look similar; distant ones don't.</p>
@@ -675,6 +710,7 @@ footer a{color:#C9CBD0}
         <details class="qpop">
           <summary><span>❓</span> Want to see the maths worked out by hand?</summary>
           <div class="qpop-body">
+            <div class="mode-note tier-simplified" style="display:block"><span class="tag">🟡 Simplified</span> The real formula (dot product → softmax → weighted blend), applied to tiny made-up numbers so every step is checkable by hand.</div>
             <p>The formula above, with small made-up numbers so you can check every step yourself - nothing here touches the live model below.</p>
             <p>Take the sentence <b>“cat sat mat”</b>. In the real model, each token's Query, Key and Value come from its own vector multiplied by three separate learned weight matrices - one per role. To keep the arithmetic short, we'll skip that step and just <b>suppose</b> each token already has these toy vectors:</p>
             <table class="sztable">
@@ -710,7 +746,7 @@ footer a{color:#C9CBD0}
         </div>
         <div class="demo">
           <div class="demo-lab">Live - the attention map</div>
-          <div class="mode-note" style="display:block;margin-top:0"><span class="tag">Illustrative, not a real model</span> This heatmap is a readable stand-in that blends two real tendencies - tokens with similar meanings attract, and tokens lean on recent neighbours. It is <b>not</b> a trained model's actual attention weights, which are learned from data and often far less tidy than this.</div>
+          <div class="mode-note" style="display:block;margin-top:0"><span class="tag">🔵 Illustrative</span> This heatmap is a readable stand-in that blends two real tendencies - tokens with similar meanings attract, and tokens lean on recent neighbours. It is <b>not</b> a trained model's actual attention weights, which are learned from data and often far less tidy than this.</div>
           <p class="note">Each <b>row</b> is a token doing the looking; each <b>column</b> is a token being looked at. Darker = more attention. The grey top-right is the <b>causal mask</b> (no peeking ahead). <b>Click a row label</b> to see where that token looks.</p>
           <div class="heat-wrap"><div class="heat" id="attn-heat"></div></div>
           <div class="legend"><span>less</span><span class="grad"></span><span>more attention</span></div>
@@ -734,7 +770,7 @@ footer a{color:#C9CBD0}
         </div>
         <div class="demo">
           <div class="demo-lab">Live - three heads, three habits</div>
-          <div class="mode-note" style="display:block"><span class="tag">Illustrative, not a real model</span> These are hand-scripted patterns chosen to mimic habits really seen inside trained models - not the actual weights of any specific head.</div>
+          <div class="mode-note" style="display:block"><span class="tag">🔵 Illustrative</span> These are hand-scripted patterns chosen to mimic habits really seen inside trained models - not the actual weights of any specific head.</div>
           <p class="note" style="margin-top:0">Same sentence, three toy heads, each with a different habit:</p>
           <div class="tabs" role="tablist" id="head-tabs">
             <button role="tab" aria-selected="true" data-h="0">Head A · previous token</button>
@@ -825,6 +861,7 @@ footer a{color:#C9CBD0}
           </div>
           <div class="demo">
             <div class="demo-lab">Live - generate, one word at a time</div>
+            <div class="mode-note tier-simplified" style="display:block"><span class="tag">🟡 Simplified</span> Real trigram statistics, counted from an actual training corpus (~90 sentences) - same score → soften → sample mechanism as a real model, on a tiny fraction of the data.</div>
             <div class="gen-line" id="gen-line"></div>
             <div class="slider-row" style="max-width:480px"><label for="temp-slider">Temperature</label><input type="range" id="temp-slider" min="0.1" max="1.5" value="0.3" step="0.1"><span class="sval" id="temp-sval">0.3</span></div>
             <p class="note" style="margin-top:2px">Candidate next words and their probabilities. This is a small <span class="term" data-def="An n-gram model predicts the next word from the previous few words by counting how often sequences appeared in its training text. This one is a trigram model - it looks at the previous two words." role="button" tabindex="0">trigram model</span> trained on a sample of ~90 sentences - tiny next to a real model (which scores ~100,000 candidates using the whole sentence), but it shows the same mechanism:</p>
@@ -975,6 +1012,7 @@ footer a{color:#C9CBD0}
           </div>
           <div class="demo">
             <div class="demo-lab">Live - watch a tiny model learn</div>
+            <div class="mode-note" style="display:block"><span class="tag">🔵 Illustrative</span> This is a scripted animation shaped to look like a real loss curve, not an actual model being trained via gradient descent - it's here to show what the <i>shape</i> of training looks like, not to compute it.</div>
             <p class="note" style="margin-top:0">A miniature next-character model learns to reproduce a short target phrase. Watch the loss fall and the output sharpen - the same shape as training a real LLM, just tiny.</p>
             <div class="train-grid">
               <div class="col"><canvas id="loss-canvas" width="600" height="300"></canvas></div>
@@ -1195,7 +1233,11 @@ function tokenize(text){
   return bpeEncode(t);
 }
 function displayTok(t){return t.replace(/\u0120/g," ").replace(/^ /,"·").replace(/\n/g,"⏎");}
-function setStatus(){/* status line removed; tokenizer still falls back silently */}
+function setStatus(){
+  const t=el("tok-tier");if(!t)return;
+  if(TOKMODE==="live"){t.className="mode-note tier-real";t.innerHTML='<span class="tag">🟢 Real</span> Using OpenAI\'s live cl100k tokeniser - these IDs and splits are genuine.';}
+  else if(TOKMODE==="offline"){t.className="mode-note tier-simplified";t.innerHTML='<span class="tag">🟡 Simplified</span> No live connection - falling back to a small tokeniser we trained ourselves. Same algorithm, smaller vocabulary; IDs won\'t match a real OpenAI model.';}
+}
 
 /* ---------- toy embeddings for vector strips (illustrative) ---------- */
 function embed(text){
@@ -1729,7 +1771,12 @@ el("t-tech").addEventListener("click",()=>setTech(true));
 
 /* scrollspy */
 const spy=[...document.querySelectorAll(".rl-link[data-spy]")];
-const obs=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)spy.forEach(l=>l.classList.toggle("active",l.dataset.target===e.target.id));}),{rootMargin:"-25% 0px -65% 0px"});
+const mobProg=el("mob-progress");
+const obs=new IntersectionObserver(es=>es.forEach(e=>{
+  if(!e.isIntersecting)return;
+  spy.forEach(l=>l.classList.toggle("active",l.dataset.target===e.target.id));
+  if(mobProg){const cur=spy.find(l=>l.dataset.target===e.target.id);if(cur)mobProg.textContent=cur.textContent;}
+}),{rootMargin:"-25% 0px -65% 0px"});
 document.querySelectorAll("section.station").forEach(s=>obs.observe(s));
 
 /* tokenizer readiness */
@@ -1857,8 +1904,8 @@ setStatus();renderPosHeat();renderStack();drawMap();trReset();rerender();
       lu.innerHTML=
         '<span class="el-title">How one ID becomes a vector \u2014 a single table lookup</span>'+
         rows+
-        '<p class="el-note">Each row is a learned list of 768 numbers \u2014 the token\'s coordinates '+
-        'in meaning-space. The full table has ~100,000 rows (one per vocabulary entry). '+
+        '<p class="el-note">Each row would normally be a learned list of 768 numbers \u2014 a token\'s coordinates '+
+        'in meaning-space (shown here as an illustrative stand-in, not real trained values). The full table has ~100,000 rows (one per vocabulary entry). '+
         'Orange cells are positive values; dark cells are negative.</p>';
     }
     /* QKV flow diagram */
