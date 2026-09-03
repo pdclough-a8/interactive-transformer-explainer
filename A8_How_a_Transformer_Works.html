@@ -139,9 +139,11 @@ body.mode-training .wt-note .tag{background:var(--orange-deep)}
 .tech-block .formula{display:block;padding:9px 0;font-size:15px;color:#FFD9C9}
 .tech-block p{margin:8px 0;color:#C7CBD5;max-width:none}
 body.show-tech .tech-block{display:block}
-.tech-switch{display:flex;align-items:center;gap:10px;margin:6px 0 2px}
+/* sticky so it stays reachable while scrolling through the stations - no more scrolling back to the top to flip it */
+.tech-switch{display:flex;align-items:center;gap:10px;margin:0 0 16px;position:sticky;top:70px;z-index:44;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:9px 14px;box-shadow:0 3px 10px rgba(0,0,0,.07)}
 .tech-switch button{font-size:13px;font-weight:600;font-family:var(--body);border:1px solid var(--border-strong);background:var(--surface);color:var(--ink);border-radius:999px;padding:7px 14px;cursor:pointer}
 .tech-switch button[aria-pressed="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+@media(max-width:920px){.tech-switch{top:104px}}
 .ex-note{margin:16px 0 0;background:#26140D;border-left:4px solid var(--orange);border-radius:0 10px 10px 0;padding:12px 15px;font-size:14.5px;color:#F1D9CE;max-width:62ch}
 .ex-note b{color:#fff}
 .ex-note[hidden]{display:none}
