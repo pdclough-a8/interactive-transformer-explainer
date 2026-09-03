@@ -606,7 +606,7 @@ footer a{color:#C9CBD0}
       <section class="station" id="attention">
         <div class="st-head"><span class="st-num">04</span><h2>Attention - tokens exchange information</h2></div>
         <p class="lead-in">This is the transformer's signature move. For every token the model asks: <b>which other tokens matter for understanding me?</b> - then exchanges information with those tokens, weighted by relevance. That's how <i>“she”</i> can pull meaning from whoever she refers to. One rule on this: a GPT-style model only ever looks <b>backwards</b> - a token can pull from itself and everything before it, never from what comes later (more on why, below).</p>
-        <p class="note" style="margin-top:0">"Exchange," "ask," "look" - these are analogies to make the mechanism easy to picture. Mechanically, it's linear transformations, dot products, softmax and matrix multiplication throughout; flip on the technical layer any time you want the literal version instead of the story.</p>
+        <p class="note" style="margin-top:0">"Exchange," "ask," "look" - these are analogies to make the mechanism easy to picture, not literal descriptions. Flip on the technical layer any time you want the exact maths instead of the story.</p>
         <div class="analogy"><span>🗣️</span><span><b>Think of it like this:</b> a meeting where every token interviews every other. Each asks a question (<i>query</i>), each advertises what it offers (<i>key</i>), and the best matches exchange their content (<i>value</i>). Strong matches get more airtime.</span></div>
 
         <p class="lead-in" style="margin-top:20px"><b>Why three separate roles, not one?</b> Every token needs to do two different jobs at once: <i>ask</i> what it needs from others, and <i>advertise</i> what it offers others. Asking and advertising aren't the same thing, so the model keeps them as separate, smaller vectors - plus a third for the actual content that gets shared once a match is found. That split is what "Query, Key, Value" means:</p>
@@ -615,7 +615,7 @@ footer a{color:#C9CBD0}
           <div class="qkv k"><div class="rl">Key <span>K</span></div><div class="dsc">This token's advert: “here's what I'm about” - checked against everyone's Query.</div></div>
           <div class="qkv v"><div class="rl">Value <span>V</span></div><div class="dsc">This token's actual content - only handed over to whoever's Query matched.</div></div>
         </div>
-        <p class="max">Every token has all three at once - it's simultaneously asking, advertising and ready to share. To score a match, the model compares one token's Query with another's Key using a <span class="term" data-def="A dot product multiplies two vectors position-by-position and adds up the results - one number saying how aligned they are." role="button" tabindex="0">dot product</span> - a single “how well do these fit?” number. <span class="term" data-def="Softmax turns a set of raw scores into percentages that add up to 100%." role="button" tabindex="0">Softmax</span> turns a token's match scores into percentages that add up to 100%, then those percentages are used to blend everyone's <b>Values</b> - a strong match contributes a lot of its Value, a weak one barely any. Splitting the job this way is what makes it efficient: Query and Key exist purely to find relevance; Value is only pulled in for whoever's actually relevant.</p>
+        <p class="max">Every token is simultaneously asking, advertising and ready to share. To score a match, the model compares one token's Query with another's Key - a <span class="term" data-def="A dot product multiplies two vectors position-by-position and adds up the results - one number saying how aligned they are." role="button" tabindex="0">dot product</span>, giving a single “how well do these fit?” number. <span class="term" data-def="Softmax turns a set of raw scores into percentages that add up to 100%." role="button" tabindex="0">Softmax</span> turns all of a token's match scores into percentages that add up to 100% - then those percentages decide how much of everyone's <b>Value</b> gets blended in: a strong match contributes a lot, a weak one barely any.</p>
         <div class="only-tech">
         <details class="qpop">
           <summary><span>❓</span> Want to see the maths worked out by hand?</summary>
@@ -718,11 +718,11 @@ footer a{color:#C9CBD0}
           <div class="arch-row"><span class="ar-name">Input embedding <span class="ar-plus">+ positional encoding</span></span><span class="ar-plain">turn tokens into vectors and stamp each with its position <span class="ar-step" data-target="embed">steps 2–3</span></span></div>
           <div class="arch-brace">repeated for every block (×N)</div>
           <div class="arch-row hot"><span class="ar-name">Multi-Head Self-Attention <span class="ar-plus">(Q, K, V)</span></span><span class="ar-plain">every token exchanges information with the others, pulling in what's relevant <span class="ar-step" data-target="attention">steps 4–5</span></span></div>
-          <div class="arch-row dim"><span class="ar-name">Add &amp; Norm</span><span class="ar-plain">residual shortcut + normalisation to keep things stable <span class="ar-step" data-target="block">step 6</span></span></div>
+          <div class="arch-row dim"><span class="ar-name">Add &amp; Norm</span><span class="ar-plain"><span class="term" data-def="A residual connection adds a step’s input back onto its output - a shortcut that stops information (and training signal) getting lost in deep stacks." role="button" tabindex="0">residual shortcut</span> + <span class="term" data-def="Normalisation rescales the numbers flowing through the model to a consistent range, which keeps training stable." role="button" tabindex="0">normalisation</span> to keep things stable <span class="ar-step" data-target="block">step 6</span></span></div>
           <div class="arch-row cool"><span class="ar-name">Feed-Forward</span><span class="ar-plain">each token is processed on its own; a lot of stored knowledge appears to live here <span class="ar-step" data-target="block">step 6</span></span></div>
           <div class="arch-row dim"><span class="ar-name">Add &amp; Norm</span><span class="ar-plain">residual + normalisation again, then on to the next block <span class="ar-step" data-target="depth">step 7</span></span></div>
           <div class="arch-brace end">after the last block</div>
-          <div class="arch-row"><span class="ar-name">Linear</span><span class="ar-plain">score every token in the vocabulary (produces the logits) <span class="ar-step" data-target="output">step 8</span></span></div>
+          <div class="arch-row"><span class="ar-name">Linear</span><span class="ar-plain">score every token in the vocabulary - a raw number for each, before it's turned into a probability <span class="ar-step" data-target="output">step 8</span></span></div>
           <div class="arch-row"><span class="ar-name">Softmax</span><span class="ar-plain">turn those scores into next-token probabilities <span class="ar-step" data-target="output">step 8</span></span></div>
           <div class="arch-out">→ probability of every possible next token</div>
         </div>
@@ -1005,7 +1005,7 @@ footer a{color:#C9CBD0}
           </div>
           <div class="demo">
             <div class="demo-lab">Live - watch a tiny model learn</div>
-            <p class="tierline">🔵 <b>Illustrative</b> - a scripted animation shaped to look like a real loss curve, not an actual model being trained via gradient descent; it shows the <i>shape</i> of training, not a computation of it.</p>
+            <p class="tierline">🔵 <b>Illustrative</b> - a scripted animation shaped to look like a real loss curve, not an actual model being trained via <span class="term" data-def="Gradient descent: take a small step that lowers the loss, then repeat - millions of times." role="button" tabindex="0">gradient descent</span>; it shows the <i>shape</i> of training, not a computation of it.</p>
             <p class="note" style="margin-top:0">A miniature next-character model learns to reproduce a short target phrase. Watch the loss fall and the output sharpen - the same shape as training a real LLM, just tiny.</p>
             <div class="train-grid">
               <div class="col"><canvas id="loss-canvas" width="600" height="300"></canvas></div>
@@ -1097,7 +1097,7 @@ footer a{color:#C9CBD0}
             <tr><td>RAG (retrieval)</td><td>Fetches relevant text at query time and inserts it into the prompt</td><td class="hot">Knowledge gaps, stale training data, hallucination</td></tr>
             <tr><td>Tool use</td><td>Model requests an action; real code runs it and returns the result</td><td class="hot">Can't act, weak precise maths, no live data</td></tr>
             <tr><td>Memory / sessions</td><td>Persists facts or history across separate conversations</td><td class="hot">No memory between chats</td></tr>
-            <tr><td>CoT / self-consistency prompting</td><td>Elicits step-by-step reasoning, or samples several attempts and votes</td><td class="hot">Weak multi-step reasoning - no retraining needed</td></tr>
+            <tr><td>Step-by-step ("chain of thought") prompting</td><td>Asks the model to reason step by step, or samples several attempts and votes on the most common answer</td><td class="hot">Weak multi-step reasoning - no retraining needed</td></tr>
             <tr><td>Guardrails / validation</td><td>Checks or filters outputs and tool calls before they take effect</td><td class="hot">Unsafe or mistaken actions</td></tr>
             <tr><td>Multi-agent orchestration</td><td>Splits a task across several LLM calls in a plan → act → observe loop</td><td class="hot">Tasks too large for one pass</td></tr>
           </tbody>
