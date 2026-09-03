@@ -380,16 +380,12 @@ footer a{color:#C9CBD0}
 .el-ellip{font-family:var(--mono);font-size:11px;color:var(--muted);padding:0 4px}
 .el-note{font-size:12.5px;color:var(--muted);margin-top:10px;max-width:70ch}
 
-/* real/simplified/illustrative tier badges - reuses .mode-note shape, recolours the tag */
-.mode-note.tier-real{background:#E6F2EA;color:#0F3D22}
-.mode-note.tier-real .tag{background:#2E7D46}
-.mode-note.tier-simplified{background:#FFF3D6;color:#4A3600}
-.mode-note.tier-simplified .tag{background:#B67F00}
-/* .tier-illustrative uses the default .mode-note (blue) styling unchanged */
-
-/* "what it doesn't do" list inside a .primer box */
-.primer ul{margin:10px 0 0 1.15em}
-.primer li{margin:5px 0}
+/* real/simplified/illustrative tier line - a slim coloured-rule subtitle under a demo-lab heading, not a full boxed callout */
+.tierline{font-size:12.5px;font-weight:500;margin:4px 0 10px;padding:2px 0 2px 10px;border-left:3px solid var(--blue);color:#1B2A3D;max-width:72ch}
+.tierline b{font-weight:700}
+.tierline.tier-real{border-left-color:#2E7D46;color:#0F3D22}
+.tierline.tier-simplified{border-left-color:#B67F00;color:#4A3600}
+/* bare .tierline (no modifier) is the illustrative default */
 
 /* mobile "you are here" progress bar - replaces the sticky nav rail below 920px */
 .mob-progress{display:none}
@@ -461,7 +457,6 @@ footer a{color:#C9CBD0}
         <li><button class="rl-link" type="button" data-target="heads" data-spy>5 · Many heads</button></li>
         <li><button class="rl-link" type="button" data-target="block" data-spy>6 · The block</button></li>
         <li><button class="rl-link" type="button" data-target="depth" data-spy>7 · Depth</button></li>
-        <li><button class="rl-link" type="button" data-target="scale" data-spy>Zooming out - scale</button></li>
         <li><button class="rl-link" type="button" data-target="output" data-spy>8 · Next word / learning</button></li>
         <li><button class="rl-link" type="button" data-target="assistant" data-spy>9 · Predictor to assistant</button></li>
         <li><button class="rl-link" type="button" data-target="beyond" data-spy>10 · Beyond the model</button></li>
@@ -498,18 +493,11 @@ footer a{color:#C9CBD0}
         <p class="note" style="margin-top:2px">↩︎ That last step loops: each new token is fed back in to predict the next. That's the entire generation loop: predict one token, append it, then repeat.</p>
         <div class="primer">
           <span class="k">Worth knowing before you start</span>
-          A transformer does <b>not</b>, by default:
-          <ul>
-            <li>look facts up in a database - it recalls patterns from training, not references</li>
-            <li>know whether its own answer is true - it can sound equally confident either way</li>
-            <li>"think" in English internally - it operates on numbers throughout, start to finish</li>
-            <li>update its weights from talking to you - every reply comes from the same frozen numbers</li>
-            <li>remember anything between separate conversations, unless it's resent to it</li>
-          </ul>
+          A transformer does <b>not</b>, by default: look facts up in a database (it recalls patterns from training, not references) · know whether its own answer is true (it can sound equally confident either way) · "think" in English internally (it operates on numbers throughout) · update its weights from talking to you (every reply comes from the same frozen numbers) · remember anything between separate conversations, unless it's resent to it.
         </div>
         <div class="primer">
           <span class="k">Neural networks?</span>
-          A neural network is a large collection of simple mathematical operations: numbers go in, get multiplied by adjustable numbers called <span class="term" data-def="Weights (or parameters) are the adjustable numbers inside the model - what training changes. Frontier models have hundreds of billions of them." role="button" tabindex="0">weights</span>, and numbers come out. <b>Training</b> is the process of slowly tuning those weights until the output is useful. A <b>transformer</b> is one particular arrangement of these operations, designed so tokens can exchange information with each other - which turns out to be remarkably good at language. Worth keeping straight: <b>a transformer is the architecture; an LLM is a specific trained model built from it</b> - usually, as on this page, a <b>decoder-only</b> transformer (more on that distinction in “Where it came from”, below).
+          A neural network is a large collection of simple mathematical operations: numbers go in, get multiplied by adjustable numbers called <span class="term" data-def="Weights (or parameters) are the adjustable numbers inside the model - what training changes. Frontier models have hundreds of billions of them." role="button" tabindex="0">weights</span>, and numbers come out. <b>Training</b> is the process of slowly tuning those weights until the output is useful. A <b>transformer</b> is one particular arrangement of these operations, designed so tokens can exchange information with each other - which turns out to be remarkably good at language. Worth keeping straight: <b>a transformer is the architecture; an LLM is a specific trained model built from it</b> (there's more on the specific variant this page covers in "Where it came from", below).
         </div>
       </section>
 
@@ -523,7 +511,7 @@ footer a{color:#C9CBD0}
         </div>
         <div class="demo">
           <div class="demo-lab">Live - your sentence as tokens</div>
-          <div class="mode-note tier-real" id="tok-tier" style="display:block"><span class="tag">🟢 Real</span> Checking for a live connection to OpenAI's tokeniser…</div>
+          <p class="tierline tier-real" id="tok-tier">🟢 <b>Real</b> - checking for a live connection to OpenAI's tokeniser…</p>
           <div class="tok-row" id="tok-display"></div>
           <p class="note" id="tok-count"></p>
           <p class="note">Want to try it on your own text? <a href="https://tiktokenizer.vercel.app/" target="_blank" rel="noopener">TikTokenizer</a> is a free interactive tokeniser that shows the same splits, live.</p>
@@ -532,6 +520,7 @@ footer a{color:#C9CBD0}
         <br>
         <div class="handoff" data-h="01"><div class="handoff-h hin"><span class="handoff-lab">Going in</span><span style="font-family:var(--mono);font-size:13px">"The engineer finished the"</span></div><div class="handoff-div"><span class="handoff-arr">→</span></div><div class="handoff-h hout"><span class="handoff-lab">Coming out</span><span class="htok" style="background:#FDE9E0;color:#C23A16;border-color:#C23A16">The</span> <span class="htok" style="background:#E4EEF9;color:#0B5CB8;border-color:#0B5CB8">·engineer</span> <span class="htok" style="background:#EAE7DF;color:#4A4D52;border-color:#4A4D52">·finished</span> <span class="htok" style="background:#FFEFE9;color:#C23A16;border-color:#C23A16">·the</span><div style="font-size:12px;color:var(--muted);margin-top:6px">Four ID numbers - the only thing that flows forward.</div></div></div>
 <div class="takeaway"><b>Bottom line:</b> from here on the model never sees letters - only a list of ID numbers.</div>
+        <div class="only-tech">
         <details class="qpop">
           <summary><span>❓</span> What about a word it has never seen?</summary>
             <div class="qpop-body">
@@ -540,6 +529,7 @@ footer a{color:#C9CBD0}
                 <p>Either way, one nuance stays true regardless of tokeniser: being able to <i>spell</i> a word isn't the same as <i>understanding</i> it. If a concept never appeared in training, the model can often still read and write the tokens, but its grasp of the meaning will be weak.</p>
             </div>
         </details>
+        </div>
       </section>
 
       <!-- 2 EMBED -->
@@ -553,14 +543,14 @@ footer a{color:#C9CBD0}
           <div class="mat-rows" id="mat-rows"></div>
           <p class="mat-cap" id="mat-cap"></p>
         </div>
-        <div class="mode-note" style="display:block;margin:14px 0"><span class="tag">🔵 Illustrative</span> The dimension counts here (768, 12,288) are real published architecture sizes. The actual colours/values below are a stand-in pattern, not a real trained embedding table.</div>
+        <p class="tierline" style="margin:4px 0 14px">🔵 <b>Illustrative</b> - the dimension counts here (768, 12,288) are real published architecture sizes; the actual colours/values below are a stand-in pattern, not a real trained embedding table.</p>
 <div class="embed-lookup" id="embed-lookup"><span class="el-title">How one ID becomes a vector - a single table lookup</span><div class="el-row"><span class="el-tok">The&nbsp;(464)</span><span class="el-op">→ row 464 of embedding table →</span><span class="el-vec"><span class="el-v" style="background:rgb(255,255,255)"></span><span class="el-v" style="background:rgb(59,69,83)"></span><span class="el-v" style="background:rgb(253,201,186)"></span><span class="el-v" style="background:rgb(200,203,207)"></span><span class="el-v" style="background:rgb(252,173,151)"></span><span class="el-v" style="background:rgb(250,111,72)"></span><span class="el-v" style="background:rgb(250,94,50)"></span><span class="el-v" style="background:rgb(127,134,143)"></span><span class="el-v" style="background:rgb(223,224,227)"></span><span class="el-v" style="background:rgb(250,106,65)"></span></span><span class="el-ellip">…&thinsp;<em style="font-style:normal">(768 total)</em></span></div><div class="el-row"><span class="el-tok">·engineer&nbsp;(8884)</span><span class="el-op">→ row 8884 of embedding table →</span><span class="el-vec"><span class="el-v" style="background:rgb(184,188,193)"></span><span class="el-v" style="background:rgb(95,103,115)"></span><span class="el-v" style="background:rgb(192,195,199)"></span><span class="el-v" style="background:rgb(86,94,106)"></span><span class="el-v" style="background:rgb(144,149,157)"></span><span class="el-v" style="background:rgb(249,83,37)"></span><span class="el-v" style="background:rgb(156,161,168)"></span><span class="el-v" style="background:rgb(152,157,165)"></span><span class="el-v" style="background:rgb(75,84,97)"></span><span class="el-v" style="background:rgb(250,101,59)"></span></span><span class="el-ellip">…&thinsp;<em style="font-style:normal">(768 total)</em></span></div><div class="el-row"><span class="el-tok">·finished&nbsp;(5201)</span><span class="el-op">→ row 5201 of embedding table →</span><span class="el-vec"><span class="el-v" style="background:rgb(188,191,196)"></span><span class="el-v" style="background:rgb(252,181,161)"></span><span class="el-v" style="background:rgb(250,115,77)"></span><span class="el-v" style="background:rgb(251,147,118)"></span><span class="el-v" style="background:rgb(69,78,92)"></span><span class="el-v" style="background:rgb(144,149,157)"></span><span class="el-v" style="background:rgb(252,180,159)"></span><span class="el-v" style="background:rgb(250,102,61)"></span><span class="el-v" style="background:rgb(250,109,69)"></span><span class="el-v" style="background:rgb(251,129,95)"></span></span><span class="el-ellip">…&thinsp;<em style="font-style:normal">(768 total)</em></span></div><div class="el-row"><span class="el-tok">·the&nbsp;(279)</span><span class="el-op">→ row 279 of embedding table →</span><span class="el-vec"><span class="el-v" style="background:rgb(249,79,31)"></span><span class="el-v" style="background:rgb(254,219,209)"></span><span class="el-v" style="background:rgb(250,94,50)"></span><span class="el-v" style="background:rgb(229,230,232)"></span><span class="el-v" style="background:rgb(253,200,184)"></span><span class="el-v" style="background:rgb(254,212,200)"></span><span class="el-v" style="background:rgb(252,162,137)"></span><span class="el-v" style="background:rgb(251,150,121)"></span><span class="el-v" style="background:rgb(253,205,191)"></span><span class="el-v" style="background:rgb(255,246,244)"></span></span><span class="el-ellip">…&thinsp;<em style="font-style:normal">(768 total)</em></span></div><p class="el-note">Each row would normally be a learned list of 768 numbers - a token's coordinates in meaning-space (shown here as an illustrative stand-in pattern, not real trained values). The full table has ~100,000 rows (one per vocabulary entry). Orange cells are positive values; dark cells are negative.</p></div>
         <div class="tech-block"><span class="tb-lab">Technical layer</span>
           <p>The embedding layer is a learned matrix <code>E ∈ ℝ^(V×d)</code>; token <code>i</code> selects row <code>E[i]</code>. Typical <code>d</code>: 768 (GPT-2 small) up to ~12,288 (GPT-3). The map below is a real, hand-curated 2-D projection - enough for the intuition; a live model uses hundreds of dimensions.</p>
         </div>
         <div class="demo">
           <div class="demo-lab">Live - the map of meaning</div>
-          <div class="mode-note" style="display:block"><span class="tag">🔵 Illustrative</span> Every position on this map was hand-placed by us to illustrate the idea clearly - it is <b>not</b> computed from a real embedding model. A real model's map is learned from data, sits in hundreds of dimensions, and would look far messier if flattened to 2D like this.</div>
+          <p class="tierline">🔵 <b>Illustrative</b> - every position on this map was hand-placed to illustrate the idea; it isn't computed from a real embedding model, which would use hundreds of dimensions and look far messier if flattened to 2D.</p>
           <p class="note" style="margin-top:10px">A curated set of everyday words, placed to illustrate how usage-based clustering works. Type a word to find its nearest neighbours, or try the analogy.</p>
           <div class="mapwrap"><canvas id="emb-canvas" width="900" height="470"></canvas></div>
           <div class="mapctl">
@@ -569,6 +559,11 @@ footer a{color:#C9CBD0}
             <button class="ghost" id="emb-analogy">Show king − man + woman</button>
           </div>
           <div class="analogy-out" id="emb-out" hidden></div>
+        </div>
+        <div class="demo">
+          <div class="demo-lab">Live - feel the size (your sentence)</div>
+          <p class="tierline tier-real">🟢 <b>Real</b> - GPT-2 small's published dimensions (768 width, 12 layers, 50,257 vocab, 124M weights), applied to your sentence's actual token count.</p>
+          <div id="sizes"></div>
         </div>
         <div class="mode-note wt-note only-train"><span class="tag">While training</span> These coordinates start out <b>random</b> - every token dumped in a meaningless heap. Training slowly slides each token into place, so tokens that appear in similar contexts drift together. The map is <i>learned</i>, not designed.</div>
         <br>
@@ -588,7 +583,7 @@ footer a{color:#C9CBD0}
         </div>
         <div class="demo">
           <div class="demo-lab">Live - position fingerprints</div>
-          <div class="mode-note tier-simplified" style="display:block"><span class="tag">🟡 Simplified</span> The real sinusoidal formula, computed live - just fewer dimensions and positions shown than a full-scale model, to keep it readable.</div>
+          <p class="tierline tier-simplified">🟡 <b>Simplified</b> - the real sinusoidal formula, computed live, with fewer dimensions and positions shown than a full-scale model, to keep it readable.</p>
           <div class="posviz">
             <div class="col">
               <p class="note" style="margin-top:0"><b>Every position gets a unique stripe.</b> Rows are positions 0–9, columns are dimensions. Nearby positions look similar; distant ones don't.</p>
@@ -625,7 +620,7 @@ footer a{color:#C9CBD0}
         <details class="qpop">
           <summary><span>❓</span> Want to see the maths worked out by hand?</summary>
           <div class="qpop-body">
-            <div class="mode-note tier-simplified" style="display:block"><span class="tag">🟡 Simplified</span> The real formula (dot product → softmax → weighted blend), applied to tiny made-up numbers so every step is checkable by hand.</div>
+            <p class="tierline tier-simplified">🟡 <b>Simplified</b> - the real formula (dot product → softmax → weighted blend), applied to tiny made-up numbers so every step is checkable by hand.</p>
             <p>The formula above, with small made-up numbers so you can check every step yourself - nothing here touches the live model below.</p>
             <p>Take the sentence <b>“cat sat mat”</b>. In the real model, each token's Query, Key and Value come from its own vector multiplied by three separate learned weight matrices - one per role. To keep the arithmetic short, we'll skip that step and just <b>suppose</b> each token already has these toy vectors:</p>
             <table class="sztable">
@@ -661,7 +656,7 @@ footer a{color:#C9CBD0}
         </div>
         <div class="demo">
           <div class="demo-lab">Live - the attention map</div>
-          <div class="mode-note" style="display:block;margin-top:0"><span class="tag">🔵 Illustrative</span> This heatmap is a readable stand-in that blends two real tendencies - tokens with similar meanings attract, and tokens lean on recent neighbours. It is <b>not</b> a trained model's actual attention weights, which are learned from data and often far less tidy than this.</div>
+          <p class="tierline" style="margin-top:0">🔵 <b>Illustrative</b> - a readable stand-in blending two real tendencies (similar meanings attract, recent neighbours matter); not a trained model's actual attention weights, which are learned from data and often far less tidy.</p>
           <p class="note">Each <b>row</b> is a token doing the looking; each <b>column</b> is a token being looked at. Darker = more attention. The grey top-right is the <b>causal mask</b> (no peeking ahead). <b>Click a row label</b> to see where that token looks.</p>
           <div class="heat-wrap"><div class="heat" id="attn-heat"></div></div>
           <div class="legend"><span>less</span><span class="grad"></span><span>more attention</span></div>
@@ -685,7 +680,7 @@ footer a{color:#C9CBD0}
         </div>
         <div class="demo">
           <div class="demo-lab">Live - three heads, three habits</div>
-          <div class="mode-note" style="display:block"><span class="tag">🔵 Illustrative</span> These are hand-scripted patterns chosen to mimic habits really seen inside trained models - not the actual weights of any specific head.</div>
+          <p class="tierline">🔵 <b>Illustrative</b> - hand-scripted patterns chosen to mimic habits really seen inside trained models, not the actual weights of any specific head.</p>
           <p class="note" style="margin-top:0">Same sentence, three toy heads, each with a different habit:</p>
           <div class="tabs" role="tablist" id="head-tabs">
             <button role="tab" aria-selected="true" data-h="0">Head A · previous token</button>
@@ -756,21 +751,7 @@ footer a{color:#C9CBD0}
         </div>
         <div class="tech-block"><span class="tb-lab">Technical layer</span>
           <p>GPT-2 small stacks 12 blocks; frontier models stack roughly 100. Every block has the same shape but its own learned weights. Depth is a big part of why larger models perform better on complex tasks.</p>
-        </div>
-        <br>
-        <div class="handoff"><div class="handoff-h hin"><span class="handoff-lab">Going in</span>After 1 block: surface patterns captured - word proximity, basic grammar.</div><div class="handoff-div"><span class="handoff-arr">→</span></div><div class="handoff-h hout"><span class="handoff-lab">Coming out</span>After 12 blocks: each layer refined the vectors further. Coreference, semantic roles, pragmatic context - all encoded by the final layer.</div></div>
-<div class="takeaway"><b>Bottom line:</b> stacking blocks lets the model build increasingly rich, abstract representations of the input, layer by layer.</div>
-      </section>
-
-      <!-- SCALE (moved here from station 2 - recaps concepts introduced in tokens/embed/attention/heads/block/depth, so it now reads as a synthesis rather than a forward-reference) -->
-      <section class="station" id="scale">
-        <div class="st-head"><span class="st-num">Σ</span><h2>Zooming out - what all this adds up to</h2></div>
-        <p class="lead-in">You've now met every piece that decides a model's size: a <span class="ar-step" data-target="tokens">vocabulary</span>, a <span class="ar-step" data-target="embed">width</span> in dimensions, <span class="ar-step" data-target="heads">attention heads</span> and their Q/K/V projections, a <span class="ar-step" data-target="block">feed-forward network</span> per block, and a <span class="ar-step" data-target="depth">stack of layers</span>. Put them together and that's the whole size of a real model - here's what that looks like, using your own sentence.</p>
-        <div class="demo">
-          <div class="demo-lab">Live - feel the size (your sentence)</div>
-          <div class="mode-note tier-real" style="display:block"><span class="tag">🟢 Real</span> GPT-2 small's published dimensions (768, 12 layers, 50,257 vocab, 124M weights) - the numbers below use your sentence's real token count against them.</div>
-          <p class="note">Small models like GPT-2 have a few hundred million adjustable numbers. Frontier models have hundreds of billions - that jump in size is a big part of why they're so much more capable.</p>
-          <div id="sizes"></div>
+          <p>Depth is one part of what decides a model's overall size, alongside <span class="ar-step" data-target="tokens">vocabulary</span>, <span class="ar-step" data-target="embed">width</span>, <span class="ar-step" data-target="heads">attention heads</span> and the <span class="ar-step" data-target="block">feed-forward network</span> per block. Put them together and here's how a few real models compare:</p>
           <table class="sztable">
             <thead><tr><th>&nbsp;</th><th>GPT-2 small</th><th>GPT-3</th><th>Frontier (2026)</th></tr></thead>
             <tbody>
@@ -781,16 +762,18 @@ footer a{color:#C9CBD0}
               <tr><td>Total weights</td><td>124 million</td><td>175 billion</td><td class="hot">100s of billions</td></tr>
             </tbody>
           </table>
-          <p class="note">GPT-2 small and GPT-3 are specific, published models, so those two columns are exact. "Frontier" isn't one architecture, though - current models vary enormously in these numbers, so that column is illustrative only, to show the scale of the jump, not a spec for any single model.</p>
-          <p class="lead-in" style="margin-top:16px"><b>Where do these sizes come from?</b> They're mostly deliberate choices:</p>
-          <p class="max" style="margin-top:6px">The <b>vocabulary</b> size is fixed when the tokeniser is trained - bigger means fewer tokens per sentence, but larger matrices. The <b>width, layers and heads</b> are architecture choices, scaled up for bigger models following <span class="term" data-def="Scaling laws are patterns researchers found showing that bigger models, trained on more data, reliably get better in predictable ways - so labs can decide how big to build before training." role="button" tabindex="0">scaling laws</span> - observed patterns for how size, data and performance relate. The <b>context window</b> is limited by memory and compute, because attention compares every token with every other - so cost grows with the <i>square</i> of the length.</p>
-          <div class="analogy"><span>📏</span><span><b>Variable input, fixed output.</b> The context window is a <em>maximum</em>, not a requirement. You can feed the model a single token or fill it to the limit - the transformer handles whatever length you give it, up to that ceiling. During generation, the input starts at the length of your prompt and grows by one token each step. The <em>output</em>, by contrast, is always the same fixed size: a probability score for every single token in the vocabulary - around 100,000 numbers, every time, regardless of how long the input was. That asymmetry is easy to miss: the context window is a cap on what goes <em>in</em>, not a fixed frame that must be filled.</span></div>
-          <div class="only-tech">
-          <details class="qpop">
-            <summary><span>📐</span> What do the actual matrix sizes look like through the pipeline?</summary>
-            <div class="qpop-body">
-              <p>Every transformation is a matrix multiply. The amber boxes below show each learned matrix and its fixed dimensions; the blue boxes show the data shape at that point. <b>N</b> is your input length - the only dimension that varies with what you type. Numbers are GPT-2 small as a concrete example.</p>
-              <svg viewBox="0 0 680 730" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;margin:14px 0;display:block" aria-label="Matrix dimensions through a GPT-2 scale transformer forward pass">
+          <p>GPT-2 small and GPT-3 are specific, published models, so those two columns are exact. "Frontier" isn't one architecture - current models vary enormously in these numbers, so that column is illustrative only, to show the scale of the jump.</p>
+          <p>These sizes are mostly deliberate choices. <b>Vocabulary</b> is fixed when the tokeniser is trained - bigger means fewer tokens per sentence, but larger matrices. <b>Width, layers and heads</b> are architecture choices, scaled up for bigger models following <span class="term" data-def="Scaling laws are patterns researchers found showing that bigger models, trained on more data, reliably get better in predictable ways - so labs can decide how big to build before training." role="button" tabindex="0">scaling laws</span>. <b>Context window</b> is limited by memory and compute, because attention compares every token with every other - so cost grows with the <i>square</i> of the length. Every projection is a matrix multiply: a token row <code>1×d</code> times a weight matrix <code>d×d</code> → <code>1×d</code>. Attention builds Q, K, V this way; the feed-forward uses <code>d×4d</code> then <code>4d×d</code>. The embedding / unembedding matrix is <code>V×d</code> - for GPT-3 that's <code>50,257 × 12,288 ≈ 617 million</code> numbers on its own. Multiply across all layers and you reach the billions.</p>
+        </div>
+        <div class="only-tech">
+        <div class="analogy"><span>📏</span><span><b>Variable input, fixed output.</b> The context window is a <em>maximum</em>, not a requirement. You can feed the model a single token or fill it to the limit - the transformer handles whatever length you give it, up to that ceiling. During generation, the input starts at the length of your prompt and grows by one token each step. The <em>output</em>, by contrast, is always the same fixed size: a probability score for every single token in the vocabulary - around 100,000 numbers, every time, regardless of how long the input was. That asymmetry is easy to miss: the context window is a cap on what goes <em>in</em>, not a fixed frame that must be filled.</span></div>
+        </div>
+        <div class="only-tech">
+        <details class="qpop">
+          <summary><span>📐</span> What do the actual matrix sizes look like through the pipeline?</summary>
+          <div class="qpop-body">
+            <p>Every transformation is a matrix multiply. The amber boxes below show each learned matrix and its fixed dimensions; the blue boxes show the data shape at that point. <b>N</b> is your input length - the only dimension that varies with what you type. Numbers are GPT-2 small as a concrete example.</p>
+            <svg viewBox="0 0 680 730" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;margin:14px 0;display:block" aria-label="Matrix dimensions through a GPT-2 scale transformer forward pass">
 <defs><marker id="marr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
 <rect x="40" y="18" width="12" height="12" rx="2" fill="#FDE9E0" stroke="#F94E1E" stroke-width="1"/><text x="58" y="28" font-family="Inter,sans-serif" font-size="11" fill="#63656A">learned matrix - fixed shape and values</text>
 <rect x="298" y="18" width="12" height="12" rx="2" fill="#E4EEF9" stroke="#0B5CB8" stroke-width="1"/><text x="316" y="28" font-family="Inter,sans-serif" font-size="11" fill="#63656A">data tensor - N is variable</text>
@@ -835,24 +818,22 @@ footer a{color:#C9CBD0}
 <rect x="40" y="635" width="310" height="50" rx="6" fill="#EFEDE7" stroke="#C7C4BA" stroke-width="0.5"/><text x="195" y="652" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="13" fill="#4A4D52" dominant-baseline="central">Softmax</text><text x="195" y="671" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" fill="#63656A" dominant-baseline="central">last token position only</text>
 <line x1="352" y1="660" x2="378" y2="660" stroke="#C7C4BA" stroke-width="1" marker-end="url(#marr)"/>
 <rect x="380" y="635" width="260" height="50" rx="6" fill="#E4EEF9" stroke="#0B5CB8" stroke-width="0.5"/><text x="510" y="652" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="13" fill="#0B5CB8" dominant-baseline="central">[50,257]</text><text x="510" y="671" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" fill="#63656A" dominant-baseline="central">next-token probabilities</text>
-              </svg>
-            </div>
-          </details>
+            </svg>
           </div>
-          <div class="only-tech">
-          <details class="qpop">
-            <summary><span>❓</span> Why 50,257, specifically?</summary>
-            <div class="qpop-body">
-              <p>It's not a count of "how many unique words exist" - it's a <b>target size chosen up front</b>, then the tokeniser is trained to fill it. BPE starts from the 256 possible byte values (so anything can always be spelled out, worst case) and repeatedly merges the most frequent adjacent pair in the training corpus into a new token, one merge = one new vocabulary entry. GPT-2's creators simply stopped after <b>50,000</b> merges, added the 256 byte tokens and 1 special end-of-text token, and got 256 + 50,000 + 1 = <b>50,257</b>. GPT-3 and this tool's live tokeniser (<code>cl100k_base</code>) inherit vocabularies from the same lineage of design choices.</p>
-              <p>So the <i>contents</i> of the vocabulary are data-driven (frequent byte-pairs earn merges), but the <i>size</i> is a human-picked trade-off: bigger vocabulary → shorter token sequences but a larger embedding/output matrix (more weights, more compute per prediction); smaller vocabulary → smaller matrices but longer sequences for the same text.</p>
-            </div>
-          </details>
-          </div>
-          <div class="tech-block"><span class="tb-lab">Technical layer</span>
-            <p>Every projection is a matrix multiply: a token row <code>1×d</code> times a weight matrix <code>d×d</code> → <code>1×d</code>. Attention builds Q, K, V this way; the feed-forward uses <code>d×4d</code> then <code>4d×d</code>. The embedding / unembedding matrix is <code>V×d</code> - for GPT-3 that's <code>50,257 × 12,288 ≈ 617 million</code> numbers on its own. Multiply across all layers and you reach the billions.</p>
-          </div>
+        </details>
         </div>
-        <div class="takeaway"><b>Bottom line:</b> a model's size is just these same pieces - vocabulary, width, heads, layers - scaled up. Nothing new happens at scale; there's simply much more of it.</div>
+        <div class="only-tech">
+        <details class="qpop">
+          <summary><span>❓</span> Why 50,257, specifically?</summary>
+          <div class="qpop-body">
+            <p>It's not a count of "how many unique words exist" - it's a <b>target size chosen up front</b>, then the tokeniser is trained to fill it. BPE starts from the 256 possible byte values (so anything can always be spelled out, worst case) and repeatedly merges the most frequent adjacent pair in the training corpus into a new token, one merge = one new vocabulary entry. GPT-2's creators simply stopped after <b>50,000</b> merges, added the 256 byte tokens and 1 special end-of-text token, and got 256 + 50,000 + 1 = <b>50,257</b>. GPT-3 and this tool's live tokeniser (<code>cl100k_base</code>) inherit vocabularies from the same lineage of design choices.</p>
+            <p>So the <i>contents</i> of the vocabulary are data-driven (frequent byte-pairs earn merges), but the <i>size</i> is a human-picked trade-off: bigger vocabulary → shorter token sequences but a larger embedding/output matrix (more weights, more compute per prediction); smaller vocabulary → smaller matrices but longer sequences for the same text.</p>
+          </div>
+        </details>
+        </div>
+        <br>
+        <div class="handoff"><div class="handoff-h hin"><span class="handoff-lab">Going in</span>After 1 block: surface patterns captured - word proximity, basic grammar.</div><div class="handoff-div"><span class="handoff-arr">→</span></div><div class="handoff-h hout"><span class="handoff-lab">Coming out</span>After 12 blocks: each layer refined the vectors further. Coreference, semantic roles, pragmatic context - all encoded by the final layer.</div></div>
+<div class="takeaway"><b>Bottom line:</b> stacking blocks lets the model build increasingly rich, abstract representations of the input, layer by layer.</div>
       </section>
 
       <!-- 8 OUTPUT / TRAINING -->
@@ -869,7 +850,7 @@ footer a{color:#C9CBD0}
           </div>
           <div class="demo">
             <div class="demo-lab">Live - generate, one word at a time</div>
-            <div class="mode-note tier-simplified" style="display:block"><span class="tag">🟡 Simplified</span> Real trigram statistics, counted from an actual training corpus (~90 sentences) - same score → soften → sample mechanism as a real model, on a tiny fraction of the data.</div>
+            <p class="tierline tier-simplified">🟡 <b>Simplified</b> - real trigram statistics, counted from an actual training corpus (~90 sentences); same score → soften → sample mechanism as a real model, on a tiny fraction of the data.</p>
             <div class="gen-line" id="gen-line"></div>
             <div class="slider-row" style="max-width:480px"><label for="temp-slider">Temperature</label><input type="range" id="temp-slider" min="0.1" max="1.5" value="0.3" step="0.1"><span class="sval" id="temp-sval">0.3</span></div>
             <p class="note" style="margin-top:2px">Candidate next words and their probabilities. This is a small <span class="term" data-def="An n-gram model predicts the next word from the previous few words by counting how often sequences appeared in its training text. This one is a trigram model - it looks at the previous two words." role="button" tabindex="0">trigram model</span> trained on a sample of ~90 sentences - tiny next to a real model (which scores ~100,000 candidates using the whole sentence), but it shows the same mechanism:</p>
@@ -881,6 +862,7 @@ footer a{color:#C9CBD0}
             </div>
             <p class="note">Low temperature keeps picking the top bar (predictable); high temperature takes more risks. Because it only remembers the previous two words, it can wander off topic on long runs - a real model tracks the whole passage - but the mechanism, score → soften into probabilities → sample → repeat, is exactly what large models do.</p>
           </div>
+          <div class="only-tech">
           <details class="qpop">
             <summary><span>↔</span> Is the forward pass really parallel? What changes at generation?</summary>
             <div class="qpop-body">
@@ -986,6 +968,8 @@ footer a{color:#C9CBD0}
               </svg>
             </div>
           </details>
+          </div>
+          <div class="only-tech">
           <details class="qpop">
             <summary><span>⚡</span> Doesn't reprocessing the whole context each time seem wasteful?</summary>
             <div class="qpop-body">
@@ -994,6 +978,7 @@ footer a{color:#C9CBD0}
               <p>What does still grow with context length is the attention step for the new token - comparing its query against every cached key. That cost grows linearly per token, and quadratically across a full generation, which is why very long contexts are expensive and why alternatives to full attention are an active research area.</p>
             </div>
           </details>
+          </div>
           <br>
           <div class="mode-note" style="display:block"><span class="tag">Fixed at inference</span> When you are <em>using</em> the model - this mode - the weights are completely frozen. Nothing you type changes them. Every request runs through the same fixed parameters the model finished training with; it is applying what it learned, not learning anything new from your input. Learning only ever happens during training.</div>
           <div class="takeaway"><b>Bottom line:</b> at its core, a language model is trained to do one thing - predict the next token. Everything else - conversation, tool use, reasoning - emerges from repeating and scaffolding that one step.</div>
@@ -1004,7 +989,7 @@ footer a{color:#C9CBD0}
           <div class="st-head"><span class="st-num">08</span><h2>Learning - how it got good in the first place</h2></div>
           <div class="primer">
             <span class="k">What training actually changes</span>
-            Training doesn't add or remove any matrices, and it doesn't change any shapes. It only changes the <b>numbers inside</b>. Before training starts, the entire structure already exists in memory - every matrix allocated to its fixed shape, filled with small random values. Then the process begins: run some text through the whole structure, compare what the model predicted against what actually came next, measure the error, and use that error signal to nudge every number in every matrix by a tiny amount in the direction that would have made the prediction slightly less wrong. Repeat that billions of times on billions of examples, and the random noise gradually resolves into something structured - the embedding table organises itself so that similar words end up near each other, the QKV matrices learn to recognise syntactic and semantic relationships, the feed-forward weights accumulate factual associations. The architecture never changes. The knowledge is entirely in the numbers.
+            Training never adds, removes or reshapes a matrix - it only changes the <b>numbers inside</b> them. Run text through the model, compare its prediction to what actually came next, measure the error, and nudge every number very slightly toward being less wrong. Repeat billions of times, and random noise resolves into structure: similar words drift together, attention learns to track relationships, feed-forward layers accumulate facts. The architecture never changes - the knowledge is entirely in the numbers.
           </div>
           <p class="lead-in">Everything so far assumed the weights were already good. They aren't, to start with - they're random. <b>Training</b> is the loop that fixes that: show the model real text, ask it to predict the next token, measure how wrong it was (the <b><span class="term" data-def="The loss is a single number measuring how wrong a prediction was. Training tries to make it smaller.">loss</span></b>), and nudge every <span class="term" data-def="Weights (or parameters) are the adjustable numbers inside the model - the things training changes. Frontier models have hundreds of billions of them." data-term="weights / parameters">weight</span> a tiny bit to be less wrong next time. Repeat billions of times.</p>
           <div class="analogy"><span>🎯</span><span><b>Think of it like this:</b> guess the next token with the answer covered, uncover it, and adjust. One example barely moves anything; trillions of examples turn random noise into fluent language.</span></div>
@@ -1016,11 +1001,11 @@ footer a{color:#C9CBD0}
             <div class="bd-arrow"><span class="bd-plus">↻ repeat, billions of times</span></div>
           </div>
           <div class="tech-block"><span class="tb-lab">Technical layer</span>
-            <p>Objective: minimise <span class="term" data-def="Cross-entropy is the specific loss used for next-token prediction - it’s low when the model gives high probability to the correct next token.">cross-entropy</span> of next-token prediction. Gradients of the loss w.r.t. every weight come from <code>backpropagation</code>; an optimiser (<code>Adam</code>/<code>AdamW</code>) takes a small step downhill: <code>θ ← θ − η·∇L</code>. That single objective, over trillions of tokens, is the source of everything the model can do.</p>
+            <p>Objective: minimise <span class="term" data-def="Cross-entropy is the specific loss used for next-token prediction - it’s low when the model gives high probability to the correct next token.">cross-entropy</span> of next-token prediction. Before training starts, every matrix already exists at its fixed shape, filled with small random values - training only ever updates the values, never the shapes. Gradients of the loss w.r.t. every weight come from <code>backpropagation</code>; an optimiser (<code>Adam</code>/<code>AdamW</code>) takes a small step downhill: <code>θ ← θ − η·∇L</code>. That single objective, over trillions of tokens, is the source of everything the model can do.</p>
           </div>
           <div class="demo">
             <div class="demo-lab">Live - watch a tiny model learn</div>
-            <div class="mode-note" style="display:block"><span class="tag">🔵 Illustrative</span> This is a scripted animation shaped to look like a real loss curve, not an actual model being trained via gradient descent - it's here to show what the <i>shape</i> of training looks like, not to compute it.</div>
+            <p class="tierline">🔵 <b>Illustrative</b> - a scripted animation shaped to look like a real loss curve, not an actual model being trained via gradient descent; it shows the <i>shape</i> of training, not a computation of it.</p>
             <p class="note" style="margin-top:0">A miniature next-character model learns to reproduce a short target phrase. Watch the loss fall and the output sharpen - the same shape as training a real LLM, just tiny.</p>
             <div class="train-grid">
               <div class="col"><canvas id="loss-canvas" width="600" height="300"></canvas></div>
@@ -1071,6 +1056,7 @@ footer a{color:#C9CBD0}
         </div>
         <p class="note" style="margin-top:10px">Everything from here on - SFT, RLHF, reasoning training - is collectively called <b>post-training</b>: further training on top of an already-pretrained model, with no architecture changes. ("Fine-tuning" gets used loosely for all of this too, but more precisely refers just to the supervised stage below.)</p>
         <p class="lead-in" style="margin-top:22px"><b>Stage 1 - Instruction fine-tuning (SFT).</b> The model is shown thousands of worked examples: a prompt on one side, a high-quality human-written response on the other. It is trained on those pairs in the usual way - predict the next token, measure the loss, nudge the weights. After enough examples the model learns the format: answer questions directly, follow instructions, stay on topic. The architecture has not changed at all; the weights have simply been steered toward a new target. A model fine-tuned this way is noticeably more useful than the raw pre-trained version - it stops trying to "continue" a question and starts trying to answer it.</p>
+        <div class="only-tech">
         <details class="qpop">
           <summary><span>❓</span> Can you fine-tune a model for a specific domain instead?</summary>
           <div class="qpop-body">
@@ -1078,16 +1064,17 @@ footer a{color:#C9CBD0}
             <p>One caveat: fine-tuning is much better at teaching <b>style and format</b> than at reliably injecting a lot of <b>new facts</b> - a small dataset doesn't get "memorised" the way trillions of pretraining tokens do, so "make it know our documents" is usually solved with retrieval instead. And in practice it's rarely done by retraining every weight - a cheaper technique called <b>LoRA</b> trains only a small set of added parameters instead.</p>
           </div>
         </details>
+        </div>
         <p class="max">But a model trained only on examples can still be unreliable in subtle ways: confidently wrong, inconsistently helpful, occasionally producing content nobody wanted. That's where the second stage comes in.</p>
         <p class="lead-in" style="margin-top:16px"><b>Stage 2 - RLHF (Reinforcement Learning from Human Feedback).</b> Human raters are shown pairs of model responses to the same prompt and asked which they prefer. Those judgments are used to train a separate <b><span class="term" data-def="A reward model is a neural network trained on human preference data to predict which model response a human would rate higher. It acts as a stand-in for the human rater during reinforcement learning.">reward model</span></b> - a network that learns to predict human preferences. The language model is then fine-tuned further using reinforcement learning: it generates responses, the reward model scores them, and the weights are nudged toward higher-scoring behaviour. Iterated many times, this shapes the model's tone, reliability and values.</p>
         <div class="analogy"><span>🎯</span><span><b>Think of it like this:</b> imagine training a new colleague in two steps. First, show them a folder of ideal responses so they understand the format. Then have a manager give feedback - "that was better, that was worse" - until good behaviour is consistent. RLHF is that feedback loop, run millions of times, with the reward model standing in for the manager.</span></div>
-        <p class="note" style="margin-top:10px">This is one common progression, not a fixed recipe - some labs skip stages, reorder them, or swap RLHF for <b>DPO</b> (Direct Preference Optimisation), a simpler variant that skips training a separate reward model (more in the technical layer below).</p>
+        <p class="note" style="margin-top:10px">This is one common progression, not a fixed recipe - some labs skip stages, reorder them, or use other optimisation methods entirely (more in the technical layer below).</p>
         <p class="lead-in" style="margin-top:16px"><b>Stage 3 - Reasoning training.</b> A newer addition, not yet in every model: further reinforcement learning on tasks with a checkable right answer - maths, code, logic - that rewards the model for reaching the correct answer, encouraging it to spend more computation on hard problems rather than answering instantly. The most visible result is models that write out a chain of reasoning steps before answering, which is what people mean by "reasoning" models - but the training itself optimises for correct outcomes, not simply for producing visible step-by-step text.</p>
         <div class="mode-note" style="display:block;margin-top:16px"><span class="tag">Key insight</span> At no point in any of these stages does the architecture change. There is no new component, no new type of layer. It is still the same transformer performing the same next-token prediction. What changes each time is the training signal - and that is enough to take a text-completer and give it a consistent personality, communication style, set of values, and - increasingly - the ability to reason through hard problems.</div>
         <div class="tech-block"><span class="tb-lab">Technical layer</span>
           <p>SFT is standard supervised learning on (prompt, completion) pairs, typically with a lower learning rate than pre-training to avoid overwriting too much. RLHF adds a second model: a reward model <code>r(x,y)</code> trained on human preference data using the Bradley-Terry objective. The language model is then optimised with <code>PPO</code> (Proximal Policy Optimisation) against <code>r</code> while a KL-divergence penalty keeps it close to the SFT checkpoint. A simpler offline variant, <code>DPO</code> (Direct Preference Optimisation), removes the RL step and frames preference learning as a classification problem directly on the language model - avoiding the need for a separate reward model. Most frontier labs now combine SFT, DPO or RLHF, and additional constitutional or rule-based filters. The model's weights after SFT serve as the starting point for RLHF; they are not reset between stages. Reasoning training differs from RLHF in one important way: because a maths or code answer can be checked automatically for correctness, this stage can reward the model directly on outcome, without needing a human-trained reward model - so it only works in these "verifiable" domains, not for open-ended writing or conversation.</p>
         </div>
-        <div class="analogy"><span>⚠️</span><span><b>What none of this fixes:</b> a transformer only ever predicts text, so a few limits stay baked in whatever training it gets. It has <b>no real-time knowledge</b> - only what was in its training data, up to a cut-off date. It can <b>hallucinate</b> - produce fluent, confident text that's simply wrong, with no built-in way to tell the difference from a correct answer. It has <b>no memory between separate conversations</b> - each one starts fresh unless the history is resent. And it's <b>not fully deterministic</b>, even with randomness turned off. None of this is a bug to be trained away - it's a consequence of what the model is: a next-token predictor. Fixing it means building tools, memory and checks <i>around</i> the model, not just training it further.</span></div>
+        <div class="analogy"><span>⚠️</span><span><b>What none of this fixes:</b> a transformer only ever predicts text, so a few limits stay baked in regardless of training: <b>no real-time knowledge</b> past its training cut-off, <b>hallucination</b> (fluent text that's simply wrong), <b>no memory between conversations</b>, and it's <b>not fully deterministic</b> even with randomness off. None of this is a bug to train away - it's what a next-token predictor is. Fixing it means building tools, memory and checks <i>around</i> the model, not training it further.</span></div>
         <div class="takeaway"><b>Bottom line:</b> a pre-trained transformer is a text completer. Instruction fine-tuning teaches it to answer rather than continue. RLHF shapes how it answers. Reasoning training teaches some models to work through hard problems step by step. Same architecture, same next-token prediction throughout - only the training signal changes.</div>
       </section>
 
@@ -1243,8 +1230,8 @@ function tokenize(text){
 function displayTok(t){return t.replace(/\u0120/g," ").replace(/^ /,"·").replace(/\n/g,"⏎");}
 function setStatus(){
   const t=el("tok-tier");if(!t)return;
-  if(TOKMODE==="live"){t.className="mode-note tier-real";t.innerHTML='<span class="tag">🟢 Real</span> Using OpenAI\'s live cl100k tokeniser - these IDs and splits are genuine.';}
-  else if(TOKMODE==="offline"){t.className="mode-note tier-simplified";t.innerHTML='<span class="tag">🟡 Simplified</span> No live connection - falling back to a small tokeniser we trained ourselves. Same algorithm, smaller vocabulary; IDs won\'t match a real OpenAI model.';}
+  if(TOKMODE==="live"){t.className="tierline tier-real";t.innerHTML='🟢 <b>Real</b> - using OpenAI\'s live cl100k tokeniser; these IDs and splits are genuine.';}
+  else if(TOKMODE==="offline"){t.className="tierline tier-simplified";t.innerHTML='🟡 <b>Simplified</b> - no live connection, falling back to a small tokeniser we trained ourselves. Same algorithm, smaller vocabulary; IDs won\'t match a real OpenAI model.';}
 }
 
 /* ---------- toy embeddings for vector strips (illustrative) ---------- */
