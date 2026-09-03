@@ -658,7 +658,7 @@ footer a{color:#C9CBD0}
         </div>
         <div class="demo">
           <div class="demo-lab">Live - the attention map</div>
-          <p class="tierline" style="margin-top:0">🔵 <b>Illustrative</b> - a readable stand-in blending two real tendencies (similar meanings attract, recent neighbours matter); not a trained model's actual attention weights, which are learned from data and often far less tidy.</p>
+          <p class="tierline" style="margin-top:0">🔵 <b>Illustrative</b> - a readable stand-in blending three real tendencies (similar meanings attract, recent neighbours matter, pronouns lean toward what they refer to); not a trained model's actual attention weights, which are learned from data and often far less tidy.</p>
           <p class="note">Each <b>row</b> is a token doing the looking; each <b>column</b> is a token being looked at. Darker = more attention. The grey top-right is the <b>causal mask</b> (no peeking ahead). <b>Click a row label</b> to see where that token looks.</p>
           <div class="heat-wrap"><div class="heat" id="attn-heat"></div></div>
           <div class="legend"><span>less</span><span class="grad"></span><span>more attention</span></div>
@@ -1344,6 +1344,26 @@ function renderPosSum(){
   if(window.__bindTerms)window.__bindTerms(host);
 }
 
+/* ---------- pronoun -> plausible-antecedent boost (3rd real tendency, additive only) ---------- */
+const PRONOUNS_PERSONAL=["she","he","they","him","her","his","their","hers","theirs","himself","herself","themselves"];
+const PRONOUNS_IMPERSONAL=["it","its","this","that","these","those","itself"];
+const PERSON_WORDS=["engineer","teacher","doctor","manager","client","driver","nurse","student","worker",
+ "developer","author","scientist","lawyer","officer","pilot","farmer","assistant","employee","customer","patient","researcher"];
+const NOT_A_CANDIDATE=["when","the","a","an","of","to","in","on","at","is","was","were","are","be","been","being",
+ "and","but","or","if","because","so","as","for","with","from","by","then","who","which",
+ "she","he","they","him","her","his","their","hers","it","its","this","that","these","those",
+ "sent","finished","gave","took","made","said","did","went","delayed","converts","converted","reviewed","asked",
+ "tested","emailed","approved","signed","discussed","agreed","prepared","rehearsed","explained","stayed","started",
+ "building","checked","fixed","pushed","showed","thanked","flagged","waited"];
+function bareWord(rawTok){return displayTok(rawTok).replace(/^·/,"").trim().toLowerCase();}
+function pronounBoost(iRawTok,jRawTok,dist){
+  const wi=bareWord(iRawTok), wj=bareWord(jRawTok);
+  if(!PRONOUNS_PERSONAL.includes(wi)&&!PRONOUNS_IMPERSONAL.includes(wi)) return 0; // inert unless attending token IS a recognised pronoun
+  if(wj.length<=2||NOT_A_CANDIDATE.includes(wj)) return 0; // never a function word or verb
+  if(PRONOUNS_PERSONAL.includes(wi)) return PERSON_WORDS.includes(wj)?1.6*Math.exp(-0.06*dist):0;
+  return PERSON_WORDS.includes(wj)?0:2.2*Math.exp(-0.06*dist); // impersonal pronoun favours non-person content words
+}
+
 /* ---------- 4/5 attention ---------- */
 function computeAttn(mode){
   const n=Math.min(S.toks.length,MAX),rows=[];
@@ -1352,9 +1372,9 @@ function computeAttn(mode){
     for(let j=0;j<n;j++){
       if(j>i){sc.push(-Infinity);continue;}
       let s;
-      if(mode===undefined) s=(j===i)?0.55:1.9*cos(S.embs[i],S.embs[j])-0.32*(i-j);
+      if(mode===undefined) s=(j===i)?0.55:1.9*cos(S.embs[i],S.embs[j])-0.18*(i-j)+pronounBoost(S.toks[i],S.toks[j],i-j);
       else if(mode===0) s=(j===i-1)?3:(j===i?0.4:-1.2-(i-j)*0.25);
-      else if(mode===1) s=(j===i)?0.7:3.2*cos(S.embs[i],S.embs[j]);
+      else if(mode===1) s=(j===i)?0.7:3.2*cos(S.embs[i],S.embs[j])-0.06*(i-j);
       else s=(j===0)?2.6:(j===i?0.8:-0.8);
       sc.push(s);
     }
