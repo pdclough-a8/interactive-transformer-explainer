@@ -461,6 +461,7 @@ footer a{color:#C9CBD0}
         <li><button class="rl-link" type="button" data-target="heads" data-spy>5 · Many heads</button></li>
         <li><button class="rl-link" type="button" data-target="block" data-spy>6 · The block</button></li>
         <li><button class="rl-link" type="button" data-target="depth" data-spy>7 · Depth</button></li>
+        <li><button class="rl-link" type="button" data-target="scale" data-spy>Zooming out - scale</button></li>
         <li><button class="rl-link" type="button" data-target="output" data-spy>8 · Next word / learning</button></li>
         <li><button class="rl-link" type="button" data-target="assistant" data-spy>9 · Predictor to assistant</button></li>
         <li><button class="rl-link" type="button" data-target="beyond" data-spy>10 · Beyond the model</button></li>
@@ -568,92 +569,6 @@ footer a{color:#C9CBD0}
             <button class="ghost" id="emb-analogy">Show king − man + woman</button>
           </div>
           <div class="analogy-out" id="emb-out" hidden></div>
-        </div>
-        <div class="demo">
-          <div class="demo-lab">Live - feel the size (your sentence)</div>
-          <div class="mode-note tier-real" style="display:block"><span class="tag">🟢 Real</span> GPT-2 small's published dimensions (768, 12 layers, 50,257 vocab, 124M weights) - the numbers below use your sentence's real token count against them.</div>
-          <p class="note">Small models like GPT-2 have a few hundred million adjustable numbers. Frontier models have hundreds of billions - that jump in size is a big part of why they're so much more capable.</p>
-          <div id="sizes"></div>
-          <table class="sztable">
-            <thead><tr><th>&nbsp;</th><th>GPT-2 small</th><th>GPT-3</th><th>Frontier (2026)</th></tr></thead>
-            <tbody>
-              <tr><td>Input - context window</td><td>1,024</td><td>2,048</td><td class="hot">128k – 1M+</td></tr>
-              <tr><td>Width d (numbers per token)</td><td>768</td><td>12,288</td><td class="hot">~12k+</td></tr>
-              <tr><td>Layers (blocks)</td><td>12</td><td>96</td><td class="hot">~100</td></tr>
-              <tr><td>Output - vocabulary</td><td>50,257</td><td>50,257</td><td class="hot">~100k – 200k</td></tr>
-              <tr><td>Total weights</td><td>124 million</td><td>175 billion</td><td class="hot">100s of billions</td></tr>
-            </tbody>
-          </table>
-          <p class="note">GPT-2 small and GPT-3 are specific, published models, so those two columns are exact. "Frontier" isn't one architecture, though - current models vary enormously in these numbers, so that column is illustrative only, to show the scale of the jump, not a spec for any single model.</p>
-          <p class="lead-in" style="margin-top:16px"><b>Where do these sizes come from?</b> They're mostly deliberate choices:</p>
-          <p class="max" style="margin-top:6px">The <b>vocabulary</b> size is fixed when the tokeniser is trained - bigger means fewer tokens per sentence, but larger matrices. The <b>width, layers and heads</b> are architecture choices, scaled up for bigger models following <span class="term" data-def="Scaling laws are patterns researchers found showing that bigger models, trained on more data, reliably get better in predictable ways - so labs can decide how big to build before training." role="button" tabindex="0">scaling laws</span> - observed patterns for how size, data and performance relate. The <b>context window</b> is limited by memory and compute, because attention compares every token with every other - so cost grows with the <i>square</i> of the length.</p>
-          <div class="analogy"><span>📏</span><span><b>Variable input, fixed output.</b> The context window is a <em>maximum</em>, not a requirement. You can feed the model a single token or fill it to the limit - the transformer handles whatever length you give it, up to that ceiling. During generation, the input starts at the length of your prompt and grows by one token each step. The <em>output</em>, by contrast, is always the same fixed size: a probability score for every single token in the vocabulary - around 100,000 numbers, every time, regardless of how long the input was. That asymmetry is easy to miss: the context window is a cap on what goes <em>in</em>, not a fixed frame that must be filled.</span></div>
-          <div class="only-tech">
-          <details class="qpop">
-            <summary><span>📐</span> What do the actual matrix sizes look like through the pipeline?</summary>
-            <div class="qpop-body">
-              <p>Every transformation is a matrix multiply. The amber boxes below show each learned matrix and its fixed dimensions; the blue boxes show the data shape at that point. <b>N</b> is your input length - the only dimension that varies with what you type. Numbers are GPT-2 small as a concrete example.</p>
-              <svg viewBox="0 0 680 730" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;margin:14px 0;display:block" aria-label="Matrix dimensions through a GPT-2 scale transformer forward pass">
-<defs><marker id="marr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
-<rect x="40" y="18" width="12" height="12" rx="2" fill="#FDE9E0" stroke="#F94E1E" stroke-width="1"/><text x="58" y="28" font-family="Inter,sans-serif" font-size="11" fill="#63656A">learned matrix - fixed shape and values</text>
-<rect x="298" y="18" width="12" height="12" rx="2" fill="#E4EEF9" stroke="#0B5CB8" stroke-width="1"/><text x="316" y="28" font-family="Inter,sans-serif" font-size="11" fill="#63656A">data tensor - N is variable</text>
-<rect x="484" y="18" width="12" height="12" rx="2" fill="#EFEDE7" stroke="#C7C4BA" stroke-width="1"/><text x="502" y="28" font-family="Inter,sans-serif" font-size="11" fill="#63656A">no new matrix</text>
-<text x="195" y="48" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="10" fill="#63656A">matrix applied</text>
-<text x="510" y="48" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="10" fill="#63656A">data shape out</text>
-<line x1="40" y1="57" x2="640" y2="57" stroke="#DFDDD6" stroke-width="0.5"/>
-<rect x="40" y="65" width="310" height="50" rx="6" fill="#EFEDE7" stroke="#C7C4BA" stroke-width="0.5"/><text x="195" y="82" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="13" fill="#4A4D52" dominant-baseline="central">Input</text><text x="195" y="101" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" fill="#63656A" dominant-baseline="central">N integer token IDs</text>
-<line x1="352" y1="90" x2="378" y2="90" stroke="#C7C4BA" stroke-width="1" marker-end="url(#marr)"/>
-<rect x="380" y="65" width="260" height="50" rx="6" fill="#E4EEF9" stroke="#0B5CB8" stroke-width="0.5"/><text x="510" y="82" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="13" fill="#0B5CB8" dominant-baseline="central">[N]</text><text x="510" y="101" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" fill="#63656A" dominant-baseline="central">N integers</text>
-<line x1="510" y1="117" x2="510" y2="133" stroke="#C7C4BA" stroke-width="1" marker-end="url(#marr)"/>
-<rect x="40" y="135" width="310" height="50" rx="6" fill="#FDE9E0" stroke="#F94E1E" stroke-width="0.5"/><text x="195" y="152" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="13" fill="#C23A16" dominant-baseline="central">Embedding table E</text><text x="195" y="171" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" fill="#C23A16" dominant-baseline="central">50,257 × 768</text>
-<line x1="352" y1="160" x2="378" y2="160" stroke="#C7C4BA" stroke-width="1" marker-end="url(#marr)"/>
-<rect x="380" y="135" width="260" height="50" rx="6" fill="#E4EEF9" stroke="#0B5CB8" stroke-width="0.5"/><text x="510" y="152" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="13" fill="#0B5CB8" dominant-baseline="central">[N × 768]</text><text x="510" y="171" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" fill="#63656A" dominant-baseline="central">one 768-dim vector per token</text>
-<line x1="510" y1="187" x2="510" y2="203" stroke="#C7C4BA" stroke-width="1" marker-end="url(#marr)"/>
-<rect x="40" y="205" width="310" height="50" rx="6" fill="#FDE9E0" stroke="#F94E1E" stroke-width="0.5"/><text x="195" y="222" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="13" fill="#C23A16" dominant-baseline="central">Position table P</text><text x="195" y="241" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" fill="#C23A16" dominant-baseline="central">1,024 × 768 - added to embeddings</text>
-<line x1="352" y1="230" x2="378" y2="230" stroke="#C7C4BA" stroke-width="1" marker-end="url(#marr)"/>
-<rect x="380" y="205" width="260" height="50" rx="6" fill="#E4EEF9" stroke="#0B5CB8" stroke-width="0.5"/><text x="510" y="222" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="13" fill="#0B5CB8" dominant-baseline="central">[N × 768]</text><text x="510" y="241" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" fill="#63656A" dominant-baseline="central">shape unchanged</text>
-<line x1="510" y1="257" x2="510" y2="281" stroke="#C7C4BA" stroke-width="1" marker-end="url(#marr)"/>
-<rect x="28" y="265" width="624" height="284" rx="8" fill="none" stroke="#C7C4BA" stroke-width="0.5" stroke-dasharray="5 3"/>
-<text x="340" y="278" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="10" fill="#63656A">× 12 layers - attention block + feed-forward</text>
-<rect x="40" y="285" width="310" height="50" rx="6" fill="#FDE9E0" stroke="#F94E1E" stroke-width="0.5"/><text x="195" y="302" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="13" fill="#C23A16" dominant-baseline="central">Q, K, V projections (× 12 heads)</text><text x="195" y="321" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" fill="#C23A16" dominant-baseline="central">W_Q, W_K, W_V - each 768 × 64</text>
-<line x1="352" y1="310" x2="378" y2="310" stroke="#C7C4BA" stroke-width="1" marker-end="url(#marr)"/>
-<rect x="380" y="285" width="260" height="50" rx="6" fill="#E4EEF9" stroke="#0B5CB8" stroke-width="0.5"/><text x="510" y="302" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="13" fill="#0B5CB8" dominant-baseline="central">[N × 64] per head</text><text x="510" y="321" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" fill="#63656A" dominant-baseline="central">Q, K and V - 12 heads each</text>
-<line x1="510" y1="337" x2="510" y2="353" stroke="#C7C4BA" stroke-width="1" marker-end="url(#marr)"/>
-<rect x="40" y="355" width="310" height="50" rx="6" fill="#EFEDE7" stroke="#C7C4BA" stroke-width="0.5"/><text x="195" y="372" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="13" fill="#4A4D52" dominant-baseline="central">Attention scores</text><text x="195" y="391" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" fill="#63656A" dominant-baseline="central">Q × K^T then softmax - no new matrix</text>
-<line x1="352" y1="380" x2="378" y2="380" stroke="#C7C4BA" stroke-width="1" marker-end="url(#marr)"/>
-<rect x="380" y="355" width="260" height="50" rx="6" fill="#E4EEF9" stroke="#0B5CB8" stroke-width="0.5"/><text x="510" y="372" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="13" fill="#0B5CB8" dominant-baseline="central">[N × N]</text><text x="510" y="391" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" fill="#63656A" dominant-baseline="central">one score per token pair</text>
-<line x1="510" y1="407" x2="510" y2="423" stroke="#C7C4BA" stroke-width="1" marker-end="url(#marr)"/>
-<rect x="40" y="425" width="310" height="50" rx="6" fill="#FDE9E0" stroke="#F94E1E" stroke-width="0.5"/><text x="195" y="442" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="13" fill="#C23A16" dominant-baseline="central">Output projection W_O</text><text x="195" y="461" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" fill="#C23A16" dominant-baseline="central">768 × 768 - recombines all 12 heads</text>
-<line x1="352" y1="450" x2="378" y2="450" stroke="#C7C4BA" stroke-width="1" marker-end="url(#marr)"/>
-<rect x="380" y="425" width="260" height="50" rx="6" fill="#E4EEF9" stroke="#0B5CB8" stroke-width="0.5"/><text x="510" y="442" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="13" fill="#0B5CB8" dominant-baseline="central">[N × 768]</text><text x="510" y="461" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" fill="#63656A" dominant-baseline="central">12 heads recombined</text>
-<line x1="510" y1="477" x2="510" y2="493" stroke="#C7C4BA" stroke-width="1" marker-end="url(#marr)"/>
-<rect x="40" y="495" width="310" height="50" rx="6" fill="#FDE9E0" stroke="#F94E1E" stroke-width="0.5"/><text x="195" y="512" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="13" fill="#C23A16" dominant-baseline="central">Feed-forward W₁ then W₂</text><text x="195" y="531" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" fill="#C23A16" dominant-baseline="central">768 × 3,072 then 3,072 × 768</text>
-<line x1="352" y1="520" x2="378" y2="520" stroke="#C7C4BA" stroke-width="1" marker-end="url(#marr)"/>
-<rect x="380" y="495" width="260" height="50" rx="6" fill="#E4EEF9" stroke="#0B5CB8" stroke-width="0.5"/><text x="510" y="512" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="13" fill="#0B5CB8" dominant-baseline="central">[N × 768]</text><text x="510" y="531" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" fill="#63656A" dominant-baseline="central">expanded to 3,072 then back</text>
-<line x1="510" y1="551" x2="510" y2="563" stroke="#C7C4BA" stroke-width="1" marker-end="url(#marr)"/>
-<rect x="40" y="565" width="310" height="50" rx="6" fill="#FDE9E0" stroke="#F94E1E" stroke-width="0.5"/><text x="195" y="582" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="13" fill="#C23A16" dominant-baseline="central">Unembedding W_U</text><text x="195" y="601" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" fill="#C23A16" dominant-baseline="central">768 × 50,257 - projects to vocab size</text>
-<line x1="352" y1="590" x2="378" y2="590" stroke="#C7C4BA" stroke-width="1" marker-end="url(#marr)"/>
-<rect x="380" y="565" width="260" height="50" rx="6" fill="#E4EEF9" stroke="#0B5CB8" stroke-width="0.5"/><text x="510" y="582" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="13" fill="#0B5CB8" dominant-baseline="central">[N × 50,257]</text><text x="510" y="601" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" fill="#63656A" dominant-baseline="central">score for every vocab token</text>
-<line x1="510" y1="617" x2="510" y2="633" stroke="#C7C4BA" stroke-width="1" marker-end="url(#marr)"/>
-<rect x="40" y="635" width="310" height="50" rx="6" fill="#EFEDE7" stroke="#C7C4BA" stroke-width="0.5"/><text x="195" y="652" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="13" fill="#4A4D52" dominant-baseline="central">Softmax</text><text x="195" y="671" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" fill="#63656A" dominant-baseline="central">last token position only</text>
-<line x1="352" y1="660" x2="378" y2="660" stroke="#C7C4BA" stroke-width="1" marker-end="url(#marr)"/>
-<rect x="380" y="635" width="260" height="50" rx="6" fill="#E4EEF9" stroke="#0B5CB8" stroke-width="0.5"/><text x="510" y="652" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="13" fill="#0B5CB8" dominant-baseline="central">[50,257]</text><text x="510" y="671" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" fill="#63656A" dominant-baseline="central">next-token probabilities</text>
-              </svg>
-            </div>
-          </details>
-          </div>
-          <div class="only-tech">
-          <details class="qpop">
-            <summary><span>❓</span> Why 50,257, specifically?</summary>
-            <div class="qpop-body">
-              <p>It's not a count of "how many unique words exist" - it's a <b>target size chosen up front</b>, then the tokeniser is trained to fill it. BPE starts from the 256 possible byte values (so anything can always be spelled out, worst case) and repeatedly merges the most frequent adjacent pair in the training corpus into a new token, one merge = one new vocabulary entry. GPT-2's creators simply stopped after <b>50,000</b> merges, added the 256 byte tokens and 1 special end-of-text token, and got 256 + 50,000 + 1 = <b>50,257</b>. GPT-3 and this tool's live tokeniser (<code>cl100k_base</code>) inherit vocabularies from the same lineage of design choices.</p>
-              <p>So the <i>contents</i> of the vocabulary are data-driven (frequent byte-pairs earn merges), but the <i>size</i> is a human-picked trade-off: bigger vocabulary → shorter token sequences but a larger embedding/output matrix (more weights, more compute per prediction); smaller vocabulary → smaller matrices but longer sequences for the same text.</p>
-            </div>
-          </details>
-          </div>
-          <div class="tech-block"><span class="tb-lab">Technical layer</span>
-            <p>Every projection is a matrix multiply: a token row <code>1×d</code> times a weight matrix <code>d×d</code> → <code>1×d</code>. Attention builds Q, K, V this way; the feed-forward uses <code>d×4d</code> then <code>4d×d</code>. The embedding / unembedding matrix is <code>V×d</code> - for GPT-3 that's <code>50,257 × 12,288 ≈ 617 million</code> numbers on its own. Multiply across all layers and you reach the billions.</p>
-          </div>
         </div>
         <div class="mode-note wt-note only-train"><span class="tag">While training</span> These coordinates start out <b>random</b> - every token dumped in a meaningless heap. Training slowly slides each token into place, so tokens that appear in similar contexts drift together. The map is <i>learned</i>, not designed.</div>
         <br>
@@ -845,6 +760,99 @@ footer a{color:#C9CBD0}
         <br>
         <div class="handoff"><div class="handoff-h hin"><span class="handoff-lab">Going in</span>After 1 block: surface patterns captured - word proximity, basic grammar.</div><div class="handoff-div"><span class="handoff-arr">→</span></div><div class="handoff-h hout"><span class="handoff-lab">Coming out</span>After 12 blocks: each layer refined the vectors further. Coreference, semantic roles, pragmatic context - all encoded by the final layer.</div></div>
 <div class="takeaway"><b>Bottom line:</b> stacking blocks lets the model build increasingly rich, abstract representations of the input, layer by layer.</div>
+      </section>
+
+      <!-- SCALE (moved here from station 2 - recaps concepts introduced in tokens/embed/attention/heads/block/depth, so it now reads as a synthesis rather than a forward-reference) -->
+      <section class="station" id="scale">
+        <div class="st-head"><span class="st-num">Σ</span><h2>Zooming out - what all this adds up to</h2></div>
+        <p class="lead-in">You've now met every piece that decides a model's size: a <span class="ar-step" data-target="tokens">vocabulary</span>, a <span class="ar-step" data-target="embed">width</span> in dimensions, <span class="ar-step" data-target="heads">attention heads</span> and their Q/K/V projections, a <span class="ar-step" data-target="block">feed-forward network</span> per block, and a <span class="ar-step" data-target="depth">stack of layers</span>. Put them together and that's the whole size of a real model - here's what that looks like, using your own sentence.</p>
+        <div class="demo">
+          <div class="demo-lab">Live - feel the size (your sentence)</div>
+          <div class="mode-note tier-real" style="display:block"><span class="tag">🟢 Real</span> GPT-2 small's published dimensions (768, 12 layers, 50,257 vocab, 124M weights) - the numbers below use your sentence's real token count against them.</div>
+          <p class="note">Small models like GPT-2 have a few hundred million adjustable numbers. Frontier models have hundreds of billions - that jump in size is a big part of why they're so much more capable.</p>
+          <div id="sizes"></div>
+          <table class="sztable">
+            <thead><tr><th>&nbsp;</th><th>GPT-2 small</th><th>GPT-3</th><th>Frontier (2026)</th></tr></thead>
+            <tbody>
+              <tr><td>Input - context window</td><td>1,024</td><td>2,048</td><td class="hot">128k – 1M+</td></tr>
+              <tr><td>Width d (numbers per token)</td><td>768</td><td>12,288</td><td class="hot">~12k+</td></tr>
+              <tr><td>Layers (blocks)</td><td>12</td><td>96</td><td class="hot">~100</td></tr>
+              <tr><td>Output - vocabulary</td><td>50,257</td><td>50,257</td><td class="hot">~100k – 200k</td></tr>
+              <tr><td>Total weights</td><td>124 million</td><td>175 billion</td><td class="hot">100s of billions</td></tr>
+            </tbody>
+          </table>
+          <p class="note">GPT-2 small and GPT-3 are specific, published models, so those two columns are exact. "Frontier" isn't one architecture, though - current models vary enormously in these numbers, so that column is illustrative only, to show the scale of the jump, not a spec for any single model.</p>
+          <p class="lead-in" style="margin-top:16px"><b>Where do these sizes come from?</b> They're mostly deliberate choices:</p>
+          <p class="max" style="margin-top:6px">The <b>vocabulary</b> size is fixed when the tokeniser is trained - bigger means fewer tokens per sentence, but larger matrices. The <b>width, layers and heads</b> are architecture choices, scaled up for bigger models following <span class="term" data-def="Scaling laws are patterns researchers found showing that bigger models, trained on more data, reliably get better in predictable ways - so labs can decide how big to build before training." role="button" tabindex="0">scaling laws</span> - observed patterns for how size, data and performance relate. The <b>context window</b> is limited by memory and compute, because attention compares every token with every other - so cost grows with the <i>square</i> of the length.</p>
+          <div class="analogy"><span>📏</span><span><b>Variable input, fixed output.</b> The context window is a <em>maximum</em>, not a requirement. You can feed the model a single token or fill it to the limit - the transformer handles whatever length you give it, up to that ceiling. During generation, the input starts at the length of your prompt and grows by one token each step. The <em>output</em>, by contrast, is always the same fixed size: a probability score for every single token in the vocabulary - around 100,000 numbers, every time, regardless of how long the input was. That asymmetry is easy to miss: the context window is a cap on what goes <em>in</em>, not a fixed frame that must be filled.</span></div>
+          <div class="only-tech">
+          <details class="qpop">
+            <summary><span>📐</span> What do the actual matrix sizes look like through the pipeline?</summary>
+            <div class="qpop-body">
+              <p>Every transformation is a matrix multiply. The amber boxes below show each learned matrix and its fixed dimensions; the blue boxes show the data shape at that point. <b>N</b> is your input length - the only dimension that varies with what you type. Numbers are GPT-2 small as a concrete example.</p>
+              <svg viewBox="0 0 680 730" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;margin:14px 0;display:block" aria-label="Matrix dimensions through a GPT-2 scale transformer forward pass">
+<defs><marker id="marr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<rect x="40" y="18" width="12" height="12" rx="2" fill="#FDE9E0" stroke="#F94E1E" stroke-width="1"/><text x="58" y="28" font-family="Inter,sans-serif" font-size="11" fill="#63656A">learned matrix - fixed shape and values</text>
+<rect x="298" y="18" width="12" height="12" rx="2" fill="#E4EEF9" stroke="#0B5CB8" stroke-width="1"/><text x="316" y="28" font-family="Inter,sans-serif" font-size="11" fill="#63656A">data tensor - N is variable</text>
+<rect x="484" y="18" width="12" height="12" rx="2" fill="#EFEDE7" stroke="#C7C4BA" stroke-width="1"/><text x="502" y="28" font-family="Inter,sans-serif" font-size="11" fill="#63656A">no new matrix</text>
+<text x="195" y="48" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="10" fill="#63656A">matrix applied</text>
+<text x="510" y="48" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="10" fill="#63656A">data shape out</text>
+<line x1="40" y1="57" x2="640" y2="57" stroke="#DFDDD6" stroke-width="0.5"/>
+<rect x="40" y="65" width="310" height="50" rx="6" fill="#EFEDE7" stroke="#C7C4BA" stroke-width="0.5"/><text x="195" y="82" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="13" fill="#4A4D52" dominant-baseline="central">Input</text><text x="195" y="101" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" fill="#63656A" dominant-baseline="central">N integer token IDs</text>
+<line x1="352" y1="90" x2="378" y2="90" stroke="#C7C4BA" stroke-width="1" marker-end="url(#marr)"/>
+<rect x="380" y="65" width="260" height="50" rx="6" fill="#E4EEF9" stroke="#0B5CB8" stroke-width="0.5"/><text x="510" y="82" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="13" fill="#0B5CB8" dominant-baseline="central">[N]</text><text x="510" y="101" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" fill="#63656A" dominant-baseline="central">N integers</text>
+<line x1="510" y1="117" x2="510" y2="133" stroke="#C7C4BA" stroke-width="1" marker-end="url(#marr)"/>
+<rect x="40" y="135" width="310" height="50" rx="6" fill="#FDE9E0" stroke="#F94E1E" stroke-width="0.5"/><text x="195" y="152" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="13" fill="#C23A16" dominant-baseline="central">Embedding table E</text><text x="195" y="171" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" fill="#C23A16" dominant-baseline="central">50,257 × 768</text>
+<line x1="352" y1="160" x2="378" y2="160" stroke="#C7C4BA" stroke-width="1" marker-end="url(#marr)"/>
+<rect x="380" y="135" width="260" height="50" rx="6" fill="#E4EEF9" stroke="#0B5CB8" stroke-width="0.5"/><text x="510" y="152" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="13" fill="#0B5CB8" dominant-baseline="central">[N × 768]</text><text x="510" y="171" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" fill="#63656A" dominant-baseline="central">one 768-dim vector per token</text>
+<line x1="510" y1="187" x2="510" y2="203" stroke="#C7C4BA" stroke-width="1" marker-end="url(#marr)"/>
+<rect x="40" y="205" width="310" height="50" rx="6" fill="#FDE9E0" stroke="#F94E1E" stroke-width="0.5"/><text x="195" y="222" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="13" fill="#C23A16" dominant-baseline="central">Position table P</text><text x="195" y="241" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" fill="#C23A16" dominant-baseline="central">1,024 × 768 - added to embeddings</text>
+<line x1="352" y1="230" x2="378" y2="230" stroke="#C7C4BA" stroke-width="1" marker-end="url(#marr)"/>
+<rect x="380" y="205" width="260" height="50" rx="6" fill="#E4EEF9" stroke="#0B5CB8" stroke-width="0.5"/><text x="510" y="222" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="13" fill="#0B5CB8" dominant-baseline="central">[N × 768]</text><text x="510" y="241" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" fill="#63656A" dominant-baseline="central">shape unchanged</text>
+<line x1="510" y1="257" x2="510" y2="281" stroke="#C7C4BA" stroke-width="1" marker-end="url(#marr)"/>
+<rect x="28" y="265" width="624" height="284" rx="8" fill="none" stroke="#C7C4BA" stroke-width="0.5" stroke-dasharray="5 3"/>
+<text x="340" y="278" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="10" fill="#63656A">× 12 layers - attention block + feed-forward</text>
+<rect x="40" y="285" width="310" height="50" rx="6" fill="#FDE9E0" stroke="#F94E1E" stroke-width="0.5"/><text x="195" y="302" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="13" fill="#C23A16" dominant-baseline="central">Q, K, V projections (× 12 heads)</text><text x="195" y="321" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" fill="#C23A16" dominant-baseline="central">W_Q, W_K, W_V - each 768 × 64</text>
+<line x1="352" y1="310" x2="378" y2="310" stroke="#C7C4BA" stroke-width="1" marker-end="url(#marr)"/>
+<rect x="380" y="285" width="260" height="50" rx="6" fill="#E4EEF9" stroke="#0B5CB8" stroke-width="0.5"/><text x="510" y="302" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="13" fill="#0B5CB8" dominant-baseline="central">[N × 64] per head</text><text x="510" y="321" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" fill="#63656A" dominant-baseline="central">Q, K and V - 12 heads each</text>
+<line x1="510" y1="337" x2="510" y2="353" stroke="#C7C4BA" stroke-width="1" marker-end="url(#marr)"/>
+<rect x="40" y="355" width="310" height="50" rx="6" fill="#EFEDE7" stroke="#C7C4BA" stroke-width="0.5"/><text x="195" y="372" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="13" fill="#4A4D52" dominant-baseline="central">Attention scores</text><text x="195" y="391" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" fill="#63656A" dominant-baseline="central">Q × K^T then softmax - no new matrix</text>
+<line x1="352" y1="380" x2="378" y2="380" stroke="#C7C4BA" stroke-width="1" marker-end="url(#marr)"/>
+<rect x="380" y="355" width="260" height="50" rx="6" fill="#E4EEF9" stroke="#0B5CB8" stroke-width="0.5"/><text x="510" y="372" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="13" fill="#0B5CB8" dominant-baseline="central">[N × N]</text><text x="510" y="391" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" fill="#63656A" dominant-baseline="central">one score per token pair</text>
+<line x1="510" y1="407" x2="510" y2="423" stroke="#C7C4BA" stroke-width="1" marker-end="url(#marr)"/>
+<rect x="40" y="425" width="310" height="50" rx="6" fill="#FDE9E0" stroke="#F94E1E" stroke-width="0.5"/><text x="195" y="442" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="13" fill="#C23A16" dominant-baseline="central">Output projection W_O</text><text x="195" y="461" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" fill="#C23A16" dominant-baseline="central">768 × 768 - recombines all 12 heads</text>
+<line x1="352" y1="450" x2="378" y2="450" stroke="#C7C4BA" stroke-width="1" marker-end="url(#marr)"/>
+<rect x="380" y="425" width="260" height="50" rx="6" fill="#E4EEF9" stroke="#0B5CB8" stroke-width="0.5"/><text x="510" y="442" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="13" fill="#0B5CB8" dominant-baseline="central">[N × 768]</text><text x="510" y="461" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" fill="#63656A" dominant-baseline="central">12 heads recombined</text>
+<line x1="510" y1="477" x2="510" y2="493" stroke="#C7C4BA" stroke-width="1" marker-end="url(#marr)"/>
+<rect x="40" y="495" width="310" height="50" rx="6" fill="#FDE9E0" stroke="#F94E1E" stroke-width="0.5"/><text x="195" y="512" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="13" fill="#C23A16" dominant-baseline="central">Feed-forward W₁ then W₂</text><text x="195" y="531" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" fill="#C23A16" dominant-baseline="central">768 × 3,072 then 3,072 × 768</text>
+<line x1="352" y1="520" x2="378" y2="520" stroke="#C7C4BA" stroke-width="1" marker-end="url(#marr)"/>
+<rect x="380" y="495" width="260" height="50" rx="6" fill="#E4EEF9" stroke="#0B5CB8" stroke-width="0.5"/><text x="510" y="512" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="13" fill="#0B5CB8" dominant-baseline="central">[N × 768]</text><text x="510" y="531" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" fill="#63656A" dominant-baseline="central">expanded to 3,072 then back</text>
+<line x1="510" y1="551" x2="510" y2="563" stroke="#C7C4BA" stroke-width="1" marker-end="url(#marr)"/>
+<rect x="40" y="565" width="310" height="50" rx="6" fill="#FDE9E0" stroke="#F94E1E" stroke-width="0.5"/><text x="195" y="582" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="13" fill="#C23A16" dominant-baseline="central">Unembedding W_U</text><text x="195" y="601" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" fill="#C23A16" dominant-baseline="central">768 × 50,257 - projects to vocab size</text>
+<line x1="352" y1="590" x2="378" y2="590" stroke="#C7C4BA" stroke-width="1" marker-end="url(#marr)"/>
+<rect x="380" y="565" width="260" height="50" rx="6" fill="#E4EEF9" stroke="#0B5CB8" stroke-width="0.5"/><text x="510" y="582" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="13" fill="#0B5CB8" dominant-baseline="central">[N × 50,257]</text><text x="510" y="601" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" fill="#63656A" dominant-baseline="central">score for every vocab token</text>
+<line x1="510" y1="617" x2="510" y2="633" stroke="#C7C4BA" stroke-width="1" marker-end="url(#marr)"/>
+<rect x="40" y="635" width="310" height="50" rx="6" fill="#EFEDE7" stroke="#C7C4BA" stroke-width="0.5"/><text x="195" y="652" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="13" fill="#4A4D52" dominant-baseline="central">Softmax</text><text x="195" y="671" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" fill="#63656A" dominant-baseline="central">last token position only</text>
+<line x1="352" y1="660" x2="378" y2="660" stroke="#C7C4BA" stroke-width="1" marker-end="url(#marr)"/>
+<rect x="380" y="635" width="260" height="50" rx="6" fill="#E4EEF9" stroke="#0B5CB8" stroke-width="0.5"/><text x="510" y="652" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="13" fill="#0B5CB8" dominant-baseline="central">[50,257]</text><text x="510" y="671" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" fill="#63656A" dominant-baseline="central">next-token probabilities</text>
+              </svg>
+            </div>
+          </details>
+          </div>
+          <div class="only-tech">
+          <details class="qpop">
+            <summary><span>❓</span> Why 50,257, specifically?</summary>
+            <div class="qpop-body">
+              <p>It's not a count of "how many unique words exist" - it's a <b>target size chosen up front</b>, then the tokeniser is trained to fill it. BPE starts from the 256 possible byte values (so anything can always be spelled out, worst case) and repeatedly merges the most frequent adjacent pair in the training corpus into a new token, one merge = one new vocabulary entry. GPT-2's creators simply stopped after <b>50,000</b> merges, added the 256 byte tokens and 1 special end-of-text token, and got 256 + 50,000 + 1 = <b>50,257</b>. GPT-3 and this tool's live tokeniser (<code>cl100k_base</code>) inherit vocabularies from the same lineage of design choices.</p>
+              <p>So the <i>contents</i> of the vocabulary are data-driven (frequent byte-pairs earn merges), but the <i>size</i> is a human-picked trade-off: bigger vocabulary → shorter token sequences but a larger embedding/output matrix (more weights, more compute per prediction); smaller vocabulary → smaller matrices but longer sequences for the same text.</p>
+            </div>
+          </details>
+          </div>
+          <div class="tech-block"><span class="tb-lab">Technical layer</span>
+            <p>Every projection is a matrix multiply: a token row <code>1×d</code> times a weight matrix <code>d×d</code> → <code>1×d</code>. Attention builds Q, K, V this way; the feed-forward uses <code>d×4d</code> then <code>4d×d</code>. The embedding / unembedding matrix is <code>V×d</code> - for GPT-3 that's <code>50,257 × 12,288 ≈ 617 million</code> numbers on its own. Multiply across all layers and you reach the billions.</p>
+          </div>
+        </div>
+        <div class="takeaway"><b>Bottom line:</b> a model's size is just these same pieces - vocabulary, width, heads, layers - scaled up. Nothing new happens at scale; there's simply much more of it.</div>
       </section>
 
       <!-- 8 OUTPUT / TRAINING -->
