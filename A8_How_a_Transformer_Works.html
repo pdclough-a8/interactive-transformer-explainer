@@ -423,7 +423,7 @@ footer a{color:#C9CBD0}
     <p id="ex-note" class="ex-note" hidden></p>
 
     <div class="pipeline" aria-label="The steps">
-      <div class="pl-inner"><button class="pl-stage" type="button" data-target="tokens"><span class="n">01</span><span class="nm">Tokenise</span></button><span class="pl-arrow">→</span><button class="pl-stage" type="button" data-target="embed"><span class="n">02</span><span class="nm">Embed</span></button><span class="pl-arrow">→</span><button class="pl-stage" type="button" data-target="position"><span class="n">03</span><span class="nm">Position</span></button><span class="pl-arrow">→</span><button class="pl-stage" type="button" data-target="attention"><span class="n">04</span><span class="nm">Attention</span></button><span class="pl-arrow">→</span><button class="pl-stage" type="button" data-target="heads"><span class="n">05</span><span class="nm">Many heads</span></button><span class="pl-arrow">→</span><button class="pl-stage" type="button" data-target="block"><span class="n">06</span><span class="nm">The block</span></button><span class="pl-arrow">→</span><button class="pl-stage" type="button" data-target="depth"><span class="n">07</span><span class="nm">Depth</span></button><span class="pl-arrow">→</span><button class="pl-stage" type="button" data-target="output"><span class="n">08</span><span class="nm">Next word</span></button><span class="pl-arrow">→</span><button class="pl-stage" type="button" data-target="assistant"><span class="n">09</span><span class="nm">To assistant</span></button></div>
+      <div class="pl-inner"><button class="pl-stage" type="button" data-target="tokens"><span class="n">01</span><span class="nm">Tokenise</span></button><span class="pl-arrow">→</span><button class="pl-stage" type="button" data-target="embed"><span class="n">02</span><span class="nm">Embed</span></button><span class="pl-arrow">→</span><button class="pl-stage" type="button" data-target="position"><span class="n">03</span><span class="nm">Position</span></button><span class="pl-arrow">→</span><button class="pl-stage" type="button" data-target="attention"><span class="n">04</span><span class="nm">Attention</span></button><span class="pl-arrow">→</span><button class="pl-stage" type="button" data-target="heads"><span class="n">05</span><span class="nm">Many heads</span></button><span class="pl-arrow">→</span><button class="pl-stage" type="button" data-target="block"><span class="n">06</span><span class="nm">The block</span></button><span class="pl-arrow">→</span><button class="pl-stage" type="button" data-target="depth"><span class="n">07</span><span class="nm">Depth</span></button><span class="pl-arrow">→</span><button class="pl-stage" type="button" data-target="output"><span class="n">08</span><span class="nm">Next word</span></button><span class="pl-arrow">→</span><button class="pl-stage" type="button" data-target="assistant"><span class="n">09</span><span class="nm">To assistant</span></button><span class="pl-arrow">→</span><button class="pl-stage" type="button" data-target="beyond"><span class="n">10</span><span class="nm">Beyond the model</span></button></div>
       </div>
   </div>
 </header>
@@ -443,6 +443,7 @@ footer a{color:#C9CBD0}
         <li><button class="rl-link" type="button" data-target="depth" data-spy>7 · Depth</button></li>
         <li><button class="rl-link" type="button" data-target="output" data-spy>8 · Next word / learning</button></li>
         <li><button class="rl-link" type="button" data-target="assistant" data-spy>9 · Predictor to assistant</button></li>
+        <li><button class="rl-link" type="button" data-target="beyond" data-spy>10 · Beyond the model</button></li>
         <li><button class="rl-link" type="button" data-target="history" data-spy>Where it came from</button></li>
         <li><button class="rl-link" type="button" data-target="resources" data-spy>Learn more</button></li>
       </ol>
@@ -1038,6 +1039,38 @@ footer a{color:#C9CBD0}
         </div>
         <div class="analogy"><span>⚠️</span><span><b>What none of this fixes:</b> a transformer only ever predicts text, so a few limits stay baked in whatever training it gets. It has <b>no real-time knowledge</b> - only what was in its training data, up to a cut-off date. It can <b>hallucinate</b> - produce fluent, confident text that's simply wrong, with no built-in way to tell the difference from a correct answer. It has <b>no memory between separate conversations</b> - each one starts fresh unless the history is resent. And it's <b>not fully deterministic</b>, even with randomness turned off. None of this is a bug to be trained away - it's a consequence of what the model is: a next-token predictor. Fixing it means building tools, memory and checks <i>around</i> the model, not just training it further.</span></div>
         <div class="takeaway"><b>Bottom line:</b> a pre-trained transformer is a text completer. Instruction fine-tuning teaches it to answer rather than continue. RLHF shapes how it answers. Reasoning training teaches some models to work through hard problems step by step. Same architecture, same next-token prediction throughout - only the training signal changes.</div>
+      </section>
+
+      <!-- 10 BEYOND THE MODEL -->
+      <section class="station" id="beyond">
+        <div class="st-head"><span class="st-num">10</span><h2>Beyond the model - RAG, tools and agents</h2></div>
+        <p class="lead-in">However it was trained, everything on this page still produces a model that only does one thing: predict the next token from whatever text is sitting in its context window. It can't fetch a webpage, run code, remember yesterday's conversation, or know about anything after its training cut-off. Closing those gaps isn't done by training the model differently - it's done by building a system <i>around</i> it that changes what goes into the context window, and what happens with what comes out.</p>
+        <div class="analogy"><span>🧠</span><span><b>Think of it like this:</b> the model is a brain in a jar - remarkably capable at language and pattern-matching, but with no eyes, hands or memory of its own. Everything below is the body built around that brain: eyes that can look things up (retrieval), hands that can take action (tools), and memory that persists (sessions).</span></div>
+        <div class="block-diagram" aria-label="From LLM to agent" style="max-width:380px">
+          <div class="bd-item io">LLM<span class="sub">raw weights - predicts the next token, nothing else</span></div>
+          <div class="bd-arrow"><span class="bd-plus">+ post-training <span class="ar-step" data-target="assistant">station 9</span></span><br>↓</div>
+          <div class="bd-item attn">Assistant<span class="sub">helpful, instruction-following - still just text in, text out</span></div>
+          <div class="bd-arrow"><span class="bd-plus">+ retrieval, tools, memory, orchestration</span><br>↓</div>
+          <div class="bd-item ffn">Agent / application<span class="sub">can look things up, take action, remember, and plan</span></div>
+        </div>
+        <p class="max">Nothing changes about the model itself between the last two tiers. Every enhancement below works by shaping what enters the context window before generation, or by acting on what comes out after it:</p>
+        <table class="sztable">
+          <thead><tr><th>Enhancement</th><th>What it does</th><th>Limitation it targets</th></tr></thead>
+          <tbody>
+            <tr><td>RAG (retrieval)</td><td>Fetches relevant text at query time and inserts it into the prompt</td><td class="hot">Knowledge gaps, stale training data, hallucination</td></tr>
+            <tr><td>Tool use</td><td>Model requests an action; real code runs it and returns the result</td><td class="hot">Can't act, weak precise maths, no live data</td></tr>
+            <tr><td>Memory / sessions</td><td>Persists facts or history across separate conversations</td><td class="hot">No memory between chats</td></tr>
+            <tr><td>CoT / self-consistency prompting</td><td>Elicits step-by-step reasoning, or samples several attempts and votes</td><td class="hot">Weak multi-step reasoning - no retraining needed</td></tr>
+            <tr><td>Guardrails / validation</td><td>Checks or filters outputs and tool calls before they take effect</td><td class="hot">Unsafe or mistaken actions</td></tr>
+            <tr><td>Multi-agent orchestration</td><td>Splits a task across several LLM calls in a plan → act → observe loop</td><td class="hot">Tasks too large for one pass</td></tr>
+          </tbody>
+        </table>
+        <p class="max" style="margin-top:14px"><b>RAG</b> in particular reuses an idea from earlier on this page: it turns your query into an embedding <span class="ar-step" data-target="embed">step 2</span> and finds the nearest documents on that same "map of meaning," then pastes their text straight into the prompt - so the model answers with real source material in front of it, rather than from memory alone.</p>
+        <div class="tech-block"><span class="tb-lab">Technical layer</span>
+          <p>RAG systems embed a document collection once (offline) into a vector store, then at query time embed the incoming question and run an approximate-nearest-neighbour search to retrieve the top-<code>k</code> chunks, often followed by a reranking step before they're inserted into the prompt. Tool use works by fine-tuning the model (back in station 9) to emit a structured call - typically JSON matching a schema you provide - which your application code parses and executes; the result is appended to the conversation and fed back in for another forward pass. Orchestrating this into a loop - reason, call a tool, observe the result, decide what's next - is often called the <code>ReAct</code> pattern, and is the core of what an "agent framework" provides.</p>
+        </div>
+        <div class="mode-note" style="display:block;margin-top:16px"><span class="tag">Key insight</span> None of this touches a single weight. Every enhancement in the table works by changing what's in the context window before generation, or by acting on what comes out after it - the model in the middle is exactly the same frozen assistant from the last station, every single time you use it.</div>
+        <div class="takeaway"><b>Bottom line:</b> RAG, tools, memory and orchestration don't make the model smarter - they give a frozen, otherwise-limited text predictor access to real information, real actions and real memory. That's the difference between an LLM and the agents built on top of it.</div>
       </section>
 
       <!-- HISTORY -->
