@@ -617,11 +617,11 @@ footer a{color:#C9CBD0}
 
         <p class="lead-in" style="margin-top:20px"><b>Why three separate roles, not one?</b> Every token needs to do two different jobs at once: <i>ask</i> what it needs from others, and <i>advertise</i> what it offers others. Asking and advertising aren't the same thing, so the model keeps them as separate, smaller vectors - plus a third for the actual content that gets shared once a match is found. That split is what "Query, Key, Value" means:</p>
         <div class="qkv-grid">
-          <div class="qkv q"><div class="rl">Query <span>Q</span></div><div class="dsc">This token's question: “what am I looking for?"</div></div>
+          <div class="qkv q"><div class="rl">Query <span>Q</span></div><div class="dsc">This token's question: “what am I looking for?”</div></div>
           <div class="qkv k"><div class="rl">Key <span>K</span></div><div class="dsc">This token's advert: “here's what I'm about” - checked against everyone's Query.</div></div>
           <div class="qkv v"><div class="rl">Value <span>V</span></div><div class="dsc">This token's actual content - only handed over to whoever's Query matched.</div></div>
         </div>
-        <p class="max">Every token is simultaneously asking, advertising and ready to share. To score a match, the model compares one token's Query with another's Key - a <span class="term" data-def="A dot product multiplies two vectors position-by-position and adds up the results - one number saying how aligned they are." role="button" tabindex="0">dot product</span>, giving a single “how well do these fit?" number. <span class="term" data-def="Softmax turns a set of raw scores into percentages that add up to 100%." role="button" tabindex="0">Softmax</span> turns all of a token's match scores into percentages that add up to 100% - then those percentages decide how much of everyone's <b>Value</b> gets blended in: a strong match contributes a lot, a weak one barely any.</p>
+        <p class="max">Every token is simultaneously asking, advertising and ready to share. To score a match, the model compares one token's Query with another's Key - a <span class="term" data-def="A dot product multiplies two vectors position-by-position and adds up the results - one number saying how aligned they are." role="button" tabindex="0">dot product</span>, giving a single “how well do these fit?” number. <span class="term" data-def="Softmax turns a set of raw scores into percentages that add up to 100%." role="button" tabindex="0">Softmax</span> turns all of a token's match scores into percentages that add up to 100% - then those percentages decide how much of everyone's <b>Value</b> gets blended in: a strong match contributes a lot, a weak one barely any.</p>
         <div class="only-tech">
         <details class="qpop">
           <summary><span>❓</span> Want to see the maths worked out by hand?</summary>
@@ -1121,7 +1121,7 @@ footer a{color:#C9CBD0}
       <section class="station" id="history">
         <div class="st-head"><span class="st-num">✦</span><h2>Where transformers came from</h2></div>
         <p class="lead-in">It helps to know why this design exists. Before 2017, language AI mostly used networks that read text <b>one token at a time, in order</b> (RNNs and LSTMs). Two problems dogged them: reading in sequence was slow to train, and they were forgetful - by the end of a long paragraph they'd lost track of the start.</p>
-        <p class="max">In 2017 a team at Google published a paper with a bold title: <i>“Attention Is All You Need."</i> Its key move was to drop the step-by-step reading entirely and let <b>every token exchange information with every other token at once</b> (the attention you explored above). That did two things: training became massively parallel - a perfect fit for modern hardware - and each token got a direct line to any other, no matter how far apart. The forgetting problem became much less severe.</p>
+        <p class="max">In 2017 a team at Google published a paper with a bold title: <i>“Attention Is All You Need.”</i> Its key move was to drop the step-by-step reading entirely and let <b>every token exchange information with every other token at once</b> (the attention you explored above). That did two things: training became massively parallel - a perfect fit for modern hardware - and each token got a direct line to any other, no matter how far apart. The forgetting problem became much less severe.</p>
         <p class="max">One detail worth knowing: that original design was an <b>encoder-decoder</b> architecture, built for machine translation - one half reading the source sentence, the other writing the translation. GPT-style models, including everything on this page, use a simplified <b>decoder-only</b> version - just the "writing" half, reused to generate text one token at a time. Same core mechanism (attention), different arrangement.</p>
         <p class="max">That combination - <b>attention plus the ability to scale</b> - is what set off the current wave of AI. Take the same architecture, make it bigger, and train it on more text, and you get BERT, the GPT series, Claude, Gemini and almost every modern language model. They differ in size and training, but under the hood they're all transformers running the loop on this page.</p>
         <div class="takeaway"><b>The one-line history:</b> old models read token-by-token and forgot; the transformer reads everything at once and exchanges information freely - and that changed everything.</div>
@@ -1682,7 +1682,7 @@ function trStep(){
   if(TR.loss<0.12)TR.loss=0.12+Math.random()*0.03;
   TR.hist.push(Math.max(0.1,TR.loss));
   el("tr-step").textContent=TR.step;el("tr-loss").textContent=TR.loss.toFixed(2);
-  el("tr-pred").textContent="""+trGuess()+""";
+  el("tr-pred").textContent='"'+trGuess()+'"';
   drawLoss();
   if(TR.step>=600){clearInterval(TR.timer);TR.timer=null;TR.run=false;el("tr-run").textContent="Done - train again";}
 }
