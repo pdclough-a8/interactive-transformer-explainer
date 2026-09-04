@@ -424,7 +424,7 @@ footer a{color:#C9CBD0}
   <div class="wrap">
     <span class="eyebrow">Data &amp; AI, explained · A8 learning tool</span>
     <h1>See how a <span class="u">transformer</span> actually works.</h1>
-    <p class="lede">Transformers are the engine behind ChatGPT, Claude and Gemini. <b style="color:#fff">Your mission:</b> take the sentence below and watch the model turn it into a prediction for whatever comes next - then follow every step it takes to get there, first as the model <b style="color:#fff">uses</b> everything it learned during training to predict the next word, then as it <b style="color:#fff">learns</b> in the first place. Start with a plain English explanation. No maths required. Flip on the technical detail when you want it.</p>
+    <p class="lede">Transformers are the most common architecture behind Large Language Models and applications like ChatGPT, Claude and Gemini. Take the sentence below and watch the model turn it into a prediction for whatever comes next - then follow every step it takes to get there, first as the model <b style="color:#fff">uses</b> everything it learned during training to predict the next word, then as it <b style="color:#fff">learns</b> in the first place. Start with a plain English explanation. Flip on the technical detail when you want it.</p>
 
     <div class="controls">
       <div class="inbox">
@@ -482,7 +482,7 @@ footer a{color:#C9CBD0}
       <!-- 0 BIG PICTURE -->
       <section class="station" id="overview">
         <div class="st-head"><span class="st-num">00</span><h2>The big picture - the whole transformer in one page</h2></div>
-          <p class="lead-in">Here's the whole thesis in one line: <b>a transformer repeatedly transforms a sequence of numbers until the result can predict the next token.</b> Text becomes tokens, tokens become numbers, those numbers exchange information and get refined many times over, then get turned into a prediction - and the loop repeats. Every stage below answers one question in that process; scaled up and trained on huge amounts of text, it produces surprisingly rich language ability. <b>Click a stage to jump to it.</b></p>
+          <p class="lead-in">A transformer <b>repeatedly transforms a sequence of numbers until the result can predict the next token.</b> Text becomes tokens, tokens become numbers, those numbers exchange information and get refined many times over, then get turned into a prediction - and the loop repeats. Every stage below answers one question in that process; scaled up and trained on huge amounts of text, it produces surprisingly rich language ability. <b>Click a stage to jump to it.</b></p>
         <div class="flow">
           <button class="fstep" type="button" data-target="tokens"><span class="fn">01</span><span class="ft">Tokenise</span><span class="fd">split your text into pieces and give each an ID number</span></button>
           <span class="farr">→</span>
@@ -494,7 +494,7 @@ footer a{color:#C9CBD0}
         </div>
         <p class="note" style="margin-top:2px">↩︎ That last step loops: each new token is fed back in to predict the next. That's the entire generation loop: predict one token, append it, then repeat.</p>
         <div class="primer">
-          <span class="k">Worth knowing before you start</span>
+          <span class="k">Things worth knowing before you start</span>
           A transformer does <b>not</b>, by default: look facts up in a database (it recalls patterns from training, not references) · know whether its own answer is true (it can sound equally confident either way) · "think" in English internally (it operates on numbers throughout) · update its weights from talking to you (every reply comes from the same frozen numbers) · remember anything between separate conversations, unless it's resent to it.
         </div>
         <div class="primer">
@@ -503,7 +503,7 @@ footer a{color:#C9CBD0}
         </div>
         <div class="primer">
           <span class="k">How to read the demos</span>
-          Every interactive demo on this page is labelled by how real it is - watch for these as you go: 🟢 <b>Real</b> - an actual computation, done live on your sentence · 🟡 <b>Simplified</b> - a real mechanism, run at a tiny scale so every step is checkable by hand · 🔵 <b>Illustrative</b> - a visual stand-in for the idea, not a real model's output.
+          Every interactive demo on this page is labelled by how realistic it is: 🟢 <b>Real</b> - an actual computation, done live on your sentence · 🟡 <b>Simplified</b> - a real mechanism, run at a tiny scale so every step is checkable by hand · 🔵 <b>Illustrative</b> - a visual stand-in for the idea, not a real model's output.
         </div>
       </section>
 
@@ -525,7 +525,7 @@ footer a{color:#C9CBD0}
         <div class="mode-note wt-note only-train"><span class="tag">While training</span> The tokeniser is built once, up front, from large collections of text - then frozen. Training never changes how text is split; it only changes what the model does with the tokens afterwards.</div>
         <br>
         <div class="handoff" data-h="01"><div class="handoff-h hin"><span class="handoff-lab">Going in</span><span style="font-family:var(--mono);font-size:13px">"The engineer finished the"</span></div><div class="handoff-div"><span class="handoff-arr">→</span></div><div class="handoff-h hout"><span class="handoff-lab">Coming out</span><span class="htok" style="background:#FDE9E0;color:#C23A16;border-color:#C23A16">The</span> <span class="htok" style="background:#E4EEF9;color:#0B5CB8;border-color:#0B5CB8">·engineer</span> <span class="htok" style="background:#EAE7DF;color:#4A4D52;border-color:#4A4D52">·finished</span> <span class="htok" style="background:#FFEFE9;color:#C23A16;border-color:#C23A16">·the</span><div style="font-size:12px;color:var(--muted);margin-top:6px">Four ID numbers - the only thing that flows forward.</div></div></div>
-<div class="takeaway"><b>Bottom line:</b> from here on the model never sees letters - only a list of ID numbers.</div>
+<div class="takeaway"><b>Bottom line:</b> from here on the model never sees characters - only a list of ID numbers.</div>
         <div class="only-tech">
         <details class="qpop">
           <summary><span>❓</span> What about a word it has never seen?</summary>
