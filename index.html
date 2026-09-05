@@ -482,7 +482,8 @@ footer a{color:#C9CBD0}
       <!-- 0 BIG PICTURE -->
       <section class="station" id="overview">
         <div class="st-head"><span class="st-num">00</span><h2>The big picture - the whole transformer in one page</h2></div>
-          <p class="lead-in">A transformer <b>repeatedly transforms a sequence of numbers until the result can predict the next token.</b> Text becomes tokens, tokens become numbers, those numbers exchange information and get refined many times over, then get turned into a prediction - and the loop repeats. Every stage below answers one question in that process; scaled up and trained on huge amounts of text, it produces surprisingly rich language ability. <b>Click a stage to jump to it.</b></p>
+          <p class="lead-in">
+            A transformer transforms a sequence of numbers through several stages until it can predict the next token - and repeats that process for each token it generates. Text becomes tokens, tokens become numbers, those numbers exchange information and get refined many times over, then get turned into a prediction - and the loop repeats. Every stage below answers one question in that process; scaled up and trained on huge amounts of text, it produces surprisingly rich language ability.<b>Click a stage to jump to it.</b></p>
         <div class="flow">
           <button class="fstep" type="button" data-target="tokens"><span class="fn">01</span><span class="ft">Tokenise</span><span class="fd">split your text into pieces and give each an ID number</span></button>
           <span class="farr">→</span>
@@ -494,7 +495,7 @@ footer a{color:#C9CBD0}
         </div>
         <p class="note" style="margin-top:2px">↩︎ That last step loops: each new token is fed back in to predict the next. That's the entire generation loop: predict one token, append it, then repeat.</p>
         <div class="primer">
-          <span class="k">Things worth knowing before you start</span>
+          <span class="k">Worth knowing before you start</span>
           A transformer does <b>not</b>, by default: look facts up in a database (it recalls patterns from training, not references) · know whether its own answer is true (it can sound equally confident either way) · "think" in English internally (it operates on numbers throughout) · update its weights from talking to you (every reply comes from the same frozen numbers) · remember anything between separate conversations, unless it's resent to it.
         </div>
         <div class="primer">
@@ -540,7 +541,7 @@ footer a{color:#C9CBD0}
 
       <!-- 2 EMBED -->
       <section class="station" id="embed">
-        <div class="st-head"><span class="st-num">02</span><h2>Embed - a list of numbers</h2></div>
+        <div class="st-head"><span class="st-num">02</span><h2>Embed - represent each token as a list of numbers</h2></div>
         <p class="lead-in">An ID like <code>8417</code> means nothing on its own. So each token is swapped for an <b><span class="term" data-def="An embedding is a list of numbers that represents a token as a point in “meaning space”, learned from patterns in how tokens occur in context - not a hand-written definition.">embedding</span></b>: a long list of numbers (vector), learned from the statistical patterns of which tokens tend to occur near which others across huge amounts of text (i.e. are semantically similar). Tokens used alike end up with similar numbers - not because anyone told the model what they mean, but because usage is a strong clue to it.</p>
         <div class="analogy"><span>🗺️</span><span><b>Think of it like this:</b> every token gets a location on a map - except the map has hundreds of dimensions, not two. Distance means "used in similar ways," and directions can carry relationships (the classic word-embedding example: <i>king − man + woman ≈ queen</i>). It's a genuinely useful map - but it's a map of usage patterns, not a dictionary of meaning: a token's embedding alone is just a starting point, refined per-sentence once attention gets hold of it.</span></div>
         <p class="lead-in" style="margin-top:20px"><b>From a list to a grid.</b> These per-token vectors stack into a <span class="term" data-def="A matrix is just a grid (table) of numbers, arranged in rows and columns. Almost everything inside a transformer is stored and manipulated as matrices." role="button" tabindex="0">matrix</span> - one row per token, one column per dimension. So your sentence becomes a tall grid of numbers, not a short list. The model's own "knowledge" is likewise huge matrices of <span class="term" data-def="Weights (or parameters) are the adjustable numbers inside the model - what training sets. Frontier models have hundreds of billions." role="button" tabindex="0">weights</span> - running text through a transformer means these matrices being multiplied together, layer after layer.</p>
@@ -567,7 +568,7 @@ footer a{color:#C9CBD0}
           <div class="analogy-out" id="emb-out" hidden></div>
         </div>
         <div class="demo">
-          <div class="demo-lab">Live - feel the size on the selected sentence)</div>
+          <div class="demo-lab">Live - feel the size of the selected sentence</div>
           <p class="tierline tier-real">🟢 <b>Real</b> - GPT-2 small's published dimensions (768 width, 12 layers, 50,257 vocab, 124M weights), applied to your sentence's actual token count.</p>
           <div id="sizes"></div>
         </div>
@@ -677,7 +678,7 @@ footer a{color:#C9CBD0}
       <!-- 5 HEADS -->
       <section class="station" id="heads">
         <div class="st-head"><span class="st-num">05</span><h2>Many heads - several viewpoints at once</h2></div>
-        <p class="lead-in">One attention pattern tracks one kind of relationship. So the model runs <b>many heads in parallel</b>, each learns different patterns of relationships - grammar, references, the previous token - then stitches them together.</p>
+        <p class="lead-in">Recap: in the last step, each token compared its Query against every other token's Key, then blended in their Values by how well those matched - that's one attention pattern. <b>Heads</b> means running that same matching process several times at once, each one picking up on different kinds of relationships - grammar, references, the previous token - before the results are combined.</p>
         <div class="analogy"><span>🔬</span><span><b>Think of it like this:</b> a team of specialists reading the same sentence - a grammarian, a fact-checker, a continuity editor. Each highlights different links; the final read merges them all.</span></div>
         <p class="note" style="margin-top:0">That's an analogy, not a job description - heads aren't deliberately assigned these roles. Their patterns emerge purely from training, and not every head ends up with a clean, nameable specialty.</p>
         <div class="tech-block"><span class="tb-lab">Technical layer</span>
@@ -705,7 +706,8 @@ footer a{color:#C9CBD0}
       <!-- 6 BLOCK -->
       <section class="station" id="block">
         <div class="st-head"><span class="st-num">06</span><h2>The block - exchange, then think</h2></div>
-        <p class="lead-in">Attention is only half a transformer <b>block</b>. (The many heads from the last section <i>are</i> this attention step - run several times in parallel, then merged into one - not a separate stage of their own.) After tokens exchange information, each one is processed alone by a small <b><span class="term" data-def="A small network applied to each token on its own (not looking at other tokens). Much of the model’s stored knowledge lives here.">feed-forward network</span></b> - a moment of private thinking where the model applies stored knowledge. Two stabilisers keep deep stacks trainable: <b><span class="term" data-def="A residual connection adds a step’s input back onto its output - a shortcut that stops information (and training signal) getting lost in deep stacks.">residual connections</span></b> (add to the signal rather than replace it) and <b><span class="term" data-def="Normalisation rescales the numbers flowing through the model to a consistent range, which keeps training stable.">normalisation</span></b> (keep numbers healthy).</p>
+        <p class="lead-in">Attention is only half a transformer <b>block</b>. (The many heads from the last section <i>are</i> this same attention step, run several times in parallel and then merged - not a separate stage of their own.) After tokens finish exchanging information, each one is then processed separately, one token at a time. That's the job of the <b><span class="term" data-def="A small network applied to each token on its own (not looking at other tokens). Much of the model’s stored knowledge lives here.">feed-forward network</span></b>: a small network whose weights were fixed during training and never change afterwards. Every token's vector passes through that same fixed function - only the vector changes, not the network itself. Because those fixed weights already encode patterns the model picked up from huge amounts of training text, passing a token through transforms its vector using those patterns - which is how the model's trained knowledge shows up in what a token comes to mean, without anything being added to the model itself.</p>
+        <p class="lead-in" style="margin-top:14px">Alongside these two steps, a couple of engineering safeguards keep very deep stacks of blocks trainable: <b><span class="term" data-def="A residual connection adds a step’s input back onto its output - a shortcut that stops information (and training signal) getting lost in deep stacks.">residual connections</span></b> and <b><span class="term" data-def="Normalisation rescales the numbers flowing through the model to a consistent range, which keeps training stable.">normalisation</span></b>. You don't need to know how these work to follow the story - the technical layer below has the detail if you're curious.</p>
         <div class="block-diagram" aria-label="One transformer block">
           <div class="bd-item io">token vectors in</div>
           <div class="bd-arrow">↓</div>
@@ -713,39 +715,40 @@ footer a{color:#C9CBD0}
           <div class="bd-arrow"><span class="bd-plus">+ add input back (residual)</span><br>↓</div>
           <div class="bd-item">normalise</div>
           <div class="bd-arrow">↓</div>
-          <div class="bd-item ffn">feed-forward network<span class="sub">each token thinks on its own</span></div>
+          <div class="bd-item ffn">feed-forward network<span class="sub">each token updated individually</span></div>
           <div class="bd-arrow"><span class="bd-plus">+ residual</span><br>↓</div>
           <div class="bd-item">normalise</div>
           <div class="bd-arrow">↓</div>
           <div class="bd-item io">token vectors out → next block</div>
         </div>
 
-        <p class="lead-in" style="margin-top:22px"><b>Reading a real transformer diagram.</b> Textbook diagrams use standard labels. Here's the whole model, top to bottom, with each box in plain English - the terms below match what you'll see in the “Attention Is All You Need” diagram and most others.</p>
-        <div class="arch">
-          <div class="arch-row"><span class="ar-name">Input embedding <span class="ar-plus">+ positional encoding</span></span><span class="ar-plain">turn tokens into vectors and stamp each with its position <span class="ar-step" data-target="embed">steps 2–3</span></span></div>
-          <div class="arch-brace">repeated for every block (×N)</div>
-          <div class="arch-row hot"><span class="ar-name">Multi-Head Self-Attention <span class="ar-plus">(Q, K, V)</span></span><span class="ar-plain">every token exchanges information with the others, pulling in what's relevant <span class="ar-step" data-target="attention">steps 4–5</span></span></div>
-          <div class="arch-row dim"><span class="ar-name">Add &amp; Norm</span><span class="ar-plain"><span class="term" data-def="A residual connection adds a step’s input back onto its output - a shortcut that stops information (and training signal) getting lost in deep stacks." role="button" tabindex="0">residual shortcut</span> + <span class="term" data-def="Normalisation rescales the numbers flowing through the model to a consistent range, which keeps training stable." role="button" tabindex="0">normalisation</span> to keep things stable <span class="ar-step" data-target="block">step 6</span></span></div>
-          <div class="arch-row cool"><span class="ar-name">Feed-Forward</span><span class="ar-plain">each token is processed on its own; a lot of stored knowledge appears to live here <span class="ar-step" data-target="block">step 6</span></span></div>
-          <div class="arch-row dim"><span class="ar-name">Add &amp; Norm</span><span class="ar-plain">residual + normalisation again, then on to the next block <span class="ar-step" data-target="depth">step 7</span></span></div>
-          <div class="arch-brace end">after the last block</div>
-          <div class="arch-row"><span class="ar-name">Linear</span><span class="ar-plain">score every token in the vocabulary - a raw number for each, before it's turned into a probability <span class="ar-step" data-target="output">step 8</span></span></div>
-          <div class="arch-row"><span class="ar-name">Softmax</span><span class="ar-plain">turn those scores into next-token probabilities <span class="ar-step" data-target="output">step 8</span></span></div>
-          <div class="arch-out">→ probability of every possible next token</div>
-        </div>
-<div class="analogy" style="margin-top:14px"><span>🏦</span><span><b>What "thinking alone" looks like:</b> imagine the word "bank" in <i>"she walked to the river bank."</i> After attention, its vector has already borrowed context from "river." The feed-forward step is where the model applies what it has stored about rivers - not by looking at other words again, but by pattern-matching against its training - and shifts the vector away from the financial meaning toward the geographical one. The feed-forward network appears to play a similar role for much of what the model has learned - though it's not the only place knowledge lives in the model.</span></div>
+        <div class="analogy" style="margin-top:14px"><span>🏦</span><span><b>What this looks like in practice:</b> take the word "bank" in <i>"she walked to the river bank."</i> After attention, its vector has already borrowed context from "river." The feed-forward step is where the model applies what it has stored about rivers - not by looking at other words again, but by matching against patterns from its training - and shifts the vector away from the financial meaning toward the geographical one. The feed-forward network appears to play a similar role for much of what the model has learned - though it's not the only place knowledge lives in the model.</span></div>
         <div class="tech-block"><span class="tb-lab">Technical layer</span>
-          <p><code>FFN(x)=W₂·act(W₁x+b₁)+b₂</code>, inner width usually <code>4d</code>, GELU/SwiGLU activations. The FFN holds roughly two-thirds of the parameters and appears to play an important role in storing and transforming factual associations - though this is an active research question, and not a complete account of where a model's "knowledge" lives. Residuals (<code>x+Sublayer(x)</code>) create a gradient highway. One wrinkle: the diagram above uses the original paper's order, normalising <i>after</i> each sub-layer; GPT-2 and almost every model since normalises <i>before</i> each sub-layer instead ("pre-norm") - it trains more reliably at depth. The steps and their order are the same either way; only where "normalise" sits shifts.</p>
+          <p><code>FFN(x)=W₂·act(W₁x+b₁)+b₂</code>, inner width usually <code>4d</code>, GELU/SwiGLU activations. The FFN holds roughly two-thirds of the parameters and appears to play an important role in storing and transforming factual associations - though this is an active research question, and not a complete account of where a model's "knowledge" lives. Residuals (<code>x+Sublayer(x)</code>) create a gradient highway. One wrinkle: the diagram below uses the original paper's order, normalising <i>after</i> each sub-layer; GPT-2 and almost every model since normalises <i>before</i> each sub-layer instead ("pre-norm") - it trains more reliably at depth. The steps and their order are the same either way; only where "normalise" sits shifts.</p>
+          <p><b>Reading a real transformer diagram.</b> Textbook diagrams use standard labels. Here's the whole model, top to bottom, with each box in plain English - the terms below match what you'll see in the “Attention Is All You Need” diagram and most others.</p>
+          <div class="arch">
+            <div class="arch-row"><span class="ar-name">Input embedding <span class="ar-plus">+ positional encoding</span></span><span class="ar-plain">turn tokens into vectors and stamp each with its position <span class="ar-step" data-target="embed">steps 2–3</span></span></div>
+            <div class="arch-brace">repeated for every block (×N)</div>
+            <div class="arch-row hot"><span class="ar-name">Multi-Head Self-Attention <span class="ar-plus">(Q, K, V)</span></span><span class="ar-plain">every token exchanges information with the others, pulling in what's relevant <span class="ar-step" data-target="attention">steps 4–5</span></span></div>
+            <div class="arch-row dim"><span class="ar-name">Add &amp; Norm</span><span class="ar-plain"><span class="term" data-def="A residual connection adds a step’s input back onto its output - a shortcut that stops information (and training signal) getting lost in deep stacks." role="button" tabindex="0">residual shortcut</span> + <span class="term" data-def="Normalisation rescales the numbers flowing through the model to a consistent range, which keeps training stable." role="button" tabindex="0">normalisation</span> to keep things stable <span class="ar-step" data-target="block">step 6</span></span></div>
+            <div class="arch-row cool"><span class="ar-name">Feed-Forward</span><span class="ar-plain">each token is processed on its own; a lot of stored knowledge appears to live here <span class="ar-step" data-target="block">step 6</span></span></div>
+            <div class="arch-row dim"><span class="ar-name">Add &amp; Norm</span><span class="ar-plain">residual + normalisation again, then on to the next block <span class="ar-step" data-target="depth">step 7</span></span></div>
+            <div class="arch-brace end">after the last block</div>
+            <div class="arch-row"><span class="ar-name">Linear</span><span class="ar-plain">score every token in the vocabulary - a raw number for each, before it's turned into a probability <span class="ar-step" data-target="output">step 8</span></span></div>
+            <div class="arch-row"><span class="ar-name">Softmax</span><span class="ar-plain">turn those scores into next-token probabilities <span class="ar-step" data-target="output">step 8</span></span></div>
+            <div class="arch-out">→ probability of every possible next token</div>
+          </div>
         </div>
         <div class="mode-note wt-note only-train"><span class="tag">While training</span> That feed-forward network appears to be where a lot of the model's <b>knowledge</b> ends up living. Its weights start random and are shaped, example by example, into the facts and patterns the model can recall.</div>
         <div class="handoff"><div class="handoff-h hin"><span class="handoff-lab">Going in</span>Vectors updated by attention - tokens have exchanged information, but stored knowledge has not been applied yet.</div><div class="handoff-div"><span class="handoff-arr">→</span></div><div class="handoff-h hout"><span class="handoff-lab">Coming out</span>Feed-forward network applied to each token individually. Factual associations and word-sense distinctions from training are woven in.</div></div>
-<div class="takeaway"><b>Bottom line:</b> one block = attention (exchange) + feed-forward (think), wrapped in residuals and normalisation.</div>
+<div class="takeaway"><b>Bottom line:</b> one block = attention (exchange) + feed-forward (apply learned patterns), wrapped in residuals and normalisation.</div>
       </section>
 
       <!-- 7 DEPTH -->
       <section class="station" id="depth">
         <div class="st-head"><span class="st-num">07</span><h2>Depth - refine, repeat, repeat...</h2></div>
-        <p class="lead-in">Then the whole block repeats - dozens of times. Early layers pick up surface patterns; later layers combine those into progressively richer, more abstract representations.</p>
+        <p class="lead-in">Recap: each block you've seen so far does two things - tokens exchange information (attention), then each one is refined using patterns the model learned in training (feed-forward). Now that whole block repeats - dozens of times. Early layers pick up surface patterns; later layers combine those into progressively richer, more abstract representations.</p>
+        <div class="analogy"><span>🖼️</span><span><b>Think of it like this:</b> editing a photo through repeated sharpening passes. The first pass cleans up rough edges; the next brings out texture; a later one sharpens fine detail that only shows up once earlier passes are done. A transformer does the same to its numbers, a dozen or more times over. This only works because each pass includes both steps from the last section - attention alone, repeated with no feed-forward step in between, would blend the passes together rather than sharpen them, more like a photo blurring under repeated smoothing than one coming into focus.</span></div>
         <div class="demo">
           <div class="demo-lab">Live - what builds up with depth</div>
           <div class="stackviz">
