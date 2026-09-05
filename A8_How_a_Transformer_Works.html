@@ -111,6 +111,17 @@ section.station{margin-bottom:44px;scroll-margin-top:80px}
 .qpop-body{padding:0 16px 16px;font-size:15px}
 .qpop-body p{margin:0 0 10px}
 .qpop-body p:last-child{margin-bottom:0}
+.stage{background:var(--surface);border:1px solid var(--border);border-radius:12px;margin:14px 0;max-width:74ch;overflow:hidden}
+.stage summary{list-style:none;cursor:pointer;padding:14px 18px;display:flex;align-items:center;gap:10px}
+.stage summary::-webkit-details-marker{display:none}
+.stage summary .stage-t{font-family:var(--disp);font-weight:700;font-size:16px;color:var(--ink)}
+.stage summary::after{content:"+";margin-left:auto;flex:0 0 auto;font-family:var(--mono);color:var(--orange-deep);font-size:18px;font-weight:400}
+.stage[open] summary::after{content:"–"}
+.stage[open] summary{border-bottom:1px solid var(--border)}
+.stage-body{padding:2px 18px 16px;font-size:16.5px;color:#3A3D42}
+.stage-body p{margin:0 0 10px}
+.stage-body p:last-child{margin-bottom:0}
+.stage-body .analogy{margin:10px 0 0}
 
 /* mode visibility */
 .only-train{display:none}.only-infer{display:block}
@@ -252,6 +263,11 @@ input[type=range]{flex:1;accent-color:var(--orange);min-width:130px}
 .ar-step:hover{background:var(--orange);color:#fff}
 .arch-brace{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:var(--ink);color:#C9CBD0;padding:6px 16px}
 .arch-out{padding:12px 16px;border-top:1px solid var(--border);font-weight:600;font-family:var(--disp);background:#F7F6F2}
+.arch.arch-flow{max-width:760px}
+.arch-flow .arch-row{display:block;padding:11px 18px}
+.arch-flow .ar-name{display:inline;min-width:0;font-size:14px}
+.arch-flow .ar-name::after{content:" \2014 ";color:var(--muted);font-weight:400}
+.arch-flow .ar-plain{color:var(--muted)}
 
 .stackviz{display:flex;flex-wrap:wrap;gap:26px;align-items:center}
 .stackviz>div:not(.stack-col){flex:1 1 300px;min-width:0}
@@ -1069,21 +1085,36 @@ footer a{color:#C9CBD0}
           <div class="bd-item io">Assistant<span class="sub">helpful, instruction-following, and - increasingly - able to reason</span></div>
         </div>
         <p class="note" style="margin-top:10px">Everything from here on - SFT, RLHF, reasoning training - is collectively called <b>post-training</b>: further training on top of an already-pretrained model, with no architecture changes. ("Fine-tuning" gets used loosely for all of this too, but more precisely refers just to the supervised stage below.)</p>
-        <p class="lead-in" style="margin-top:22px"><b>Stage 1 - Instruction fine-tuning (SFT).</b> The model is shown thousands of worked examples: a prompt on one side, a high-quality human-written response on the other. It is trained on those pairs in the usual way - predict the next token, measure the loss, nudge the weights. After enough examples the model learns the format: answer questions directly, follow instructions, stay on topic. The architecture has not changed at all; the weights have simply been steered toward a new target. A model fine-tuned this way is noticeably more useful than the raw pre-trained version - it stops trying to "continue" a question and starts trying to answer it.</p>
-        <div class="only-tech">
-        <details class="qpop">
-          <summary><span>❓</span> Can you fine-tune a model for a specific domain instead?</summary>
-          <div class="qpop-body">
-            <p>Yes - it's the same operation, just aimed at a different dataset: instead of general instruction-following examples, you train on something narrower (legal contracts, support tickets, a particular coding style), usually starting from an already instruction-tuned model rather than the raw base model.</p>
-            <p>One caveat: fine-tuning is much better at teaching <b>style and format</b> than at reliably injecting a lot of <b>new facts</b> - a small dataset doesn't get "memorised" the way trillions of pretraining tokens do, so "make it know our documents" is usually solved with retrieval instead. And in practice it's rarely done by retraining every weight - a cheaper technique called <b>LoRA</b> trains only a small set of added parameters instead.</p>
+        <details class="stage" style="margin-top:22px">
+          <summary><span class="stage-t">Stage 1 · Instruction fine-tuning (SFT)</span></summary>
+          <div class="stage-body">
+            <p>The model is shown thousands of worked examples: a prompt on one side, a high-quality human-written response on the other. It is trained on those pairs in the usual way - predict the next token, measure the loss, nudge the weights. After enough examples the model learns the format: answer questions directly, follow instructions, stay on topic. The architecture has not changed at all; the weights have simply been steered toward a new target. A model fine-tuned this way is noticeably more useful than the raw pre-trained version - it stops trying to "continue" a question and starts trying to answer it.</p>
+            <div class="only-tech">
+            <details class="qpop">
+              <summary><span>❓</span> Can you fine-tune a model for a specific domain instead?</summary>
+              <div class="qpop-body">
+                <p>Yes - it's the same operation, just aimed at a different dataset: instead of general instruction-following examples, you train on something narrower (legal contracts, support tickets, a particular coding style), usually starting from an already instruction-tuned model rather than the raw base model.</p>
+                <p>One caveat: fine-tuning is much better at teaching <b>style and format</b> than at reliably injecting a lot of <b>new facts</b> - a small dataset doesn't get "memorised" the way trillions of pretraining tokens do, so "make it know our documents" is usually solved with retrieval instead. And in practice it's rarely done by retraining every weight - a cheaper technique called <b>LoRA</b> trains only a small set of added parameters instead.</p>
+              </div>
+            </details>
+            </div>
           </div>
         </details>
-        </div>
         <p class="max">But a model trained only on examples can still be unreliable in subtle ways: confidently wrong, inconsistently helpful, occasionally producing content nobody wanted. That's where the second stage comes in.</p>
-        <p class="lead-in" style="margin-top:16px"><b>Stage 2 - RLHF (Reinforcement Learning from Human Feedback).</b> Human raters are shown pairs of model responses to the same prompt and asked which they prefer. Those judgments are used to train a separate <b><span class="term" data-def="A reward model is a neural network trained on human preference data to predict which model response a human would rate higher. It acts as a stand-in for the human rater during reinforcement learning.">reward model</span></b> - a network that learns to predict human preferences. The language model is then fine-tuned further using reinforcement learning: it generates responses, the reward model scores them, and the weights are nudged toward higher-scoring behaviour. Iterated many times, this shapes the model's tone, reliability and values.</p>
-        <div class="analogy"><span>🎯</span><span><b>Think of it like this:</b> imagine training a new colleague in two steps. First, show them a folder of ideal responses so they understand the format. Then have a manager give feedback - "that was better, that was worse" - until good behaviour is consistent. RLHF is that feedback loop, run millions of times, with the reward model standing in for the manager.</span></div>
-        <p class="note" style="margin-top:10px">This is one common progression, not a fixed recipe - some labs skip stages, reorder them, or use other optimisation methods entirely (more in the technical layer below).</p>
-        <p class="lead-in" style="margin-top:16px"><b>Stage 3 - Reasoning training.</b> A newer addition, not yet in every model: further reinforcement learning on tasks with a checkable right answer - maths, code, logic - that rewards the model for reaching the correct answer, encouraging it to spend more computation on hard problems rather than answering instantly. The most visible result is models that write out a chain of reasoning steps before answering, which is what people mean by "reasoning" models - but the training itself optimises for correct outcomes, not simply for producing visible step-by-step text.</p>
+        <details class="stage" style="margin-top:16px">
+          <summary><span class="stage-t">Stage 2 · RLHF (Reinforcement Learning from Human Feedback)</span></summary>
+          <div class="stage-body">
+            <p>Human raters are shown pairs of model responses to the same prompt and asked which they prefer. Those judgments are used to train a separate <b><span class="term" data-def="A reward model is a neural network trained on human preference data to predict which model response a human would rate higher. It acts as a stand-in for the human rater during reinforcement learning.">reward model</span></b> - a network that learns to predict human preferences. The language model is then fine-tuned further using reinforcement learning: it generates responses, the reward model scores them, and the weights are nudged toward higher-scoring behaviour. Iterated many times, this shapes the model's tone, reliability and values.</p>
+            <div class="analogy"><span>🎯</span><span><b>Think of it like this:</b> imagine training a new colleague in two steps. First, show them a folder of ideal responses so they understand the format. Then have a manager give feedback - "that was better, that was worse" - until good behaviour is consistent. RLHF is that feedback loop, run millions of times, with the reward model standing in for the manager.</span></div>
+            <p class="note" style="margin-top:10px">This is one common progression, not a fixed recipe - some labs skip stages, reorder them, or use other optimisation methods entirely (more in the technical layer below).</p>
+          </div>
+        </details>
+        <details class="stage" style="margin-top:16px">
+          <summary><span class="stage-t">Stage 3 · Reasoning training</span></summary>
+          <div class="stage-body">
+            <p>A newer addition, not yet in every model: further reinforcement learning on tasks with a checkable right answer - maths, code, logic - that rewards the model for reaching the correct answer, encouraging it to spend more computation on hard problems rather than answering instantly. The most visible result is models that write out a chain of reasoning steps before answering, which is what people mean by "reasoning" models - but the training itself optimises for correct outcomes, not simply for producing visible step-by-step text.</p>
+          </div>
+        </details>
         <div class="mode-note" style="display:block;margin-top:16px"><span class="tag">Key insight</span> At no point in any of these stages does the architecture change. There is no new component, no new type of layer. It is still the same transformer performing the same next-token prediction. What changes each time is the training signal - and that is enough to take a text-completer and give it a consistent personality, communication style, set of values, and - increasingly - the ability to reason through hard problems.</div>
         <div class="tech-block"><span class="tb-lab">Technical layer</span>
           <p>SFT is standard supervised learning on (prompt, completion) pairs, typically with a lower learning rate than pre-training to avoid overwriting too much. RLHF adds a second model: a reward model <code>r(x,y)</code> trained on human preference data using the Bradley-Terry objective. The language model is then optimised with <code>PPO</code> (Proximal Policy Optimisation) against <code>r</code> while a KL-divergence penalty keeps it close to the SFT checkpoint. A simpler offline variant, <code>DPO</code> (Direct Preference Optimisation), removes the RL step and frames preference learning as a classification problem directly on the language model - avoiding the need for a separate reward model. Most frontier labs now combine SFT, DPO or RLHF, and additional constitutional or rule-based filters. The model's weights after SFT serve as the starting point for RLHF; they are not reset between stages. Reasoning training differs from RLHF in one important way: because a maths or code answer can be checked automatically for correctness, this stage can reward the model directly on outcome, without needing a human-trained reward model - so it only works in these "verifiable" domains, not for open-ended writing or conversation.</p>
@@ -1128,7 +1159,7 @@ footer a{color:#C9CBD0}
       <section class="station" id="bigideas">
         <div class="st-head"><span class="st-num">✓</span><h2>The big ideas, in one place</h2></div>
         <p class="lead-in">The core ideas behind a transformer - each linked back to where it appears above.</p>
-        <div class="arch">
+        <div class="arch arch-flow">
           <div class="arch-row"><span class="ar-name">Meaning is a position in space</span><span class="ar-plain">similar words end up close together in a token's vector <span class="ar-step" data-target="embed">embed</span></span></div>
           <div class="arch-row"><span class="ar-name">Context reshapes meaning</span><span class="ar-plain">"bank" isn't fixed until attention pulls in what surrounds it <span class="ar-step" data-target="attention">attention</span></span></div>
           <div class="arch-row"><span class="ar-name">Relevance is learned, not hard-coded</span><span class="ar-plain">grammar, coreference, proximity - discovered from data <span class="ar-step" data-target="attention">attention</span></span></div>
@@ -1144,9 +1175,24 @@ footer a{color:#C9CBD0}
       <section class="station" id="history">
         <div class="st-head"><span class="st-num">✦</span><h2>Where transformers came from</h2></div>
         <p class="lead-in">It helps to know why this design exists. Before 2017, language AI mostly used networks that read text <b>one token at a time, in order</b> (RNNs and LSTMs). Two problems dogged them: reading in sequence was slow to train, and they were forgetful - by the end of a long paragraph they'd lost track of the start.</p>
-        <p class="max">In 2017 a team at Google published a paper with a bold title: <i>“Attention Is All You Need.”</i> Its key move was to drop the step-by-step reading entirely and let <b>every token exchange information with every other token at once</b> (the attention you explored above). That did two things: training became massively parallel - a perfect fit for modern hardware - and each token got a direct line to any other, no matter how far apart. The forgetting problem became much less severe.</p>
-        <p class="max">One detail worth knowing: that original design was an <b>encoder-decoder</b> architecture, built for machine translation - one half reading the source sentence, the other writing the translation. GPT-style models, including everything on this page, use a simplified <b>decoder-only</b> version - just the "writing" half, reused to generate text one token at a time. Same core mechanism (attention), different arrangement.</p>
-        <p class="max">That combination - <b>attention plus the ability to scale</b> - is what set off the current wave of AI. Take the same architecture, make it bigger, and train it on more text, and you get BERT, the GPT series, Claude, Gemini and almost every modern language model. They differ in size and training, but under the hood they're all transformers running the loop on this page.</p>
+        <details class="stage" style="margin-top:14px">
+          <summary><span class="stage-t">2017 · “Attention Is All You Need”</span></summary>
+          <div class="stage-body">
+            <p>In 2017 a team at Google published a paper with a bold title: <i>“Attention Is All You Need.”</i> Its key move was to drop the step-by-step reading entirely and let <b>every token exchange information with every other token at once</b> (the attention you explored above). That did two things: training became massively parallel - a perfect fit for modern hardware - and each token got a direct line to any other, no matter how far apart. The forgetting problem became much less severe.</p>
+          </div>
+        </details>
+        <details class="stage" style="margin-top:12px">
+          <summary><span class="stage-t">Encoder-decoder → decoder-only</span></summary>
+          <div class="stage-body">
+            <p>One detail worth knowing: that original design was an <b>encoder-decoder</b> architecture, built for machine translation - one half reading the source sentence, the other writing the translation. GPT-style models, including everything on this page, use a simplified <b>decoder-only</b> version - just the "writing" half, reused to generate text one token at a time. Same core mechanism (attention), different arrangement.</p>
+          </div>
+        </details>
+        <details class="stage" style="margin-top:12px">
+          <summary><span class="stage-t">Why it took off</span></summary>
+          <div class="stage-body">
+            <p>That combination - <b>attention plus the ability to scale</b> - is what set off the current wave of AI. Take the same architecture, make it bigger, and train it on more text, and you get BERT, the GPT series, Claude, Gemini and almost every modern language model. They differ in size and training, but under the hood they're all transformers running the loop on this page.</p>
+          </div>
+        </details>
         <div class="takeaway"><b>The one-line history:</b> old models read token-by-token and forgot; the transformer reads everything at once and exchanges information freely - and that changed everything.</div>
       </section>
 
