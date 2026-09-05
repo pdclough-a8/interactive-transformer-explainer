@@ -322,6 +322,13 @@ button:focus-visible{outline:2px solid var(--orange);outline-offset:1px}
 .primer{background:var(--ink);color:#DDE0E6;border-radius:12px;padding:16px 18px;margin:18px 0;max-width:74ch;font-size:14.5px}
 .primer b{color:#fff}
 .primer .k{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--orange-bright);font-weight:600;display:block;margin-bottom:6px}
+details.primer{padding:0}
+details.primer summary{list-style:none;cursor:pointer;padding:16px 18px}
+details.primer summary::-webkit-details-marker{display:none}
+details.primer summary .k{margin-bottom:0;display:inline-flex;align-items:center;width:100%}
+details.primer summary .k::after{content:"+";margin-left:auto;color:var(--orange-bright);font-size:15px;font-weight:400}
+details.primer[open] summary .k::after{content:"–"}
+details.primer .primer-body{padding:0 18px 16px}
 .fastpath{background:var(--orange-soft);border:1px solid var(--orange);border-radius:12px;padding:13px 16px;margin:0 0 20px;font-size:14px;max-width:74ch;display:flex;flex-wrap:wrap;gap:4px 8px;align-items:baseline}
 .fastpath .fp-k{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--orange-deep);font-weight:700;flex:0 0 auto}
 .fastpath .fp-txt{color:#3A3D42}
@@ -462,6 +469,7 @@ footer a{color:#C9CBD0}
         <li><button class="rl-link" type="button" data-target="output" data-spy>8 · Next word / learning</button></li>
         <li><button class="rl-link" type="button" data-target="assistant" data-spy>9 · Predictor to assistant</button></li>
         <li><button class="rl-link" type="button" data-target="beyond" data-spy>10 · Beyond the model</button></li>
+        <li><button class="rl-link" type="button" data-target="bigideas" data-spy>✓ · The big ideas</button></li>
         <li><button class="rl-link" type="button" data-target="history" data-spy>Where it came from</button></li>
         <li><button class="rl-link" type="button" data-target="resources" data-spy>Learn more</button></li>
       </ol>
@@ -494,18 +502,18 @@ footer a{color:#C9CBD0}
           <button class="fstep" type="button" data-target="output"><span class="fn">08</span><span class="ft">Predict next word</span><span class="fd">score every possible token, pick one, add it - then loop back and do it all again</span></button>
         </div>
         <p class="note" style="margin-top:2px">↩︎ That last step loops: each new token is fed back in to predict the next. That's the entire generation loop: predict one token, append it, then repeat.</p>
-        <div class="primer">
-          <span class="k">Worth knowing before you start</span>
-          A transformer does <b>not</b>, by default: look facts up in a database (it recalls patterns from training, not references) · know whether its own answer is true (it can sound equally confident either way) · "think" in English internally (it operates on numbers throughout) · update its weights from talking to you (every reply comes from the same frozen numbers) · remember anything between separate conversations, unless it's resent to it.
-        </div>
-        <div class="primer">
-          <span class="k">Neural networks?</span>
-          A neural network is a large collection of simple mathematical operations: numbers go in, get multiplied by adjustable numbers called <span class="term" data-def="Weights (or parameters) are the adjustable numbers inside the model - what training changes. Frontier models have hundreds of billions of them." role="button" tabindex="0">weights</span>, and numbers come out. <b>Training</b> is the process of slowly tuning those weights until the output is useful. A <b>transformer</b> is one particular arrangement of these operations, designed so tokens can exchange information with each other - which turns out to be remarkably good at language. Worth keeping straight: <b>a transformer is the architecture; an LLM is a specific trained model built from it</b>. This page focuses on the <b>decoder-only</b> variant used by GPT-style models - more on what that means, and where it came from, in "Where it came from" below.
-        </div>
-        <div class="primer">
-          <span class="k">How to read the demos</span>
-          Every interactive demo on this page is labelled by how realistic it is: 🟢 <b>Real</b> - an actual computation, done live on your sentence · 🟡 <b>Simplified</b> - a real mechanism, run at a tiny scale so every step is checkable by hand · 🔵 <b>Illustrative</b> - a visual stand-in for the idea, not a real model's output.
-        </div>
+        <details class="primer">
+          <summary><span class="k">Worth knowing before you start</span></summary>
+          <div class="primer-body">A transformer does <b>not</b>, by default: look facts up in a database (it recalls patterns from training, not references) · know whether its own answer is true (it can sound equally confident either way) · "think" in English internally (it operates on numbers throughout) · update its weights from talking to you (every reply comes from the same frozen numbers) · remember anything between separate conversations, unless it's resent to it.</div>
+        </details>
+        <details class="primer">
+          <summary><span class="k">Neural networks?</span></summary>
+          <div class="primer-body">A neural network is a large collection of simple mathematical operations: numbers go in, get multiplied by adjustable numbers called <span class="term" data-def="Weights (or parameters) are the adjustable numbers inside the model - what training changes. Frontier models have hundreds of billions of them." role="button" tabindex="0">weights</span>, and numbers come out. <b>Training</b> is the process of slowly tuning those weights until the output is useful. A <b>transformer</b> is one particular arrangement of these operations, designed so tokens can exchange information with each other - which turns out to be remarkably good at language. Worth keeping straight: <b>a transformer is the architecture; an LLM is a specific trained model built from it</b>. This page focuses on the <b>decoder-only</b> variant used by GPT-style models - more on what that means, and where it came from, in "Where it came from" below.</div>
+        </details>
+        <details class="primer">
+          <summary><span class="k">How to read the demos</span></summary>
+          <div class="primer-body">Every interactive demo on this page is labelled by how realistic it is: 🟢 <b>Real</b> - an actual computation, done live on your sentence · 🟡 <b>Simplified</b> - a real mechanism, run at a tiny scale so every step is checkable by hand · 🔵 <b>Illustrative</b> - a visual stand-in for the idea, not a real model's output.</div>
+        </details>
       </section>
 
       <!-- 1 TOKENISE -->
@@ -774,6 +782,7 @@ footer a{color:#C9CBD0}
           </table>
           <p>GPT-2 small and GPT-3 are specific, published models, so those two columns are exact. "Frontier" isn't one architecture - current models vary enormously in these numbers, so that column is illustrative only, to show the scale of the jump.</p>
           <p>These sizes are mostly deliberate choices. <b>Vocabulary</b> is fixed when the tokeniser is trained - bigger means fewer tokens per sentence, but larger matrices. <b>Width, layers and heads</b> are architecture choices, scaled up for bigger models following <span class="term" data-def="Scaling laws are patterns researchers found showing that bigger models, trained on more data, reliably get better in predictable ways - so labs can decide how big to build before training." role="button" tabindex="0">scaling laws</span>. <b>Context window</b> is limited by memory and compute, because attention compares every token with every other - so cost grows with the <i>square</i> of the length. Every projection is a matrix multiply: a token row <code>1×d</code> times a weight matrix <code>d×d</code> → <code>1×d</code>. Attention builds Q, K, V this way; the feed-forward uses <code>d×4d</code> then <code>4d×d</code>. The embedding / unembedding matrix is <code>V×d</code> - for GPT-3 that's <code>50,257 × 12,288 ≈ 617 million</code> numbers on its own. Multiply across all layers and you reach the billions.</p>
+          <p>Bigger isn't just "the same, but better." Some abilities - basic arithmetic, following multi-step instructions, learning a new pattern from a few examples in the prompt - don't improve gradually as models grow; they can appear quite suddenly once a model crosses some scale threshold, and be largely absent below it. There's active debate over how much of this is a genuine step-change versus an artifact of how the ability gets measured - but empirically, scaling up keeps turning up capabilities nobody explicitly trained the model to have.</p>
         </div>
         <div class="only-tech">
         <div class="analogy"><span>📏</span><span><b>Variable input, fixed output.</b> The context window is a <em>maximum</em>, not a requirement. You can feed the model a single token or fill it to the limit - the transformer handles whatever length you give it, up to that ceiling. During generation, the input starts at the length of your prompt and grows by one token each step. The <em>output</em>, by contrast, is always the same fixed size: a probability score for every single token in the vocabulary - around 100,000 numbers, every time, regardless of how long the input was. That asymmetry is easy to miss: the context window is a cap on what goes <em>in</em>, not a fixed frame that must be filled.</span></div>
@@ -1118,6 +1127,22 @@ footer a{color:#C9CBD0}
         </div>
         <div class="mode-note" style="display:block;margin-top:16px"><span class="tag">Key insight</span> None of this touches a single weight. Every enhancement in the table works by changing what's in the context window before generation, or by acting on what comes out after it - the model in the middle is exactly the same frozen assistant from the last station, every single time you use it.</div>
         <div class="takeaway"><b>Bottom line:</b> RAG, tools, memory and orchestration don't make the model smarter - they give a frozen, otherwise-limited text predictor access to real information, real actions and real memory. That's one useful way to think about the difference between an LLM and the agentic applications built on top of it.</div>
+      </section>
+
+      <!-- BIG IDEAS -->
+      <section class="station" id="bigideas">
+        <div class="st-head"><span class="st-num">✓</span><h2>The big ideas, in one place</h2></div>
+        <p class="lead-in">You've now seen each of these happen, not just read about them. Here's the short version, with a link back to where each one lives.</p>
+        <div class="arch">
+          <div class="arch-row"><span class="ar-name">Meaning is a position in space</span><span class="ar-plain">similar words end up close together in a token's vector <span class="ar-step" data-target="embed">embed</span></span></div>
+          <div class="arch-row"><span class="ar-name">Context reshapes meaning</span><span class="ar-plain">"bank" isn't fixed until attention pulls in what surrounds it <span class="ar-step" data-target="attention">attention</span></span></div>
+          <div class="arch-row"><span class="ar-name">Relevance is learned, not hard-coded</span><span class="ar-plain">the model learns what to attend to, rather than following fixed rules <span class="ar-step" data-target="attention">attention</span></span></div>
+          <div class="arch-row"><span class="ar-name">Depth turns simple steps into complex behaviour</span><span class="ar-plain">each layer builds on what the last one refined <span class="ar-step" data-target="depth">depth</span></span></div>
+          <div class="arch-row"><span class="ar-name">Prediction is the only training signal</span><span class="ar-plain">everything else the model can do emerges from practising this one task <span class="ar-step" data-target="output">learning</span></span></div>
+          <div class="arch-row"><span class="ar-name">Scale can produce sudden jumps in ability</span><span class="ar-plain">not just gradual improvement as models get bigger <span class="ar-step" data-target="depth">depth</span></span></div>
+          <div class="arch-row"><span class="ar-name">Parallelism, not sequence</span><span class="ar-plain">every token is processed at once, which is why training scales so well <span class="ar-step" data-target="history">history</span></span></div>
+          <div class="arch-row"><span class="ar-name">Generation feeds its own output back in</span><span class="ar-plain">each new token sees everything produced so far, including itself <span class="ar-step" data-target="output">output</span></span></div>
+        </div>
       </section>
 
       <!-- HISTORY -->
