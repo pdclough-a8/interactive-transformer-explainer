@@ -164,6 +164,13 @@ body.show-tech .tech-block{display:block}
 @media(max-width:600px){.demo{padding:16px}}
 .demo-lab{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--orange-deep);font-weight:600;display:flex;align-items:center;gap:8px;margin-bottom:14px}
 .demo-lab::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--orange)}
+details.demo{padding:0}
+details.demo>summary.demo-lab{padding:22px;margin-bottom:0;list-style:none;cursor:pointer}
+details.demo>summary.demo-lab::-webkit-details-marker{display:none}
+details.demo>summary.demo-lab::after{content:"+";margin-left:auto;font-family:var(--mono);color:var(--orange-deep);font-size:18px;font-weight:400}
+details.demo[open]>summary.demo-lab::after{content:"–"}
+details.demo>.demo-body{padding:0 22px 22px}
+@media(max-width:600px){details.demo>summary.demo-lab{padding:16px}details.demo>.demo-body{padding:0 16px 16px}}
 .note{font-size:13px;color:var(--muted);margin-top:12px;max-width:72ch}
 .note b{color:var(--ink)}
 
@@ -586,11 +593,13 @@ footer a{color:#C9CBD0}
           </div>
           <div class="analogy-out" id="emb-out" hidden></div>
         </div>
-        <div class="demo">
-          <div class="demo-lab">Live - feel the size of the selected sentence</div>
-          <p class="tierline tier-real">🟢 <b>Real</b> - GPT-2 small's published dimensions (768 width, 12 layers, 50,257 vocab, 124M weights), applied to your sentence's actual token count.</p>
-          <div id="sizes"></div>
-        </div>
+        <details class="demo">
+          <summary class="demo-lab">Live - feel the size of the selected sentence</summary>
+          <div class="demo-body">
+            <p class="tierline tier-real">🟢 <b>Real</b> - GPT-2 small's published dimensions (768 width, 12 layers, 50,257 vocab, 124M weights), applied to your sentence's actual token count.</p>
+            <div id="sizes"></div>
+          </div>
+        </details>
         <div class="mode-note wt-note only-train"><span class="tag">While training</span> These coordinates start out <b>random</b> - every token dumped in a meaningless heap. Training slowly slides each token into place, so tokens that appear in similar contexts drift together. The map is <i>learned</i>, not designed.</div>
         <br>
         <div class="handoff" data-h="02"><div class="handoff-h hin"><span class="handoff-lab">Going in</span><span style="font-family:var(--mono);font-size:13px;background:#EFEDE7;padding:2px 8px;border-radius:5px">464</span> <span style="font-family:var(--mono);font-size:13px;background:#EFEDE7;padding:2px 8px;border-radius:5px">8884</span> <span style="font-family:var(--mono);font-size:13px;background:#EFEDE7;padding:2px 8px;border-radius:5px">5201</span> <span style="font-family:var(--mono);font-size:13px;background:#EFEDE7;padding:2px 8px;border-radius:5px">279</span><div style="font-size:12px;color:var(--muted);margin-top:6px">Raw integers - no geometry, no meaning yet.</div></div><div class="handoff-div"><span class="handoff-arr">→</span></div><div class="handoff-h hout"><span class="handoff-lab">Coming out</span><span class="htok" style="background:#FDE9E0;color:#C23A16;border-color:#C23A16">The</span><span class="hvec"><span class="hv" style="background:rgb(255,255,255)"></span><span class="hv" style="background:rgb(59,69,83)"></span><span class="hv" style="background:rgb(253,201,186)"></span><span class="hv" style="background:rgb(200,203,207)"></span><span class="hv" style="background:rgb(252,173,151)"></span><span class="hv" style="background:rgb(250,111,72)"></span><span class="hv" style="background:rgb(250,94,50)"></span><span class="hv" style="background:rgb(127,134,143)"></span><span class="hv" style="background:rgb(223,224,227)"></span><span class="hv" style="background:rgb(250,106,65)"></span></span> <span class="htok" style="background:#E4EEF9;color:#0B5CB8;border-color:#0B5CB8">·engineer</span><span class="hvec"><span class="hv" style="background:rgb(184,188,193)"></span><span class="hv" style="background:rgb(95,103,115)"></span><span class="hv" style="background:rgb(192,195,199)"></span><span class="hv" style="background:rgb(86,94,106)"></span><span class="hv" style="background:rgb(144,149,157)"></span><span class="hv" style="background:rgb(249,83,37)"></span><span class="hv" style="background:rgb(156,161,168)"></span><span class="hv" style="background:rgb(152,157,165)"></span><span class="hv" style="background:rgb(75,84,97)"></span><span class="hv" style="background:rgb(250,101,59)"></span></span> <span class="htok" style="background:#EAE7DF;color:#4A4D52;border-color:#4A4D52">·finished</span><span class="hvec"><span class="hv" style="background:rgb(188,191,196)"></span><span class="hv" style="background:rgb(252,181,161)"></span><span class="hv" style="background:rgb(250,115,77)"></span><span class="hv" style="background:rgb(251,147,118)"></span><span class="hv" style="background:rgb(69,78,92)"></span><span class="hv" style="background:rgb(144,149,157)"></span><span class="hv" style="background:rgb(252,180,159)"></span><span class="hv" style="background:rgb(250,102,61)"></span><span class="hv" style="background:rgb(250,109,69)"></span><span class="hv" style="background:rgb(251,129,95)"></span></span> <span class="htok" style="background:#FFEFE9;color:#C23A16;border-color:#C23A16">·the</span><span class="hvec"><span class="hv" style="background:rgb(249,79,31)"></span><span class="hv" style="background:rgb(254,219,209)"></span><span class="hv" style="background:rgb(250,94,50)"></span><span class="hv" style="background:rgb(229,230,232)"></span><span class="hv" style="background:rgb(253,200,184)"></span><span class="hv" style="background:rgb(254,212,200)"></span><span class="hv" style="background:rgb(252,162,137)"></span><span class="hv" style="background:rgb(251,150,121)"></span><span class="hv" style="background:rgb(253,205,191)"></span><span class="hv" style="background:rgb(255,246,244)"></span></span> <div style="font-size:12px;color:var(--muted);margin-top:6px">Each ID becomes 768 numbers - a location in meaning-space.</div></div></div>
