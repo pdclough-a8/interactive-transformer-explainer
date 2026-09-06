@@ -4,11 +4,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Repository overview
 
-This repo contains a single, self-contained HTML file:
+This repo contains a single, self-contained HTML file, plus a tiny redirect stub for GitHub Pages:
 
-- `A8_How_a_Transformer_Works.html` - an interactive, client-side explainer ("How a transformer works") built for Analytics8. It walks through tokenization → embeddings → positional encoding → attention → multi-head attention → transformer blocks → depth/stacking → next-token generation → a toy training demo.
+- `A8_How_a_Transformer_Works.html` - the real, canonical file. An interactive, client-side explainer ("How a transformer works") built for Analytics8. It walks through tokenization → embeddings → positional encoding → attention → multi-head attention → transformer blocks → depth/stacking → next-token generation → a toy training demo. **Always edit this file.**
+- `index.html` - NOT a content file. It's a one-line redirect stub (`<meta http-equiv="refresh">` + JS `location.replace`) that forwards `/` to `A8_How_a_Transformer_Works.html`. It exists only because GitHub Pages serves `index.html` at the root by default. Never edit or duplicate content into this file - if it ever stops being a redirect stub, the site silently starts showing a stale copy again (this happened before; see git history around "resync index.html").
 
-There is no build system, package manager, bundler, test suite, or server. There is no git repository initialized in this directory. The page is meant to be opened directly in a browser (double-click, or via a simple static file server).
+There is no build system, package manager, bundler, or test suite. This directory **is** a git repo (remote: `origin` → GitHub) and pushes to `main` auto-deploy to GitHub Pages via `.github/workflows/static.yml` - so a push, not just a local save, is what makes a change visible on the live site. The page can also be opened directly in a browser (double-click, or via a simple static file server) for local testing.
 
 ## Running / testing
 
