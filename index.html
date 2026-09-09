@@ -65,18 +65,6 @@ a{color:var(--orange-deep)}
 .dot{width:8px;height:8px;border-radius:50%;background:#888;flex:0 0 auto}
 .dot.live{background:#39C56A}.dot.off{background:var(--orange)}
 
-/* pipeline overview */
-.pipeline{margin-top:30px;overflow-x:auto;padding-bottom:6px}
-.pl-inner{display:flex;align-items:stretch;min-width:820px;gap:0}
-.pl-stage{flex:1;font-family:var(--body);cursor:pointer;color:#DDe;padding:11px 8px;border:1px solid #35393F;border-radius:11px;background:#1E2228;text-align:center;transition:border-color .15s,transform .15s,opacity .2s}
-.pl-stage:hover{border-color:var(--orange);transform:translateY(-2px)}
-.pl-stage .n{font-family:var(--mono);font-size:11px;color:var(--orange-bright);font-weight:600;display:block}
-.pl-stage .nm{font-size:12.5px;font-weight:600;color:#fff;display:block;line-height:1.25;margin-top:2px}
-.pl-arrow{flex:0 0 22px;display:flex;align-items:center;justify-content:center;color:#4C5157;font-size:15px}
-/* step 9 (predictor to assistant) only fully applies in training mode - mute it in inference mode as a hint */
-body.mode-inference .pl-stage[data-target="assistant"]{opacity:.4}
-body.mode-inference .pl-stage[data-target="assistant"]:hover{opacity:.7}
-
 /* ---------- layout ---------- */
 .layout{display:grid;grid-template-columns:210px 1fr;gap:40px;align-items:start}
 .layout>*{min-width:0}
@@ -467,10 +455,6 @@ footer a{color:#C9CBD0}
       <button class="ex" data-s="The morning train was delayed because of heavy snow" data-note="Watch the last step: given this sentence, the model predicts a sensible next word. Everyday text is what these models see most.">Prediction: a natural next word</button>
     </div>
     <p id="ex-note" class="ex-note" hidden></p>
-
-    <div class="pipeline" aria-label="The steps">
-      <div class="pl-inner"><button class="pl-stage" type="button" data-target="tokens"><span class="n">01</span><span class="nm">Tokenise</span></button><span class="pl-arrow">→</span><button class="pl-stage" type="button" data-target="embed"><span class="n">02</span><span class="nm">Embed</span></button><span class="pl-arrow">→</span><button class="pl-stage" type="button" data-target="position"><span class="n">03</span><span class="nm">Position</span></button><span class="pl-arrow">→</span><button class="pl-stage" type="button" data-target="attention"><span class="n">04</span><span class="nm">Attention</span></button><span class="pl-arrow">→</span><button class="pl-stage" type="button" data-target="heads"><span class="n">05</span><span class="nm">Many heads</span></button><span class="pl-arrow">→</span><button class="pl-stage" type="button" data-target="block"><span class="n">06</span><span class="nm">The block</span></button><span class="pl-arrow">→</span><button class="pl-stage" type="button" data-target="depth"><span class="n">07</span><span class="nm">Depth</span></button><span class="pl-arrow">→</span><button class="pl-stage" type="button" data-target="output"><span class="n">08</span><span class="nm">Next word</span></button><span class="pl-arrow">→</span><button class="pl-stage" type="button" data-target="assistant"><span class="n">09</span><span class="nm">To assistant</span></button><span class="pl-arrow">→</span><button class="pl-stage" type="button" data-target="beyond"><span class="n">10</span><span class="nm">Beyond the model</span></button></div>
-      </div>
   </div>
 </header>
 
