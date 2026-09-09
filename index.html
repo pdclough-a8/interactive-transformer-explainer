@@ -68,11 +68,14 @@ a{color:var(--orange-deep)}
 /* pipeline overview */
 .pipeline{margin-top:30px;overflow-x:auto;padding-bottom:6px}
 .pl-inner{display:flex;align-items:stretch;min-width:820px;gap:0}
-.pl-stage{flex:1;font-family:var(--body);cursor:pointer;color:#DDe;padding:11px 8px;border:1px solid #35393F;border-radius:11px;background:#1E2228;text-align:center;transition:border-color .15s,transform .15s}
+.pl-stage{flex:1;font-family:var(--body);cursor:pointer;color:#DDe;padding:11px 8px;border:1px solid #35393F;border-radius:11px;background:#1E2228;text-align:center;transition:border-color .15s,transform .15s,opacity .2s}
 .pl-stage:hover{border-color:var(--orange);transform:translateY(-2px)}
 .pl-stage .n{font-family:var(--mono);font-size:11px;color:var(--orange-bright);font-weight:600;display:block}
 .pl-stage .nm{font-size:12.5px;font-weight:600;color:#fff;display:block;line-height:1.25;margin-top:2px}
 .pl-arrow{flex:0 0 22px;display:flex;align-items:center;justify-content:center;color:#4C5157;font-size:15px}
+/* step 9 (predictor to assistant) only fully applies in training mode - mute it in inference mode as a hint */
+body.mode-inference .pl-stage[data-target="assistant"]{opacity:.4}
+body.mode-inference .pl-stage[data-target="assistant"]:hover{opacity:.7}
 
 /* ---------- layout ---------- */
 .layout{display:grid;grid-template-columns:210px 1fr;gap:40px;align-items:start}
