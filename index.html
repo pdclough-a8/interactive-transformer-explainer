@@ -536,7 +536,7 @@ footer a{color:#C9CBD0}
 
       <!-- 1 TOKENISE -->
       <section class="station" id="tokens">
-        <div class="st-head"><span class="st-num">01</span><h2>Tokenise - cut the text into pieces</h2></div>
+        <div class="st-head"><span class="st-num">01</span><h2>Tokenise - break the text up</h2></div>
         <p class="lead-in">A model can't read words directly. First it segments your text into <b><span class="term" data-def="A token is a chunk of text - usually a whole word or a piece of a word - that the model treats as one unit.">tokens</span></b> - usually whole words, sometimes pieces of words or punctuation - and swaps each for an ID number from a fixed dictionary.</p>
         <div class="analogy"><span>🧩</span><span><b>Think of it like this:</b> a fixed box of building bricks (around 100,000 of them). Any sentence ever written can be snapped together from those bricks. Rare or invented words just get built from several smaller bricks.</span></div>
         <div class="tech-block"><span class="tb-lab">Technical layer</span>
@@ -1080,6 +1080,11 @@ footer a{color:#C9CBD0}
       <!-- 9 FROM PREDICTOR TO ASSISTANT -->
       <section class="station" id="assistant">
         <div class="st-head"><span class="st-num">09</span><h2>From predictor to assistant - what comes after</h2></div>
+        <div class="only-infer">
+          <p class="lead-in">This stage - turning a raw predictor into an assistant via SFT, RLHF and reasoning training - is itself a further round of training. It isn't something that happens while a finished model is running, which is what Inference mode shows; it's already baked into the frozen weights of any assistant you'd actually use, including the one implied elsewhere on this page.</p>
+          <button class="primary" id="assistant-to-train">Switch to Training mode to see it →</button>
+        </div>
+        <div class="only-train">
         <p class="lead-in">Everything on this page so far produces a model that is very good at one thing: <b>completing text</b>. Given <i>"The capital of France is"</i>, it will most likely say <i>"Paris"</i>. But it has no particular reason to be helpful, accurate, or safe - it will just as readily complete <i>"How do I..."</i> by continuing the pattern of text it has seen. Turning that raw text-completer into an assistant like Claude, ChatGPT or Gemini takes further rounds of training on top. All of it still uses next-token prediction - what changes is the training signal.</p>
         <div class="analogy"><span>📚</span><span><b>Think of it like this:</b> pre-training is like reading every book ever written, absorbing patterns and facts with no goal beyond predicting the next word. The stages below are an apprenticeship - first studying worked examples of ideal behaviour, then receiving feedback on your own attempts, until good behaviour is reliable.</span></div>
         <div class="block-diagram" aria-label="Pre-training to assistant pipeline" style="max-width:360px">
@@ -1130,6 +1135,7 @@ footer a{color:#C9CBD0}
         </div>
         <div class="analogy"><span>⚠️</span><span><b>What none of this fixes:</b> a transformer only ever predicts text, so a few limits stay baked in regardless of training: <b>no real-time knowledge</b> past its training cut-off, <b>hallucination</b> (fluent text that's simply wrong), <b>no memory between conversations</b>, and even with sampling randomness turned off, small numerical or hardware-level differences can still cause tiny variations between runs. None of this is a bug to train away - it's what a next-token predictor is. Fixing it means building tools, memory and checks <i>around</i> the model, not training it further.</span></div>
         <div class="takeaway"><b>Bottom line:</b> a pre-trained transformer is a text completer. Instruction fine-tuning teaches it to answer rather than continue. RLHF shapes how it answers. Reasoning training teaches some models to work through hard problems step by step. Same architecture, same next-token prediction throughout - only the training signal changes.</div>
+        </div>
       </section>
 
       <!-- 10 BEYOND THE MODEL -->
@@ -1868,6 +1874,7 @@ function setMode(train){document.body.classList.toggle("mode-training",train);do
   el("m-train").setAttribute("aria-pressed",String(train));el("m-infer").setAttribute("aria-pressed",String(!train));}
 el("m-infer").addEventListener("click",()=>setMode(false));
 el("m-train").addEventListener("click",()=>setMode(true));
+el("assistant-to-train").addEventListener("click",()=>setMode(true));
 function setTech(on){document.body.classList.toggle("show-tech",on);el("t-tech").setAttribute("aria-pressed",String(on));el("t-plain").setAttribute("aria-pressed",String(!on));}
 el("t-plain").addEventListener("click",()=>setTech(false));
 el("t-tech").addEventListener("click",()=>setTech(true));
