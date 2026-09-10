@@ -379,6 +379,8 @@ details.primer summary .k{margin-bottom:0;display:inline-flex;align-items:center
 details.primer summary .k::after{content:"+";margin-left:auto;color:var(--orange-bright);font-size:15px;font-weight:400}
 details.primer[open] summary .k::after{content:"–"}
 details.primer .primer-body{padding:0 18px 16px}
+/* the big-picture flow diagram runs full width - let the text/boxes right under it match, rather than snapping to the sitewide reading-width cap */
+#overview .tierline,#overview .note,#overview .primer{max-width:none}
 .res-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-top:16px}
 .res{display:block;background:#fff;border:1px solid var(--border);border-radius:12px;padding:16px;text-decoration:none;color:var(--ink)}
 .res:hover{border-color:var(--orange);transform:translateY(-2px);transition:.15s}
