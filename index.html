@@ -617,7 +617,8 @@ footer a{color:#C9CBD0}
             </div>
           </div>
         </div>
-        <p class="tierline" style="margin-top:10px">🔵 <b>Illustrative</b> - a simplified map of the whole pipeline; the token IDs, attention weights and prediction percentages shown here are illustrative, not computed from your sentence (the real, live version of each step is further down the page).</p>
+        <p class="tierline only-infer" style="margin-top:10px">🔵 <b>Illustrative</b> - a simplified map of the whole pipeline; the token IDs, attention weights and prediction percentages shown here are illustrative, not computed from your sentence (the real, live version of each step is further down the page).</p>
+        <p class="tierline only-train" style="margin-top:10px">🔵 <b>Illustrative</b> - and this is the same pipeline that runs during training, too: nothing above changes. Training just adds one more step afterward - comparing the prediction to the real next token and nudging every weight (see the panel above).</p>
         <p class="note" style="margin-top:2px">↩︎ That last step loops: each new token is fed back in to predict the next. That's the entire generation loop: predict one token, append it, then repeat.</p>
         <details class="primer">
           <summary><span class="k">Worth knowing before you start</span></summary>
