@@ -346,7 +346,8 @@ button:focus-visible{outline:2px solid var(--orange);outline-offset:1px}
 .flow.enhanced .ftok .tchip{font-family:var(--mono);font-size:13px;font-weight:500;padding:4px 8px;border-radius:6px;border:1.5px solid var(--border-strong);background:#fff}
 .flow.enhanced .ftok .tid{font-family:var(--mono);font-size:10px;color:var(--muted)}
 .flow.enhanced .fmore{font-family:var(--mono);font-size:15px;color:var(--muted);align-self:center;padding-bottom:2px}
-.flow.enhanced .femb{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.flow.enhanced .femb{display:flex;flex-direction:column;gap:6px}
+.flow.enhanced .femb-row{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
 .flow.enhanced .farr-mini{color:var(--rail);font-size:13px}
 .flow.enhanced .fdimrow{display:flex;gap:2px}
 .flow.enhanced .fdim{display:inline-block;width:10px;height:18px;border-radius:2px}
@@ -568,17 +569,47 @@ footer a{color:#C9CBD0}
           <button class="fstep" type="button" data-target="embed">
             <span class="fn">02–03</span><span class="ft">🗺️ Embed + position</span><span class="fd">turns each token into a vector of meaning, stamped with its place in the sentence</span>
             <span class="fviz femb">
-              <span class="fchip" style="background:#E4EEF9;color:#0B5CB8;border-color:#0B5CB8">cat</span>
-              <span class="farr-mini">→</span>
-              <span class="fdimrow">
-                <span class="fdim" style="background:rgb(255,255,255);border:1px solid #eee"></span>
-                <span class="fdim" style="background:rgb(59,69,83)"></span>
-                <span class="fdim" style="background:rgb(253,201,186)"></span>
-                <span class="fdim" style="background:rgb(200,203,207)"></span>
-                <span class="fdim" style="background:rgb(252,173,151)"></span>
-                <span class="fdim" style="background:rgb(250,111,72)"></span>
-                <span class="fdim" style="background:rgb(250,94,50)"></span>
-                <span class="fdim" style="background:rgb(127,134,143)"></span>
+              <span class="femb-row">
+                <span class="fchip" style="background:#FDE9E0;color:#C23A16;border-color:#C23A16">The</span>
+                <span class="farr-mini">→</span>
+                <span class="fdimrow">
+                  <span class="fdim" style="background:rgb(255,255,255);border:1px solid #eee"></span>
+                  <span class="fdim" style="background:rgb(59,69,83)"></span>
+                  <span class="fdim" style="background:rgb(253,201,186)"></span>
+                  <span class="fdim" style="background:rgb(200,203,207)"></span>
+                  <span class="fdim" style="background:rgb(252,173,151)"></span>
+                  <span class="fdim" style="background:rgb(250,111,72)"></span>
+                  <span class="fdim" style="background:rgb(250,94,50)"></span>
+                  <span class="fdim" style="background:rgb(127,134,143)"></span>
+                </span>
+              </span>
+              <span class="femb-row">
+                <span class="fchip" style="background:#E4EEF9;color:#0B5CB8;border-color:#0B5CB8">cat</span>
+                <span class="farr-mini">→</span>
+                <span class="fdimrow">
+                  <span class="fdim" style="background:rgb(184,188,193)"></span>
+                  <span class="fdim" style="background:rgb(95,103,115)"></span>
+                  <span class="fdim" style="background:rgb(192,195,199)"></span>
+                  <span class="fdim" style="background:rgb(86,94,106)"></span>
+                  <span class="fdim" style="background:rgb(144,149,157)"></span>
+                  <span class="fdim" style="background:rgb(249,83,37)"></span>
+                  <span class="fdim" style="background:rgb(156,161,168)"></span>
+                  <span class="fdim" style="background:rgb(152,157,165)"></span>
+                </span>
+              </span>
+              <span class="femb-row">
+                <span class="fchip" style="background:#EAE7DF;color:#4A4D52;border-color:#4A4D52">sat</span>
+                <span class="farr-mini">→</span>
+                <span class="fdimrow">
+                  <span class="fdim" style="background:rgb(188,191,196)"></span>
+                  <span class="fdim" style="background:rgb(252,181,161)"></span>
+                  <span class="fdim" style="background:rgb(250,115,77)"></span>
+                  <span class="fdim" style="background:rgb(251,147,118)"></span>
+                  <span class="fdim" style="background:rgb(69,78,92)"></span>
+                  <span class="fdim" style="background:rgb(144,149,157)"></span>
+                  <span class="fdim" style="background:rgb(252,180,159)"></span>
+                  <span class="fdim" style="background:rgb(250,102,61)"></span>
+                </span>
               </span>
             </span>
           </button>
@@ -613,6 +644,8 @@ footer a{color:#C9CBD0}
               <span class="fbar-row"><span class="bw">mat</span><span class="fbar-wrap"><span class="fbar" style="width:61%"></span></span><span class="bp">61%</span></span>
               <span class="fbar-row"><span class="bw">rug</span><span class="fbar-wrap"><span class="fbar" style="width:14%"></span></span><span class="bp">14%</span></span>
               <span class="fbar-row"><span class="bw">floor</span><span class="fbar-wrap"><span class="fbar" style="width:6%"></span></span><span class="bp">6%</span></span>
+              <span class="fbar-row"><span class="bw">chair</span><span class="fbar-wrap"><span class="fbar" style="width:2%"></span></span><span class="bp">2%</span></span>
+              <span class="fbar-row"><span class="bw">wall</span><span class="fbar-wrap"><span class="fbar" style="width:1%"></span></span><span class="bp">1%</span></span>
               <span class="frest">… and every other word in the vocabulary, all scored</span>
             </span>
           </button>
