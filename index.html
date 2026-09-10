@@ -332,6 +332,42 @@ button:focus-visible{outline:2px solid var(--orange);outline-offset:1px}
 .flow .fstep .ft{font-family:var(--disp);font-weight:600;font-size:15px;display:block;margin:2px 0 4px}
 .flow .fstep .fd{font-size:12.5px;color:#3A3D42;line-height:1.45}
 .flow .farr{align-self:center;color:var(--rail);font-size:18px;flex:0 0 auto}
+
+/* big-picture flow: small per-card visuals (tokens, context window, embedding, attention, output) */
+.flow.enhanced .fstep{flex:1 1 140px;display:flex;flex-direction:column}
+.flow.enhanced .fstep .ft{display:flex;align-items:center;gap:6px}
+.flow.enhanced .fviz{display:block;margin-top:9px;padding-top:9px;border-top:1px dashed var(--border)}
+.flow.enhanced .fraw{font-family:var(--mono);font-size:12px;display:block;background:var(--ink);color:#DDE0E6;border-radius:6px;padding:6px 8px}
+.flow.enhanced .fchips{display:flex;flex-wrap:wrap;gap:4px;align-items:center}
+.flow.enhanced .fchip{font-family:var(--mono);font-size:10.5px;font-weight:500;padding:2px 6px;border-radius:5px;border:1.5px solid;white-space:nowrap}
+.flow.enhanced .fslot{display:inline-block;width:20px;height:17px;border:1.5px dashed var(--border-strong);border-radius:5px}
+.flow.enhanced .ftoks{display:flex;gap:10px;align-items:flex-end}
+.flow.enhanced .ftok{display:inline-flex;flex-direction:column;align-items:center;gap:3px}
+.flow.enhanced .ftok .tchip{font-family:var(--mono);font-size:13px;font-weight:500;padding:4px 8px;border-radius:6px;border:1.5px solid var(--border-strong);background:#fff}
+.flow.enhanced .ftok .tid{font-family:var(--mono);font-size:10px;color:var(--muted)}
+.flow.enhanced .fmore{font-family:var(--mono);font-size:15px;color:var(--muted);align-self:center;padding-bottom:2px}
+.flow.enhanced .femb{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.flow.enhanced .farr-mini{color:var(--rail);font-size:13px}
+.flow.enhanced .fdimrow{display:flex;gap:2px}
+.flow.enhanced .fdim{display:inline-block;width:10px;height:18px;border-radius:2px}
+.flow.enhanced .fbars{display:flex;flex-direction:column;gap:4px}
+.flow.enhanced .fbar-row{display:grid;grid-template-columns:34px 1fr 26px;align-items:center;gap:6px}
+.flow.enhanced .fbar-row .bw{font-family:var(--mono);font-size:10.5px;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.flow.enhanced .fbar-wrap{display:block;height:9px;background:#EFEDE7;border-radius:4px;overflow:hidden}
+.flow.enhanced .fbar{display:block;height:100%;background:var(--good);border-radius:4px}
+.flow.enhanced .fbar-row .bp{font-family:var(--mono);font-size:10px;color:var(--muted);font-variant-numeric:tabular-nums}
+.flow.enhanced .frest{display:block;font-size:11.5px;color:var(--muted);margin-top:5px}
+/* boundary: which cards are actual layers of the network vs. pre/post-processing around it */
+.flow.enhanced .inside-transformer{border:1.5px dashed var(--blue);border-radius:14px;background:var(--blue-soft);padding:14px 12px 12px;flex:1 1 auto}
+.flow.enhanced .inside-lab{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--blue);font-weight:700;margin-bottom:10px}
+.flow.enhanced .inside-row{display:flex;flex-wrap:wrap;gap:10px;align-items:stretch}
+.flow.enhanced .inside-row .fstep{background:#fff}
+/* transformer card gets extra room - the attention example needs to actually be readable */
+.flow.enhanced .fstep.ftrans{flex:1.9 1 260px}
+.flow.enhanced .farcs text{font-family:var(--mono);font-weight:500}
+.flow.enhanced .flegend{display:flex;align-items:center;gap:6px;font-size:9.5px;color:var(--muted);margin-top:8px;white-space:nowrap}
+.flow.enhanced .fgrad{width:46px;height:7px;border-radius:4px;background:linear-gradient(90deg,rgb(237,187,170),rgb(194,58,22));flex:0 0 auto}
+.flow.enhanced .fffn{display:block;font-size:11px;color:var(--muted);margin-top:8px;padding-top:8px;border-top:1px dashed var(--border)}
 @media(max-width:620px){.flow .farr{display:none}}
 .primer{background:var(--ink);color:#DDE0E6;border-radius:12px;padding:16px 18px;margin:18px 0;max-width:74ch;font-size:14.5px}
 .primer b{color:#fff}
@@ -497,15 +533,91 @@ footer a{color:#C9CBD0}
         <div class="st-head"><span class="st-num">00</span><h2>The big picture - the whole transformer in one page</h2></div>
           <p class="lead-in">
             A transformer passes a sequence of numbers through several stages, transforming it step by step until it can predict the next token - and repeats that process for each token it generates. Text becomes tokens, tokens become numbers, those numbers exchange information and get refined many times over, then get turned into a prediction - and the loop repeats. Every stage below answers one question in that process; scaled up and trained on huge amounts of text, it produces surprisingly rich language ability.<b>Click a stage to jump to it.</b></p>
-        <div class="flow">
-          <button class="fstep" type="button" data-target="tokens"><span class="fn">01</span><span class="ft">Tokenise</span><span class="fd">split your text into pieces and give each an ID number</span></button>
+        <div class="flow enhanced">
+          <button class="fstep" type="button" data-target="tokens">
+            <span class="fn" style="color:var(--muted)">in</span><span class="ft">💬 Raw text</span>
+            <span class="fviz"><span class="fraw">"The cat sat on the ___"</span></span>
+          </button>
           <span class="farr">→</span>
-          <button class="fstep" type="button" data-target="embed"><span class="fn">02–03</span><span class="ft">Embed + position</span><span class="fd">turn each piece into a vector of meaning, stamped with its place in the sentence</span></button>
+          <button class="fstep" type="button" data-target="tokens">
+            <span class="fn">01</span><span class="ft">🧩 Tokenise</span><span class="fd">splits the text into pieces and gives each an ID number</span>
+            <span class="fviz ftoks">
+              <span class="ftok"><span class="tchip">The</span><span class="tid">464</span></span>
+              <span class="ftok"><span class="tchip">cat</span><span class="tid">3797</span></span>
+              <span class="fmore">…</span>
+            </span>
+          </button>
           <span class="farr">→</span>
-          <button class="fstep" type="button" data-target="attention"><span class="fn">04–06 · ×N</span><span class="ft">Transformer blocks</span><span class="fd">the core, repeated many times: tokens <b>exchange information</b> with each other, then each is refined on its own</span></button>
+          <button class="fstep" type="button" data-target="embed">
+            <span class="fn" style="color:var(--muted)">note</span><span class="ft">📦 Context window <span style="font-weight:400;font-size:11px;color:var(--muted)">(e.g. 8 tokens)</span></span><span class="fd">holds a fixed number of tokens - 5 used here, 3 free</span>
+            <span class="fviz fchips">
+              <span class="fchip" style="background:#FDE9E0;color:#C23A16;border-color:#C23A16">The</span>
+              <span class="fchip" style="background:#E4EEF9;color:#0B5CB8;border-color:#0B5CB8">cat</span>
+              <span class="fchip" style="background:#EAE7DF;color:#4A4D52;border-color:#4A4D52">sat</span>
+              <span class="fchip" style="background:#FFEFE9;color:#C23A16;border-color:#C23A16">on</span>
+              <span class="fchip" style="background:#E4EEF9;color:#0B5CB8;border-color:#0B5CB8">the</span>
+              <span class="fslot"></span><span class="fslot"></span><span class="fslot"></span>
+            </span>
+          </button>
           <span class="farr">→</span>
-          <button class="fstep" type="button" data-target="output"><span class="fn">08</span><span class="ft">Predict next word</span><span class="fd">score every possible token, pick one, add it - then loop back and do it all again</span></button>
+          <div class="inside-transformer">
+            <span class="inside-lab">Inside the transformer</span>
+            <div class="inside-row">
+          <button class="fstep" type="button" data-target="embed">
+            <span class="fn">02–03</span><span class="ft">🗺️ Embed + position</span><span class="fd">turns each token into a vector of meaning, stamped with its place in the sentence</span>
+            <span class="fviz femb">
+              <span class="fchip" style="background:#E4EEF9;color:#0B5CB8;border-color:#0B5CB8">cat</span>
+              <span class="farr-mini">→</span>
+              <span class="fdimrow">
+                <span class="fdim" style="background:rgb(255,255,255);border:1px solid #eee"></span>
+                <span class="fdim" style="background:rgb(59,69,83)"></span>
+                <span class="fdim" style="background:rgb(253,201,186)"></span>
+                <span class="fdim" style="background:rgb(200,203,207)"></span>
+                <span class="fdim" style="background:rgb(252,173,151)"></span>
+                <span class="fdim" style="background:rgb(250,111,72)"></span>
+                <span class="fdim" style="background:rgb(250,94,50)"></span>
+                <span class="fdim" style="background:rgb(127,134,143)"></span>
+              </span>
+            </span>
+          </button>
+          <span class="farr">→</span>
+          <button class="fstep ftrans" type="button" data-target="attention">
+            <span class="fn">04–06 · ×N</span><span class="ft">🗣️ Transformer blocks</span><span class="fd">every token looks at every other token <em>at once</em> (attention), then each is refined individually using patterns learned in training (feed-forward)</span>
+            <span class="fviz">
+              <svg class="farcs" viewBox="0 0 204 90" width="100%" height="90" role="img" aria-label="Diagram: five word boxes - The, cat, sat, on, the - processed together, every one connected to at least one neighbour by an arc, darker and taller arcs showing stronger relationships: cat-sat strongest, on-sat moderate, The-cat and the-on weaker">
+                <path d="M23,54 Q43,40 63,54" fill="none" stroke="rgb(231,167,147)" stroke-width="2.0" stroke-linecap="round"/>
+                <path d="M63,54 Q82,18 101,54" fill="none" stroke="rgb(209,104,75)" stroke-width="3.4" stroke-linecap="round"/>
+                <path d="M101,54 Q120,36 139,54" fill="none" stroke="rgb(225,149,127)" stroke-width="2.4" stroke-linecap="round"/>
+                <path d="M139,54 Q159,44 179,54" fill="none" stroke="rgb(237,187,170)" stroke-width="1.6" stroke-linecap="round"/>
+                <rect x="8" y="54" width="30" height="26" rx="6" fill="#FDE9E0" stroke="#C23A16" stroke-width="1.3"/>
+                <text x="23" y="71" font-family="IBM Plex Mono,ui-monospace,Menlo,Consolas,monospace" font-size="10.5" fill="#C23A16" text-anchor="middle">The</text>
+                <rect x="48" y="54" width="30" height="26" rx="6" fill="#E4EEF9" stroke="#0B5CB8" stroke-width="1.3"/>
+                <text x="63" y="71" font-family="IBM Plex Mono,ui-monospace,Menlo,Consolas,monospace" font-size="10.5" fill="#0B5CB8" text-anchor="middle">cat</text>
+                <rect x="86" y="54" width="30" height="26" rx="6" fill="#EAE7DF" stroke="#4A4D52" stroke-width="1.3"/>
+                <text x="101" y="71" font-family="IBM Plex Mono,ui-monospace,Menlo,Consolas,monospace" font-size="10.5" fill="#4A4D52" text-anchor="middle">sat</text>
+                <rect x="124" y="54" width="30" height="26" rx="6" fill="#FFEFE9" stroke="#C23A16" stroke-width="1.3"/>
+                <text x="139" y="71" font-family="IBM Plex Mono,ui-monospace,Menlo,Consolas,monospace" font-size="10.5" fill="#C23A16" text-anchor="middle">on</text>
+                <rect x="162" y="54" width="34" height="26" rx="6" fill="#E4EEF9" stroke="#0B5CB8" stroke-width="1.3"/>
+                <text x="179" y="71" font-family="IBM Plex Mono,ui-monospace,Menlo,Consolas,monospace" font-size="10.5" fill="#0B5CB8" text-anchor="middle">the</text>
+              </svg>
+              <span class="flegend"><span>weaker link</span><span class="fgrad"></span><span>stronger link</span></span>
+              <span class="fffn">🏦 then each token is refined on its own, deepening its meaning</span>
+            </span>
+          </button>
+          <span class="farr">→</span>
+          <button class="fstep" type="button" data-target="output">
+            <span class="fn">08</span><span class="ft">🎲 Predict next token</span><span class="fd">every token in the vocabulary scored, top one usually picked</span>
+            <span class="fviz fbars">
+              <span class="fbar-row"><span class="bw">mat</span><span class="fbar-wrap"><span class="fbar" style="width:61%"></span></span><span class="bp">61%</span></span>
+              <span class="fbar-row"><span class="bw">rug</span><span class="fbar-wrap"><span class="fbar" style="width:14%"></span></span><span class="bp">14%</span></span>
+              <span class="fbar-row"><span class="bw">floor</span><span class="fbar-wrap"><span class="fbar" style="width:6%"></span></span><span class="bp">6%</span></span>
+              <span class="frest">… and every other word in the vocabulary, all scored</span>
+            </span>
+          </button>
+            </div>
+          </div>
         </div>
+        <p class="tierline" style="margin-top:10px">🔵 <b>Illustrative</b> - a simplified map of the whole pipeline; the token IDs, attention weights and prediction percentages shown here are illustrative, not computed from your sentence (the real, live version of each step is further down the page).</p>
         <p class="note" style="margin-top:2px">↩︎ That last step loops: each new token is fed back in to predict the next. That's the entire generation loop: predict one token, append it, then repeat.</p>
         <details class="primer">
           <summary><span class="k">Worth knowing before you start</span></summary>
