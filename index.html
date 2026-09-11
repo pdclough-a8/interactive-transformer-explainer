@@ -2097,7 +2097,7 @@ function rerender(){
   S.toks=toks;S.ids=ids;
   S.embs=S.toks.slice(0,MAX).map(t=>embed(displayTok(t)));
   renderTokens();renderPosSum();
-  S.attn=computeAttn();renderAttnHeat();el("attn-focus").hidden=true;renderAttnArcs();
+  S.attn=computeAttn();renderAttnHeat();el("attn-focus").hidden=true;renderAttnArcs();updatePronounSwapBtn();
   renderHeads();resetGen();
   renderMatrix();renderSizes();
   /* update handoff panels */
@@ -2147,18 +2147,22 @@ el("mask-toggle").addEventListener("click",()=>{
   renderAttnHeat();el("attn-focus").hidden=true;
 });
 let pronounSwapSaved=null;
+const PRONOUN_RE=/\b(she|he|they|him|her|his|their)\b/i;
+function updatePronounSwapBtn(){
+  const btn=el("pronoun-swap-btn");if(!btn||pronounSwapSaved!==null)return;
+  btn.textContent=PRONOUN_RE.test(el("sentence").value)?'🔁 Do it for me - swap the pronoun → "it"':'🔁 No pronoun in this sentence - try it on the pronoun example →';
+}
 el("pronoun-swap-btn").addEventListener("click",()=>{
   const inp=el("sentence"),btn=el("pronoun-swap-btn");
   if(pronounSwapSaved===null){
     let text=inp.value;
-    if(!/\bshe\b/i.test(text))text=inp.defaultValue;
+    if(!PRONOUN_RE.test(text))text=inp.defaultValue;
     pronounSwapSaved=text;
-    inp.value=text.replace(/\bshe\b/i,"it");
-    btn.textContent='↩ Swap back to "she"';
+    inp.value=text.replace(PRONOUN_RE,"it");
+    btn.textContent='↩ Swap back';
   }else{
     inp.value=pronounSwapSaved;
     pronounSwapSaved=null;
-    btn.textContent='🔁 Do it for me - swap "she" → "it"';
   }
   rerender();
 });
