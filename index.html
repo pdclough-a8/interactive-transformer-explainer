@@ -880,6 +880,7 @@ footer a{color:#C9CBD0}
             <p class="tierline" style="margin-top:0">🔵 <b>Illustrative</b> - a readable stand-in blending three real tendencies (similar meanings attract, recent neighbours matter, pronouns lean toward what they refer to); not a trained model's actual attention weights, which are learned from data and often far less tidy.</p>
             <p class="note">Each <b>row</b> is a token doing the looking; each <b>column</b> is a token being looked at. Darker = more attention. The grey top-right is the <b>causal mask</b> (no peeking ahead). <b>Click a row label</b> to see where that token looks.</p>
             <p class="note"><b>Try it:</b> change "she" to "it" in the sentence above and watch that row's target shift from "engineer" to "design" - that's the model resolving what a pronoun refers to, live.</p>
+            <div class="actions" style="margin-top:6px"><button class="ghost" id="pronoun-swap-btn">🔁 Do it for me - swap "she" → "it"</button></div>
             <div class="heat-wrap"><div class="heat" id="attn-heat"></div></div>
             <div class="legend"><span>less</span><span class="grad"></span><span>more attention</span></div>
             <div class="attn-focus" id="attn-focus" hidden><div class="af-title" id="af-title"></div><div class="af-tokens" id="af-tokens"></div></div>
@@ -2144,6 +2145,22 @@ el("mask-toggle").addEventListener("click",()=>{
   el("mask-toggle").textContent=S.maskOff?"🔒 Turn the causal mask back on":"🔓 Turn off the causal mask";
   el("mask-note").hidden=!S.maskOff;
   renderAttnHeat();el("attn-focus").hidden=true;
+});
+let pronounSwapSaved=null;
+el("pronoun-swap-btn").addEventListener("click",()=>{
+  const inp=el("sentence"),btn=el("pronoun-swap-btn");
+  if(pronounSwapSaved===null){
+    let text=inp.value;
+    if(!/\bshe\b/i.test(text))text=inp.defaultValue;
+    pronounSwapSaved=text;
+    inp.value=text.replace(/\bshe\b/i,"it");
+    btn.textContent='↩ Swap back to "she"';
+  }else{
+    inp.value=pronounSwapSaved;
+    pronounSwapSaved=null;
+    btn.textContent='🔁 Do it for me - swap "she" → "it"';
+  }
+  rerender();
 });
 el("emb-find").addEventListener("click",()=>findNeighbours(el("emb-word").value));
 el("emb-word").addEventListener("keydown",e=>{if(e.key==="Enter")findNeighbours(el("emb-word").value);});
