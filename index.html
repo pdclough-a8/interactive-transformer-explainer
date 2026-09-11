@@ -798,7 +798,7 @@ footer a{color:#C9CBD0}
           <p class="tierline tier-simplified">🟡 <b>Simplified</b> - a real formula used by LLMs, computed live, with fewer dimensions and positions shown than a full-scale model, to keep it readable.</p>
           <div class="posviz">
             <div class="col">
-              <p class="note" style="margin-top:0"><b>Every position gets a unique stripe.</b> Rows are positions 0–9, columns are dimensions. Nearby positions look similar; distant ones don't.</p>
+              <p class="note" style="margin-top:0"><b>Every position gets a unique stripe.</b> Rows are the positions in your sentence, columns are dimensions. Nearby positions look similar; distant ones don't.</p>
               <div class="heat-wrap"><div class="heat" id="pos-heat"></div></div>
             </div>
             <div class="col">
@@ -1631,7 +1631,8 @@ function showAnalogy(){
 /* ---------- 3 position ---------- */
 function renderPosHeat(){
   const host=el("pos-heat");host.innerHTML="";host.style.gridTemplateColumns=`40px repeat(${D},19px)`;
-  for(let p=0;p<10;p++){
+  const n=Math.max(1,Math.min(S.toks.length,MAX));
+  for(let p=0;p<n;p++){
     const l=document.createElement("span");l.className="hlab";l.style.width="40px";l.textContent="p"+p;host.appendChild(l);
     const v=posEnc(p);
     for(let d=0;d<D;d++){const c=document.createElement("span");c.className="hcell";c.style.width="19px";c.style.height="19px";c.style.background=valColor(v[d]);host.appendChild(c);}
@@ -2096,7 +2097,7 @@ function rerender(){
   const {toks,ids}=tokenize(text);
   S.toks=toks;S.ids=ids;
   S.embs=S.toks.slice(0,MAX).map(t=>embed(displayTok(t)));
-  renderTokens();renderPosSum();
+  renderTokens();renderPosHeat();renderPosSum();
   S.attn=computeAttn();renderAttnHeat();el("attn-focus").hidden=true;renderAttnArcs();updatePronounSwapBtn();
   renderHeads();resetGen();
   renderMatrix();renderSizes();
@@ -2155,9 +2156,8 @@ function updatePronounSwapBtn(){
 el("pronoun-swap-btn").addEventListener("click",()=>{
   const inp=el("sentence"),btn=el("pronoun-swap-btn");
   if(pronounSwapSaved===null){
-    let text=inp.value;
-    if(!PRONOUN_RE.test(text))text=inp.defaultValue;
-    pronounSwapSaved=text;
+    pronounSwapSaved=inp.value;
+    const text=PRONOUN_RE.test(inp.value)?inp.value:inp.defaultValue;
     inp.value=text.replace(PRONOUN_RE,"it");
     btn.textContent='↩ Swap back';
   }else{
