@@ -1115,11 +1115,11 @@ footer a{color:#C9CBD0}
           </div>
           <div class="demo">
             <div class="demo-lab">Live - generate, one word at a time</div>
-            <p class="tierline tier-simplified">🟡 <b>Simplified</b> - real trigram statistics, counted from an actual training corpus (~350 sentences); same score → soften → sample mechanism as a real model, on a tiny fraction of the data.</p>
-            <p class="note" style="margin-top:0">This toy model only knows sentences about a handful of everyday topics: <b>office work</b> (reports, clients, projects), <b>weather and commuting</b> (trains, snow, delays), <b>plants and photosynthesis</b>, <b>home and family life</b>, <b>food</b>, <b>technology</b>, <b>school</b>, <b>sport</b>, <b>travel</b>, <b>health</b>, <b>shopping</b>, <b>entertainment</b> and <b>animals</b>. A sentence in one of those areas is far more likely to get a sensible-looking prediction than something further afield.</p>
+            <p class="tierline tier-simplified">🟡 <b>Simplified</b> - real trigram statistics, counted from an actual training corpus (~480 sentences); same score → soften → sample mechanism as a real model, on a tiny fraction of the data.</p>
+            <p class="note" style="margin-top:0">This toy model only knows sentences about a handful of everyday topics: <b>office work</b> (reports, clients, projects), <b>weather and commuting</b> (trains, snow, delays), <b>plants and photosynthesis</b>, <b>home and family life</b>, <b>food</b>, <b>technology</b>, <b>school</b>, <b>sport</b>, <b>travel</b>, <b>health</b>, <b>shopping</b>, <b>entertainment</b> and <b>animals</b> - plus, handily, <b>the explanations on this page itself</b>. A sentence in one of those areas, or copied from a paragraph you've just read above, is far more likely to get a sensible-looking prediction than something further afield.</p>
             <div class="gen-line" id="gen-line"></div>
             <div class="slider-row" style="max-width:480px"><label for="temp-slider">Temperature</label><input type="range" id="temp-slider" min="0.1" max="1.5" value="0.3" step="0.1"><span class="sval" id="temp-sval">0.3</span></div>
-            <p class="note" style="margin-top:2px">Candidate next words and their probabilities. This is a small <span class="term" data-def="An n-gram model predicts the next word from the previous few words by counting how often sequences appeared in its training text. This one is a trigram model - it looks at the previous two words." role="button" tabindex="0">trigram model</span> trained on a sample of ~350 sentences - tiny next to a real model (which scores ~100,000 candidates using the whole sentence), but it shows the same mechanism:</p>
+            <p class="note" style="margin-top:2px">Candidate next words and their probabilities. This is a small <span class="term" data-def="An n-gram model predicts the next word from the previous few words by counting how often sequences appeared in its training text. This one is a trigram model - it looks at the previous two words." role="button" tabindex="0">trigram model</span> trained on a sample of ~480 sentences - tiny next to a real model (which scores ~100,000 candidates using the whole sentence), but it shows the same mechanism:</p>
             <p class="note" id="lm-weak-note" style="margin-top:2px;color:var(--orange-deep)" hidden>⚠️ This exact phrasing hasn't been seen in the tiny training corpus, so these candidates are mostly generic word frequency, not a real contextual prediction - try a sentence closer to the topics above for a cleaner example.</p>
             <div class="prob-list" id="prob-list"></div>
             <div class="actions">
@@ -2182,6 +2182,128 @@ She tried to stay calm while she waited for the results.
 They managed to book the last two seats on the train.
 He continued to practise even after the coach had gone home.
 She began to feel more confident with every passing week.
+A transformer passes a sequence of numbers through several stages, transforming it step by step until it can predict the next token - and repeats that process for each token it generates.
+Text becomes tokens, tokens become numbers, those numbers exchange information and get refined many times over, then get turned into a prediction - and the loop repeats.
+Every stage below answers one question in that process; scaled up and trained on huge amounts of text, it produces surprisingly rich language ability.
+Click a stage to jump to it.
+A model can't read words directly.
+First it segments your text into tokens - usually whole words, sometimes pieces of words or punctuation - and swaps each for an ID number from a fixed dictionary.
+An ID like 8417 means nothing on its own.
+Tokens used alike end up with similar numbers - not because anyone told the model what they mean, but because usage is a strong clue to it.
+From a list to a grid.
+These per-token vectors stack into a matrix - one row per token, one column per dimension.
+So your sentence becomes a tall grid of numbers, not a short list.
+The model's own "knowledge" is likewise huge matrices of weights - running text through a transformer means these matrices being multiplied together, layer after layer.
+A problem: the model looks at all tokens at once, not left to right.
+Without help it couldn't tell "dog bites man" from "man bites dog".
+The fix: blend a position signal into each token, so every vector also carries "I'm token #3".
+More formally referred to as self-attention, this is a key feature of transformer and enables it to capature relationships among tokens in a sequence, so that the representation of each token is influenced by the others.
+The embedding represents each token's meaning, but we want to consider it within the context of the sequence.
+Attention helps the model with generating more accurate next word predictions.
+For every token the model asks: which other tokens matter for understanding me? - then exchanges information with those tokens, weighted by relevance.
+That's how "she" can pull meaning from whoever she refers to.
+One rule on this: a GPT-style model only ever looks backwards - a token can pull from itself and everything before it, never from what comes later (more on why, below).
+Every token needs to do two different jobs at once: ask what it needs from others, and advertise what it offers others.
+Asking and advertising aren't the same thing, so the model keeps them separate - plus a third role for the actual content that gets shared once a match is found.
+This is achieved using Query, Key and Value vectors.
+Recap: in the last step, each token compared its Query against every other token's Key, then blended in their Values by how well those matched - that's one attention pattern.
+Heads means running that same matching process several times at once, each one picking up on different kinds of relationships - grammar, references, the previous token - before the results are combined.
+Attention is only half a transformer block.
+That's the job of the feed-forward network: a small network whose weights were fixed during training and never change afterwards.
+Every token's vector passes through that same fixed function - only the vector changes, not the network itself.
+Recap: each block you've seen so far does two things - tokens exchange information (attention), then each one is refined using patterns the model learned in training (feed-forward).
+Now that whole block repeats - dozens of times.
+As a rough tendency, earlier layers often capture more surface-level patterns, while later layers build richer contextual representations.
+After the final layer, the model scores every token in its vocabulary for how well it fits next, turns those scores into probabilities that add up to 100%, and picks one - usually with a little randomness.
+It adds that token and runs the whole thing again.
+That loop, one token at a time, is text generation.
+(The demo below sometimes says "word" for readability, since its toy model works on whole words - but a real model, and everything else on this page, works in tokens.).
+Everything so far assumed the weights were already good.
+They aren't, to start with - they're random.
+Training is the loop that fixes that: show the model real text, ask it to predict the next token, measure how wrong it was (the loss ), and nudge every weight a tiny bit to be less wrong next time.
+Repeat billions of times.
+This stage - turning a raw predictor into an assistant via instruction fine-tuning, learning from human feedback, and reasoning training - is itself a further round of training.
+Everything on this page so far produces a model that is very good at one thing: completing text.
+Given "The capital of France is", it will most likely say "Paris".
+But it has no particular reason to be helpful, accurate, or safe - it will just as readily complete "How do I..." by continuing the pattern of text it has seen.
+Turning that raw text-completer into an assistant like Claude, ChatGPT or Gemini takes further rounds of training on top.
+All of it still uses next-token prediction - what changes is the training signal.
+However it was trained, everything on this page still produces a model that only does one thing: predict the next token from whatever text is sitting in its context window.
+It can't fetch a webpage, run code, remember yesterday's conversation, or know about anything after its training cut-off.
+Closing those gaps isn't done by training the model differently - it's done by building a system around it that changes what goes into the context window, and what happens with what comes out.
+The core ideas behind a transformer - each linked back to where it appears above.
+It helps to know why this design exists.
+Before 2017, language AI mostly used networks that read text one token at a time, in order (RNNs and LSTMs).
+Two problems dogged them: reading in sequence was slow to train, and they were forgetful - by the end of a long paragraph they'd lost track of the start.
+If you'd like to go deeper, these are some of the clearest resources out there, roughly from gentlest to most hands-on.
+They open in a new tab.
+Think of it like this: a fixed box of building bricks (around 100,000 of them).
+Any sentence ever written can be snapped together from those bricks.
+Rare or invented words just get built from several smaller bricks.
+Think of it like this: every token gets a location on a map - except the map has hundreds of dimensions, not two.
+Distance means "used in similar ways," and directions can carry relationships (the classic word-embedding example: king − man + woman ≈ queen ).
+It's a genuinely useful map - but it's a map of usage patterns, not a dictionary of meaning: a token's embedding alone is just a starting point, refined per-sentence once attention gets hold of it.
+Think of it like this: numbered tickets at a deli counter.
+Everyone's visible at once, but each ticket keeps the order straight.
+Think of it like this: a meeting where every token interviews every other.
+Each asks a question ( query ), each advertises what it offers ( key ), and the best matches exchange their content ( value ).
+Strong matches get more airtime.
+Watch what happens: every grey "×" cell just turned into a real number - each row can now pull attention from words that come after it, something a real GPT-style model is never allowed to do.
+That's exactly the shortcut training has to prevent: if a model predicting the next word could already see it sitting a few cells to the right, it would learn to copy, not predict.
+Think of it like this: a team of specialists reading the same sentence - a grammarian, a fact-checker, a continuity editor.
+Each highlights different links; the final read merges them all.
+The feed-forward network appears to play a similar role for much of what the model has learned - though it's not the only place knowledge lives in the model.
+Think of it like this: editing a photo through repeated sharpening passes.
+The first pass cleans up rough edges; the next brings out texture; a later one sharpens fine detail that only shows up once earlier passes are done.
+A transformer does the same to its numbers, a dozen or more times over.
+Variable input, fixed output.
+The context window is a maximum, not a requirement.
+You can feed the model a single token or fill it to the limit - the transformer handles whatever length you give it, up to that ceiling.
+During generation, the input starts at the length of your prompt and grows by one token each step.
+The output, by contrast, is always the same fixed size: a probability score for every single token in the vocabulary - around 100,000 numbers, every time, regardless of how long the input was.
+That asymmetry is easy to miss: the context window is a cap on what goes in, not a fixed frame that must be filled.
+Think of it like this: a weighted raffle.
+Every candidate token gets tickets in proportion to how well it fits.
+The temperature dial sets fairness - low gives nearly all tickets to the favourite (predictable), high spreads them wide (creative, or chaotic).
+Think of it like this: guess the next token with the answer covered, uncover it, and adjust.
+One example barely moves anything; trillions of examples turn random noise into fluent language.
+Think of it like this: pre-training is like reading every book ever written, absorbing patterns and facts with no goal beyond predicting the next word.
+The stages below are an apprenticeship - first studying worked examples of ideal behaviour, then receiving feedback on your own attempts, until good behaviour is reliable.
+Think of it like this: imagine training a new colleague in two steps.
+First, show them a folder of ideal responses so they understand the format.
+Then have a manager give feedback - "that was better, that was worse" - until good behaviour is consistent.
+Learning from human feedback is that feedback loop, run millions of times, with the reward model standing in for the manager.
+None of this is a bug to train away - it's what a next-token predictor is.
+Fixing it means building tools, memory and checks around the model, not training it further.
+Think of it like this: the model is a brain in a jar - remarkably capable at language and pattern-matching, but with no eyes, hands or memory of its own.
+Everything below is the body built around that brain: eyes that can look things up (retrieval), hands that can take action (tools), and memory that persists (sessions).
+Bottom line: from here on the model never sees characters - only a list of ID numbers.
+Bottom line: embeddings give the model a numerical sense of meaning - before any context is considered.
+Bottom line: every token now knows both what it means and where it sits.
+Bottom line: attention is the information-exchange step - tokens pull in relevant information from each other.
+After this, "bank" in river bank and savings bank carries different meaning, borrowed from its neighbours.
+Bottom line: many heads let the model track many relationships in the same sentence at the same time.
+Bottom line: stacking blocks lets the model build increasingly rich, abstract representations of the input, layer by layer.
+Bottom line: at its core, a language model is trained to do one thing - predict the next token.
+Everything else - conversation, tool use, reasoning - emerges from repeating and scaffolding that one step.
+Bottom line: training is just next-token prediction plus a nudge, repeated at enormous scale until the random weights become knowledge.
+Bottom line: a pre-trained transformer is a text completer.
+Instruction fine-tuning teaches it to answer rather than continue.
+Learning from human feedback shapes how it answers.
+Reasoning training teaches some models to work through hard problems step by step.
+Same architecture, same next-token prediction throughout - only the training signal changes.
+Bottom line: RAG, tools, memory and orchestration don't make the model smarter - they give a frozen, otherwise-limited text predictor access to real information, real actions and real memory.
+That's one useful way to think about the difference between an LLM and the agentic applications built on top of it.
+The one-line history: old models read token-by-token and forgot; the transformer reads everything at once and exchanges information freely - and that changed everything.
+Every token is simultaneously asking, advertising and ready to share.
+To score a match, the model compares one token's Query with another's Key - a dot product, giving a single "how well do these fit?" number.
+Softmax turns all of a token's match scores into percentages that add up to 100% - then those percentages decide how much of everyone's Value gets blended in: a strong match contributes a lot, a weak one barely any.
+How big is "astronomical"?
+Today's frontier models are trained on trillions of tokens and carry hundreds of billions of parameters.
+But a model trained only on examples can still be unreliable in subtle ways: confidently wrong, inconsistently helpful, occasionally producing content nobody wanted.
+That's where the second stage comes in.
+Nothing changes about the model itself between the last two tiers.
+Every enhancement below works by shaping what enters the context window before generation, or by acting on what comes out after it.
 `;
 const TRI={},BI={},UNI={};
 (function buildLM(){
