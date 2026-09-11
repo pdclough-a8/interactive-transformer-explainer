@@ -788,7 +788,7 @@ footer a{color:#C9CBD0}
         <p class="lead-in">A problem: the model looks at all tokens <b>at once</b>, not left to right. Without help it couldn't tell <i>“dog bites man”</i> from <i>“man bites dog”</i>. The fix: blend a <span class="term" data-def="Positional encoding: extra numbers added to each token so the model knows where it sits in the sentence." data-term="positional encoding">position signal</span> into each token, so every vector also carries “I'm token #3”.</p>
         <div class="analogy"><span>🎫</span><span><b>Think of it like this:</b> numbered tickets at a deli counter. Everyone's visible at once, but each ticket keeps the order straight.</span></div>
         <div class="tech-block"><span class="tb-lab">Technical layer</span>
-          <p>The original paper used fixed sinusoids - a sine and cosine wave at a different frequency for each dimension. Because every dimension oscillates at its own rate, the combination at any given position is unique, so each position ends up with its own fingerprint. Modern models often use learned positions instead, or a newer scheme called rotary embeddings (<code>RoPE</code>).</p>
+          <p>The original paper used fixed sinusoids - a sine and cosine wave at a different frequency for each dimension. Because every dimension oscillates at its own rate, the combination at any given position is unique, so each position ends up with its own fingerprint. Modern models often use learned positions instead, or a newer scheme called rotary embeddings (<a href="https://blog.eleuther.ai/rotary-embeddings/" target="_blank" rel="noopener"><code>RoPE</code></a>).</p>
         </div>
         <div class="demo">
           <div class="demo-lab">Live - position fingerprints</div>
