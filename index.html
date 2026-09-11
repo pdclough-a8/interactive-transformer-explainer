@@ -233,7 +233,7 @@ details.demo>.demo-body{padding:0 22px 22px}
 .slider-row label{font-size:13.5px;font-weight:600;white-space:nowrap}
 input[type=range]{flex:1;accent-color:var(--orange);min-width:130px}
 .sval{font-family:var(--mono);font-size:13px;font-weight:600;min-width:52px;text-align:right}
-.sumviz{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.sumviz{display:flex;flex-direction:column;gap:8px;margin-top:8px;overflow-x:auto;padding-bottom:4px}
 
 /* block diagram */
 .block-diagram{display:flex;flex-direction:column;align-items:center;margin:16px auto;max-width:340px}
@@ -708,8 +708,13 @@ footer a{color:#C9CBD0}
           <p class="tierline tier-real" id="tok-tier">🟢 <b>Real</b> - checking for a live connection to OpenAI's tokeniser…</p>
           <div class="tok-row" id="tok-display"></div>
           <p class="note" id="tok-count"></p>
-          <p class="note">Want to try it on your own text? <a href="https://tiktokenizer.vercel.app/" target="_blank" rel="noopener">TikTokenizer</a> is a free interactive tokeniser that shows the same splits, live.</p>
         </div>
+        <details class="qpop">
+          <summary><span>🔗</span> Try tokenising your own text</summary>
+          <div class="qpop-body">
+            <p>Want to try it on your own text? <a href="https://tiktokenizer.vercel.app/" target="_blank" rel="noopener">TikTokenizer</a> is a free interactive tokeniser that shows the same splits, live.</p>
+          </div>
+        </details>
         <div class="mode-note wt-note only-train"><span class="tag">While training</span> The tokeniser is built once, up front, from large collections of text - then frozen. Training never changes how text is split; it only changes what the model does with the tokens afterwards.</div>
         <div class="only-tech">
         <details class="qpop">
@@ -783,9 +788,7 @@ footer a{color:#C9CBD0}
         <p class="lead-in">A problem: the model looks at all tokens <b>at once</b>, not left to right. Without help it couldn't tell <i>“dog bites man”</i> from <i>“man bites dog”</i>. The fix: blend a <span class="term" data-def="Positional encoding: extra numbers added to each token so the model knows where it sits in the sentence." data-term="positional encoding">position signal</span> into each token, so every vector also carries “I'm token #3”.</p>
         <div class="analogy"><span>🎫</span><span><b>Think of it like this:</b> numbered tickets at a deli counter. Everyone's visible at once, but each ticket keeps the order straight.</span></div>
         <div class="tech-block"><span class="tb-lab">Technical layer</span>
-          <p>The original paper used fixed sinusoids:</p>
-          <span class="formula">PE(pos,2i)=sin(pos/10000^(2i/d)) · PE(pos,2i+1)=cos(pos/10000^(2i/d))</span>
-          <p>Each dimension oscillates at its own frequency, giving every position a unique fingerprint. Modern models often use learned positions or rotary embeddings (<code>RoPE</code>).</p>
+          <p>The original paper used fixed sinusoids - a sine and cosine wave at a different frequency for each dimension. Because every dimension oscillates at its own rate, the combination at any given position is unique, so each position ends up with its own fingerprint. Modern models often use learned positions instead, or a newer scheme called rotary embeddings (<code>RoPE</code>).</p>
         </div>
         <div class="demo">
           <div class="demo-lab">Live - position fingerprints</div>
