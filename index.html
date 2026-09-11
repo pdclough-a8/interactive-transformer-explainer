@@ -788,7 +788,7 @@ footer a{color:#C9CBD0}
       <!-- 3 POSITION -->
       <section class="station" id="position">
         <div class="st-head"><span class="st-num">03</span><h2>Position - keep track of word order</h2></div>
-        <p class="lead-in">A problem: the model looks at all tokens <b>at once</b>, not left to right. Without help it couldn't tell <i>“dog bites man”</i> from <i>“man bites dog”</i>. The fix: blend a <span class="term" data-def="Positional encoding: extra numbers added to each token so the model knows where it sits in the sentence." data-term="positional encoding">position signal</span> into each token, so every vector also carries “I'm token #3”.</p>
+        <p class="lead-in">A problem: the model looks at all tokens <b>at once</b>, not left to right. Without help it couldn't tell <i>“dog bites man”</i> from <i>“man bites dog”</i>. The fix: blend a <span class="term" data-def="Positional encoding: extra numbers added to each token so the model knows where it sits in the sentence." data-term="positional encoding">position signal</span> into each token, so each one also carries its own position - e.g. the 4th token's vector carries something like “I'm token #3” (counting from 0).</p>
         <div class="analogy"><span>🎫</span><span><b>Think of it like this:</b> numbered tickets at a deli counter. Everyone's visible at once, but each ticket keeps the order straight.</span></div>
         <div class="tech-block"><span class="tb-lab">Technical layer</span>
           <p>The original paper used fixed sinusoids - a sine and cosine wave at a different frequency for each dimension. Because every dimension oscillates at its own rate, the combination at any given position is unique, so each position ends up with its own fingerprint. Modern models often use learned positions instead, or a newer scheme called rotary embeddings (<a href="https://blog.eleuther.ai/rotary-embeddings/" target="_blank" rel="noopener"><code>RoPE</code></a>).</p>
@@ -2196,7 +2196,7 @@ So your sentence becomes a tall grid of numbers, not a short list.
 The model's own "knowledge" is likewise huge matrices of weights - running text through a transformer means these matrices being multiplied together, layer after layer.
 A problem: the model looks at all tokens at once, not left to right.
 Without help it couldn't tell "dog bites man" from "man bites dog".
-The fix: blend a position signal into each token, so every vector also carries "I'm token #3".
+The fix: blend a position signal into each token, so each one also carries its own position - e.g. the 4th token's vector carries something like "I'm token #3" (counting from 0).
 More formally referred to as self-attention, this is a key feature of transformer and enables it to capature relationships among tokens in a sequence, so that the representation of each token is influenced by the others.
 The embedding represents each token's meaning, but we want to consider it within the context of the sequence.
 Attention helps the model with generating more accurate next word predictions.
