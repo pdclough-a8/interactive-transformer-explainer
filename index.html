@@ -879,9 +879,12 @@ footer a{color:#C9CBD0}
           <div class="demo-body">
             <p class="tierline" style="margin-top:0">🔵 <b>Illustrative</b> - a readable stand-in blending three real tendencies (similar meanings attract, recent neighbours matter, pronouns lean toward what they refer to); not a trained model's actual attention weights, which are learned from data and often far less tidy.</p>
             <p class="note">Each <b>row</b> is a token doing the looking; each <b>column</b> is a token being looked at. Darker = more attention. The grey top-right is the <b>causal mask</b> (no peeking ahead). <b>Click a row label</b> to see where that token looks.</p>
+            <p class="note"><b>Try it:</b> change "she" to "he" or "they" in the sentence above and watch which row lights up differently - that's the model resolving who a pronoun refers to, live.</p>
             <div class="heat-wrap"><div class="heat" id="attn-heat"></div></div>
             <div class="legend"><span>less</span><span class="grad"></span><span>more attention</span></div>
             <div class="attn-focus" id="attn-focus" hidden><div class="af-title" id="af-title"></div><div class="af-tokens" id="af-tokens"></div></div>
+            <div class="actions" style="margin-top:12px"><button class="ghost" id="mask-toggle">🔓 Turn off the causal mask</button></div>
+            <div class="analogy" id="mask-note" style="margin-top:10px" hidden><span>⚠️</span><span><b>Watch what happens:</b> every grey “×” cell just turned into a real number - each row can now pull attention from words that come <i>after</i> it, something a real GPT-style model is never allowed to do. That's exactly the shortcut training has to prevent: if a model predicting the next word could already see it sitting a few cells to the right, it would learn to copy, not predict.</span></div>
           </div>
         </details>
         <div class="mode-note wt-note only-train"><span class="tag">While training</span> The query/key/value projections are just more weights, starting random. Training tunes them until useful patterns emerge - heads that link pronouns to names, track grammar, or copy earlier text.</div>
@@ -1108,7 +1111,7 @@ footer a{color:#C9CBD0}
               <button class="ghost" id="btn-auto">Auto-write to the end</button>
               <button class="ghost" id="btn-reset">Back to my sentence</button>
             </div>
-            <p class="note">Low temperature keeps picking the top bar (predictable); high temperature takes more risks. Because it only remembers the previous two words, it can wander off topic on long runs - a real model tracks the whole passage - but the mechanism, score → soften into probabilities → sample → repeat, is exactly what large models do.</p>
+            <p class="note"><b>Try it:</b> turn the dial down until it always picks the same word (predictable), then turn it up until it starts making strange choices (chaotic). Because it only remembers the previous two words, it can wander off topic on long runs - a real model tracks the whole passage - but the mechanism, score → soften into probabilities → sample → repeat, is exactly what large models do.</p>
           </div>
           <div class="only-tech">
           <details class="qpop">
@@ -1557,7 +1560,7 @@ function valColor(v){ // orange positive, navy negative
 }
 function heatColor(w){const t=Math.max(0,Math.min(1,w));const a=[253,233,224],b=[194,58,22];return `rgb(${Math.round(a[0]+(b[0]-a[0])*t)},${Math.round(a[1]+(b[1]-a[1])*t)},${Math.round(a[2]+(b[2]-a[2])*t)})`;}
 
-const S={toks:[],ids:[],embs:[],attn:[],head:0,gen:[],newN:0,timer:null};
+const S={toks:[],ids:[],embs:[],attn:[],head:0,gen:[],newN:0,timer:null,maskOff:false};
 
 /* ---------- 1 tokens ---------- */
 function renderTokens(){
@@ -1690,6 +1693,17 @@ function computeAttn(mode){
   }
   return rows;
 }
+/* same scoring as the main (unlabelled) head, but with the causal mask removed - lets a token attend forwards too */
+function computeAttnUnmasked(){
+  const n=Math.min(S.toks.length,MAX),rows=[];
+  for(let i=0;i<n;i++){
+    const sc=[];
+    for(let j=0;j<n;j++)sc.push((j===i)?0.55:1.9*cos(S.embs[i],S.embs[j])-0.18*(i-j)+pronounBoost(S.toks[i],S.toks[j],i-j));
+    rows.push(softmax(sc));
+  }
+  return rows;
+}
+function renderAttnHeat(){renderHeat("attn-heat",S.maskOff?computeAttnUnmasked():S.attn,true);}
 function shortTok(t){const s=displayTok(t).trim();return s.length>4?s.slice(0,4):s;}
 /* small live arc diagram: each token's single strongest backward link to a content word, drawn above a row of token boxes */
 function renderAttnArcs(){
@@ -1750,7 +1764,7 @@ function renderHeat(hostId,attn,clickable){
   }
 }
 function renderFocus(i){
-  const a=S.attn;if(!a[i])return;
+  const a=S.maskOff?computeAttnUnmasked():S.attn;if(!a[i])return;
   el("attn-focus").hidden=false;
   el("af-title").innerHTML=`Where <span style="font-family:var(--mono);color:var(--orange-deep)">"${esc(displayTok(S.toks[i]).trim())}"</span> looks (% of attention):`;
   const host=el("af-tokens");host.innerHTML="";
@@ -2071,7 +2085,7 @@ function rerender(){
   S.toks=toks;S.ids=ids;
   S.embs=S.toks.slice(0,MAX).map(t=>embed(displayTok(t)));
   renderTokens();renderPosSum();
-  S.attn=computeAttn();renderHeat("attn-heat",S.attn,true);el("attn-focus").hidden=true;renderAttnArcs();
+  S.attn=computeAttn();renderAttnHeat();el("attn-focus").hidden=true;renderAttnArcs();
   renderHeads();resetGen();
   renderMatrix();renderSizes();
   /* update handoff panels */
@@ -2114,6 +2128,12 @@ el("btn-auto").addEventListener("click",()=>{clearInterval(S.timer);let n=0;S.ti
 document.querySelectorAll("#head-tabs button").forEach(b=>b.addEventListener("click",()=>{
   S.head=+b.dataset.h;document.querySelectorAll("#head-tabs button").forEach(x=>x.setAttribute("aria-selected",String(x===b)));renderHeads();
 }));
+el("mask-toggle").addEventListener("click",()=>{
+  S.maskOff=!S.maskOff;
+  el("mask-toggle").textContent=S.maskOff?"🔒 Turn the causal mask back on":"🔓 Turn off the causal mask";
+  el("mask-note").hidden=!S.maskOff;
+  renderAttnHeat();el("attn-focus").hidden=true;
+});
 el("emb-find").addEventListener("click",()=>findNeighbours(el("emb-word").value));
 el("emb-word").addEventListener("keydown",e=>{if(e.key==="Enter")findNeighbours(el("emb-word").value);});
 el("emb-analogy").addEventListener("click",showAnalogy);
