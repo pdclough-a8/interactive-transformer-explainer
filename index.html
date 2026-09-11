@@ -735,7 +735,7 @@ footer a{color:#C9CBD0}
       <!-- 2 EMBED -->
       <section class="station" id="embed">
         <div class="st-head"><span class="st-num">02</span><h2>Embed - represent each token as a list of numbers</h2></div>
-        <p class="lead-in">An ID like <code>8417</code> means nothing on its own. So each token is swapped for an <b><span class="term" data-def="An embedding is a list of numbers that represents a token as a point in “meaning space”, learned from patterns in how tokens occur in context - not a hand-written definition.">embedding</span></b>: a long list of numbers (vector), learned from the statistical patterns of which tokens tend to occur near which others across huge amounts of text (i.e. are semantically similar). Tokens used alike end up with similar numbers - not because anyone told the model what they mean, but because usage is a strong clue to it.</p>
+        <p class="lead-in">An ID like <code>8417</code> means nothing on its own. So each token is swapped for an <b><span class="term" data-def="An embedding is a list of numbers that represents a token as a point in “meaning space”, learned from patterns in how tokens occur in context - not a hand-written definition.">embedding</span></b>: a long list of numbers, or <span class="term" data-def="A vector is simply a list of numbers. It's the basic unit a transformer stores and moves everything in - a token's meaning, its position, and later its Query, Key and Value roles are all just vectors." role="button" tabindex="0">vector</span>, learned from the statistical patterns of which tokens tend to occur near which others across huge amounts of text (i.e. are semantically similar). Tokens used alike end up with similar numbers - not because anyone told the model what they mean, but because usage is a strong clue to it.</p>
         <div class="analogy"><span>🗺️</span><span><b>Think of it like this:</b> every token gets a location on a map - except the map has hundreds of dimensions, not two. Distance means "used in similar ways," and directions can carry relationships (the classic word-embedding example: <i>king − man + woman ≈ queen</i>). It's a genuinely useful map - but it's a map of usage patterns, not a dictionary of meaning: a token's embedding alone is just a starting point, refined per-sentence once attention gets hold of it.</span></div>
         <p class="lead-in" style="margin-top:20px"><b>From a list to a grid.</b> These per-token vectors stack into a <span class="term" data-def="A matrix is just a grid (table) of numbers, arranged in rows and columns. Almost everything inside a transformer is stored and manipulated as matrices." role="button" tabindex="0">matrix</span> - one row per token, one column per dimension. So your sentence becomes a tall grid of numbers, not a short list. The model's own "knowledge" is likewise huge matrices of <span class="term" data-def="Weights (or parameters) are the adjustable numbers inside the model - what training sets. Frontier models have hundreds of billions." role="button" tabindex="0">weights</span> - running text through a transformer means these matrices being multiplied together, layer after layer.</p>
         <div class="matwrap">
@@ -825,19 +825,32 @@ footer a{color:#C9CBD0}
         <p class="note" style="margin-top:0">"Exchange," "ask," "look" - these are analogies to make the mechanism easy to picture, not literal descriptions. Flip on the technical layer any time you want the exact maths instead of the story.</p>
         <div class="analogy"><span>🗣️</span><span><b>Think of it like this:</b> a meeting where every token interviews every other. Each asks a question (<i>query</i>), each advertises what it offers (<i>key</i>), and the best matches exchange their content (<i>value</i>). Strong matches get more airtime.</span></div>
 
-        <p class="lead-in" style="margin-top:20px"><b>Why three separate roles, not one?</b> Every token needs to do two different jobs at once: <i>ask</i> what it needs from others, and <i>advertise</i> what it offers others. Asking and advertising aren't the same thing, so the model keeps them as separate, smaller vectors - plus a third for the actual content that gets shared once a match is found. That split is what "Query, Key, Value" means:</p>
+        <p class="lead-in" style="margin-top:20px"><b>Every token needs to do two different jobs at once:</b> <i>ask</i> what it needs from others, and <i>advertise</i> what it offers others. Asking and advertising aren't the same thing, so the model keeps them separate - plus a third role for the actual content that gets shared once a match is found. This is achieved using Query, Key and Value <span class="term" data-def="A vector is simply a list of numbers. It's the basic unit a transformer stores and moves everything in - a token's meaning, its position, and here its Query, Key and Value roles, are all just vectors." role="button" tabindex="0">vectors</span>.</p>
+        <div class="only-tech">
         <div class="qkv-grid">
           <div class="qkv q"><div class="rl">Query <span>Q</span></div><div class="dsc">This token's question: “what am I looking for?”</div></div>
           <div class="qkv k"><div class="rl">Key <span>K</span></div><div class="dsc">This token's advert: “here's what I'm about” - checked against everyone's Query.</div></div>
           <div class="qkv v"><div class="rl">Value <span>V</span></div><div class="dsc">This token's actual content - only handed over to whoever's Query matched.</div></div>
         </div>
         <p class="max">Every token is simultaneously asking, advertising and ready to share. To score a match, the model compares one token's Query with another's Key - a <span class="term" data-def="A dot product multiplies two vectors position-by-position and adds up the results - one number saying how aligned they are." role="button" tabindex="0">dot product</span>, giving a single “how well do these fit?” number. <span class="term" data-def="Softmax turns a set of raw scores into percentages that add up to 100%." role="button" tabindex="0">Softmax</span> turns all of a token's match scores into percentages that add up to 100% - then those percentages decide how much of everyone's <b>Value</b> gets blended in: a strong match contributes a lot, a weak one barely any.</p>
+        <div class="qkv-flow" id="qkv-flow" aria-hidden="true">
+          <span class="qf tok">“she”</span><span class="qf op">builds</span>
+          <span class="qf q">Query</span><span class="qf op">·</span><span class="qf k">Keys of every token</span>
+          <span class="qf op">→</span><span class="qf s">match scores</span><span class="qf op">→ softmax →</span>
+          <span class="qf w">attention weights</span><span class="qf op">→ blend</span><span class="qf v">Values</span><span class="qf op">→</span><span class="qf tok">new “she”</span>
+        </div>
+        <p class="note" style="margin-top:8px">This is the same dot-product → softmax → blend dance described above, just drawn as one flow. "Attention weights" here are the softmax percentages for one token's matches - not the model's trained weights (parameters) mentioned elsewhere on this page; same word, different thing.</p>
+        </div>
+        <div class="tech-block"><span class="tb-lab">Technical layer</span>
+          <p>Each token's vector is multiplied by three separate learned weight matrices to produce its Query, Key and Value. Matching is a dot product between one token's Query and another's Key, scaled down and passed through softmax to turn raw scores into weights - those weights then decide how much of everyone's Value gets blended together.</p>
+          <p>Decoder-only (GPT-style) models add a <b>causal mask</b>: future positions are set to −∞ before softmax, so a token only attends to itself and earlier tokens - that's what makes left-to-right generation possible.</p>
+        </div>
         <div class="only-tech">
         <details class="qpop">
           <summary><span>❓</span> Want to see the maths worked out by hand?</summary>
           <div class="qpop-body">
-            <p class="tierline tier-simplified">🟡 <b>Simplified</b> - the real formula (dot product → softmax → weighted blend), applied to tiny made-up numbers so every step is checkable by hand.</p>
-            <p>The formula above, with small made-up numbers so you can check every step yourself - nothing here touches the live model below.</p>
+            <p class="tierline tier-simplified">🟡 <b>Simplified</b> - the real mechanism (dot product → softmax → weighted blend), applied to tiny made-up numbers so every step is checkable by hand.</p>
+            <p>Small made-up numbers so you can check every step yourself - nothing here touches the live model below.</p>
             <p>Take the sentence <b>“cat sat mat”</b>. In the real model, each token's Query, Key and Value come from its own vector multiplied by three separate learned weight matrices - one per role. To keep the arithmetic short, we'll skip that step and just <b>suppose</b> each token already has these toy vectors:</p>
             <table class="sztable">
               <thead><tr><th></th><th>Query</th><th>Key</th><th>Value</th></tr></thead>
@@ -855,29 +868,20 @@ footer a{color:#C9CBD0}
             <p><b>Step 3 - blend the Values by those weights</b> to get “sat”'s new, information-exchanged vector:</p>
             <p>0.21×(9,1) + 0.58×(2,8) + 0.21×(4,4) ≈ <b>(3.9, 5.7)</b></p>
             <p>That result - <b>(3.9, 5.7)</b> - <i>is</i> “sat”'s new vector: mostly its own Value (2,8), since it attended to itself most, pulled a little toward “cat”'s Value (9,1) and “mat”'s Value (4,4), since they got a small share of the attention too. This new vector <b>replaces</b> “sat”'s old one and carries on into the rest of the block (and every block after it) - so by the time the model reaches the end, each token's vector has absorbed a bit of meaning from the tokens around it.</p>
-            <p>That's the entire mechanism in the formula above, worked out on a napkin. The live heatmap below applies that same idea to your real sentence - though, as the note beside it explains, it's a readable stand-in rather than a real model's learned weights.</p>
+            <p>That's the entire mechanism above, worked out on a napkin. The live heatmap below applies that same idea to your real sentence - though, as the note beside it explains, it's a readable stand-in rather than a real model's learned weights.</p>
           </div>
         </details>
         </div>
-        <div class="qkv-flow" id="qkv-flow" aria-hidden="true">
-          <span class="qf tok">“she”</span><span class="qf op">builds</span>
-          <span class="qf q">Query</span><span class="qf op">·</span><span class="qf k">Keys of every token</span>
-          <span class="qf op">→</span><span class="qf s">match scores</span><span class="qf op">→ softmax →</span>
-          <span class="qf w">weights</span><span class="qf op">→ blend</span><span class="qf v">Values</span><span class="qf op">→</span><span class="qf tok">new “she”</span>
-        </div>
-        <div class="tech-block"><span class="tb-lab">Technical layer</span>
-          <p>Each vector is projected to <code>q=xW_Q</code>, <code>k=xW_K</code>, <code>v=xW_V</code>. Weights are scaled <span class="term" data-def="A dot product multiplies two vectors position-by-position and adds up the results - one number saying how aligned they are." data-term="dot product">dot-products</span> then a row-wise softmax:</p>
-          <span class="formula">Attention(Q,K,V)=softmax(QKᵀ/√d_k)·V</span>
-          <p>Decoder-only (GPT-style) models add a <b>causal mask</b>: future positions are set to −∞ before softmax, so a token only attends to itself and earlier tokens - that's what makes left-to-right generation possible.</p>
-        </div>
-        <div class="demo">
-          <div class="demo-lab">Live - the attention map</div>
-          <p class="tierline" style="margin-top:0">🔵 <b>Illustrative</b> - a readable stand-in blending three real tendencies (similar meanings attract, recent neighbours matter, pronouns lean toward what they refer to); not a trained model's actual attention weights, which are learned from data and often far less tidy.</p>
-          <p class="note">Each <b>row</b> is a token doing the looking; each <b>column</b> is a token being looked at. Darker = more attention. The grey top-right is the <b>causal mask</b> (no peeking ahead). <b>Click a row label</b> to see where that token looks.</p>
-          <div class="heat-wrap"><div class="heat" id="attn-heat"></div></div>
-          <div class="legend"><span>less</span><span class="grad"></span><span>more attention</span></div>
-          <div class="attn-focus" id="attn-focus" hidden><div class="af-title" id="af-title"></div><div class="af-tokens" id="af-tokens"></div></div>
-        </div>
+        <details class="demo">
+          <summary class="demo-lab">Live - the attention map</summary>
+          <div class="demo-body">
+            <p class="tierline" style="margin-top:0">🔵 <b>Illustrative</b> - a readable stand-in blending three real tendencies (similar meanings attract, recent neighbours matter, pronouns lean toward what they refer to); not a trained model's actual attention weights, which are learned from data and often far less tidy.</p>
+            <p class="note">Each <b>row</b> is a token doing the looking; each <b>column</b> is a token being looked at. Darker = more attention. The grey top-right is the <b>causal mask</b> (no peeking ahead). <b>Click a row label</b> to see where that token looks.</p>
+            <div class="heat-wrap"><div class="heat" id="attn-heat"></div></div>
+            <div class="legend"><span>less</span><span class="grad"></span><span>more attention</span></div>
+            <div class="attn-focus" id="attn-focus" hidden><div class="af-title" id="af-title"></div><div class="af-tokens" id="af-tokens"></div></div>
+          </div>
+        </details>
         <div class="mode-note wt-note only-train"><span class="tag">While training</span> The query/key/value projections are just more weights, starting random. Training tunes them until useful patterns emerge - heads that link pronouns to names, track grammar, or copy earlier text.</div>
         <br>
         <div class="handoff" data-h="04"><div class="handoff-h hin"><span class="handoff-lab">Going in</span><span class="htok" style="background:#E4EEF9;color:#0B5CB8;border-color:#0B5CB8">·engineer</span> carries only its own meaning. No information about the rest of the sentence - no hint that "she" will refer back to it.</div><div class="handoff-div"><span class="handoff-arr">→</span></div><div class="handoff-h hout"><span class="handoff-lab">Coming out</span><span class="htok" style="background:#E4EEF9;color:#0B5CB8;border-color:#0B5CB8">·engineer</span> has drawn in context from <span class="htok" style="background:#EAE7DF;color:#4A4D52;border-color:#4A4D52">·finished</span> and every other token. Its vector now encodes its role in <i>this</i> sentence, not just its dictionary meaning.</div></div>
@@ -1657,26 +1661,33 @@ function computeAttn(mode){
   return rows;
 }
 function shortTok(t){const s=displayTok(t).trim();return s.length>4?s.slice(0,4):s;}
-/* small live arc diagram: each token's single strongest backward link, drawn above a row of token boxes */
+/* small live arc diagram: each token's single strongest backward link to a content word, drawn above a row of token boxes */
 function renderAttnArcs(){
   const host=el("attn-arcs");if(!host)return;
   const n=Math.min(S.toks.length,MAX);
   if(n<2){host.innerHTML='<span class="note">Type a sentence with at least two words above.</span>';return;}
-  const boxW=54,boxH=26,gap=10,rowY=46;
-  const totalW=n*boxW+(n-1)*gap+16,totalH=rowY+boxH+18;
+  const boxH=26,gap=10,rowY=46,padX=8;
+  const labels=[];for(let i=0;i<n;i++)labels.push(displayTok(S.toks[i]).trim()||"·");
+  const widths=labels.map(l=>Math.max(34,l.length*6.6+16));
+  const lefts=[];let run=padX;for(let i=0;i<n;i++){lefts.push(run);run+=widths[i]+gap;}
+  const totalW=run-gap+padX,totalH=rowY+boxH+18;
   const palette=[["#FDE9E0","#C23A16"],["#E4EEF9","#0B5CB8"],["#EAE7DF","#4A4D52"],["#FFEFE9","#C23A16"]];
-  const cx=i=>8+i*(boxW+gap)+boxW/2;
+  const cx=i=>lefts[i]+widths[i]/2;
   const cands=[];
   for(let i=1;i<n;i++){
     let bestJ=-1,bestW=-1;
-    for(let j=0;j<i;j++){const w=S.attn[i]&&S.attn[i][j];if(w!==null&&w!==undefined&&w>bestW){bestW=w;bestJ=j;}}
+    for(let j=0;j<i;j++){
+      const w=S.attn[i]&&S.attn[i][j];if(w===null||w===undefined)continue;
+      const bw=bareWord(S.toks[j]);if(bw.length<=2||NOT_A_CANDIDATE.includes(bw))continue; // skip function words/pronouns as targets - not an "obvious" relation
+      if(w>bestW){bestW=w;bestJ=j;}
+    }
     if(bestJ<0)continue;
     const uni=1/(i+1);
     if(bestW>uni*1.3)cands.push({i,j:bestJ,w:bestW,score:bestW-uni});
   }
   cands.sort((a,b)=>b.score-a.score);
   const chosen=cands.slice(0,4);
-  let svg=`<svg viewBox="0 0 ${totalW} ${totalH}" width="100%" height="${totalH}" role="img" aria-label="Diagram showing each token's strongest link to an earlier word, drawn as arcs of varying strength">`;
+  let svg=`<svg viewBox="0 0 ${totalW} ${totalH}" width="100%" height="${totalH}" role="img" aria-label="Diagram showing each token's strongest link to an earlier content word, drawn as arcs of varying strength">`;
   chosen.forEach(c=>{
     const x1=cx(c.j),x2=cx(c.i),dist=Math.abs(x2-x1);
     const peak=Math.max(6,rowY-(14+dist*0.10+c.w*20));
@@ -1684,8 +1695,8 @@ function renderAttnArcs(){
     svg+=`<path d="M${x1},${rowY} Q${mid},${peak} ${x2},${rowY}" fill="none" stroke="${col}" stroke-width="${sw}" stroke-linecap="round"/>`;
   });
   for(let i=0;i<n;i++){
-    const[bg,fg]=palette[i%4],x=8+i*(boxW+gap),full=esc(displayTok(S.toks[i]).trim());
-    svg+=`<g><title>${full}</title><rect x="${x}" y="${rowY}" width="${boxW}" height="${boxH}" rx="6" fill="${bg}" stroke="${fg}" stroke-width="1.3"/><text x="${x+boxW/2}" y="${rowY+boxH/2+4}" font-family="IBM Plex Mono,ui-monospace,Menlo,Consolas,monospace" font-size="10.5" fill="${fg}" text-anchor="middle">${esc(shortTok(S.toks[i]))}</text></g>`;
+    const[bg,fg]=palette[i%4],x=lefts[i],w=widths[i];
+    svg+=`<g><title>${esc(labels[i])}</title><rect x="${x}" y="${rowY}" width="${w}" height="${boxH}" rx="6" fill="${bg}" stroke="${fg}" stroke-width="1.3"/><text x="${x+w/2}" y="${rowY+boxH/2+4}" font-family="IBM Plex Mono,ui-monospace,Menlo,Consolas,monospace" font-size="11" fill="${fg}" text-anchor="middle">${esc(labels[i])}</text></g>`;
   }
   svg+="</svg>";
   host.innerHTML=svg;
