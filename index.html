@@ -980,16 +980,24 @@ footer a{color:#C9CBD0}
         <div class="st-head"><span class="st-num">07</span><h2>Depth - refine, repeat, repeat...</h2></div>
         <p class="lead-in">Recap: each block you've seen so far does two things - tokens exchange information (attention), then each one is refined using patterns the model learned in training (feed-forward). Now that whole block repeats - dozens of times. Early layers pick up surface patterns; later layers combine those into progressively richer, more abstract representations.</p>
         <div class="analogy"><span>🖼️</span><span><b>Think of it like this:</b> editing a photo through repeated sharpening passes. The first pass cleans up rough edges; the next brings out texture; a later one sharpens fine detail that only shows up once earlier passes are done. A transformer does the same to its numbers, a dozen or more times over. This only works because each pass includes both steps from the last section - attention alone, repeated with no feed-forward step in between, would blend the passes together rather than sharpen them, more like a photo blurring under repeated smoothing than one coming into focus.</span></div>
-        <div class="demo">
-          <div class="demo-lab">Live - what builds up with depth</div>
-          <div class="stackviz">
-            <div class="stack-col" id="stack-col"></div>
-            <div>
-              <div class="slider-row" style="min-width:230px"><label for="depth-slider">Depth</label><input type="range" id="depth-slider" min="0" max="6" value="0" step="1"><span class="sval" id="depth-sval">in</span></div>
-              <div class="stack-story" id="stack-story"></div>
+        <details class="demo">
+          <summary class="demo-lab">Live - what builds up with depth</summary>
+          <div class="demo-body">
+            <div class="stackviz">
+              <div class="stack-col" id="stack-col"></div>
+              <div>
+                <div class="slider-row" style="min-width:230px"><label for="depth-slider">Depth</label><input type="range" id="depth-slider" min="0" max="6" value="0" step="1"><span class="sval" id="depth-sval">in</span></div>
+                <div class="stack-story" id="stack-story"></div>
+              </div>
             </div>
           </div>
-        </div>
+        </details>
+        <details class="qpop">
+          <summary><span>🔗</span> Explore a real model, layer by layer</summary>
+          <div class="qpop-body">
+            <p>Want to see depth in a real model, rendered in 3D? <a href="https://bbycroft.net/llm" target="_blank" rel="noopener">LLM Visualization</a> by Brendan Bycroft walks a real GPT model's entire structure block by block, all the way from tokens in to prediction out - a great way to see how everything on this page fits together at full scale.</p>
+          </div>
+        </details>
         <div class="tech-block"><span class="tb-lab">Technical layer</span>
           <p>GPT-2 small stacks 12 blocks; frontier models stack roughly 100. Every block has the same shape but its own learned weights. Depth is a big part of why larger models perform better on complex tasks.</p>
           <p>Depth is one part of what decides a model's overall size, alongside <span class="ar-step" data-target="tokens">vocabulary</span>, <span class="ar-step" data-target="embed">width</span>, <span class="ar-step" data-target="heads">attention heads</span> and the <span class="ar-step" data-target="block">feed-forward network</span> per block. Put them together and here's how a few real models compare:</p>
@@ -1004,7 +1012,7 @@ footer a{color:#C9CBD0}
             </tbody>
           </table>
           <p>GPT-2 small and GPT-3 are specific, published models, so those two columns are exact. "Frontier" isn't one architecture - current models vary enormously in these numbers, so that column is illustrative only, to show the scale of the jump.</p>
-          <p>These sizes are mostly deliberate choices. <b>Vocabulary</b> is fixed when the tokeniser is trained - bigger means fewer tokens per sentence, but larger matrices. <b>Width, layers and heads</b> are architecture choices, scaled up for bigger models following <span class="term" data-def="Scaling laws are patterns researchers found showing that bigger models, trained on more data, reliably get better in predictable ways - so labs can decide how big to build before training." role="button" tabindex="0">scaling laws</span>. <b>Context window</b> is limited by memory and compute, because attention compares every token with every other - so cost grows with the <i>square</i> of the length. Every projection is a matrix multiply: a token row <code>1×d</code> times a weight matrix <code>d×d</code> → <code>1×d</code>. Attention builds Q, K, V this way; the feed-forward uses <code>d×4d</code> then <code>4d×d</code>. The embedding / unembedding matrix is <code>V×d</code> - for GPT-3 that's <code>50,257 × 12,288 ≈ 617 million</code> numbers on its own. Multiply across all layers and you reach the billions.</p>
+          <p>These sizes are mostly deliberate choices. <b>Vocabulary</b> is fixed when the tokeniser is trained - bigger means fewer tokens per sentence, but larger matrices. <b>Width, layers and heads</b> are architecture choices, scaled up for bigger models following <span class="term" data-def="Scaling laws are patterns researchers found showing that bigger models, trained on more data, reliably get better in predictable ways - so labs can decide how big to build before training." role="button" tabindex="0">scaling laws</span>. <b>Context window</b> is limited by memory and compute, because attention compares every token with every other - so cost grows with the <i>square</i> of the length. Every projection is a matrix multiply: a token's vector is multiplied by a learned weight matrix to produce the next vector. Attention builds Query, Key and Value this way; the feed-forward network widens the vector out, then narrows it back down, using two matrices of its own. The embedding and unembedding tables are themselves one giant matrix each, sized vocabulary × width - for GPT-3 that's around 617 million numbers in that one table alone. Multiply that kind of size across every layer and you reach the billions.</p>
           <p>Bigger isn't just "the same, but better." Some abilities - basic arithmetic, following multi-step instructions, learning a new pattern from a few examples in the prompt - don't improve gradually as models grow; they can appear quite suddenly once a model crosses some scale threshold, and be largely absent below it. There's active debate over how much of this is a genuine step-change versus an artifact of how the ability gets measured - but empirically, scaling up keeps turning up capabilities nobody explicitly trained the model to have.</p>
         </div>
         <div class="only-tech">
@@ -1074,7 +1082,7 @@ footer a{color:#C9CBD0}
         </details>
         </div>
         <br>
-        <div class="handoff"><div class="handoff-h hin"><span class="handoff-lab">Going in</span>After 1 block: surface patterns captured - word proximity, basic grammar.</div><div class="handoff-div"><span class="handoff-arr">→</span></div><div class="handoff-h hout"><span class="handoff-lab">Coming out</span>After 12 blocks: each layer refined the vectors further. Coreference, semantic roles, pragmatic context - all encoded by the final layer.</div></div>
+        <div class="handoff"><div class="handoff-h hin"><span class="handoff-lab">Going in</span>After 1 block: surface patterns captured - word proximity, basic grammar.</div><div class="handoff-div"><span class="handoff-arr">→</span></div><div class="handoff-h hout"><span class="handoff-lab">Coming out</span>After 12 blocks (GPT-2 small's real depth): each layer refined the vectors further. Coreference, semantic roles, pragmatic context - all encoded by the final layer.</div></div>
 <div class="takeaway"><b>Bottom line:</b> stacking blocks lets the model build increasingly rich, abstract representations of the input, layer by layer.</div>
       </section>
 
