@@ -1091,12 +1091,10 @@ footer a{color:#C9CBD0}
         <!-- INFERENCE VIEW -->
         <div class="only-infer">
           <div class="st-head"><span class="st-num">08</span><h2>Next word - where generation happens</h2></div>
-          <p class="lead-in">After the final layer, the model scores every token in its vocabulary for how well it fits next, turns those scores into probabilities (<b><span class="term" data-def="Softmax turns a set of raw scores into percentages that add up to 100% - bigger scores get bigger shares.">softmax</span></b>), and picks one - usually with a little randomness. It adds that token and runs the whole thing again. That loop, one token at a time, <i>is</i> text generation.</p>
+          <p class="lead-in">After the final layer, the model scores every token in its vocabulary for how well it fits next, turns those scores into probabilities that add up to 100%, and picks one - usually with a little randomness. It adds that token and runs the whole thing again. That loop, one token at a time, <i>is</i> text generation.</p>
           <div class="analogy"><span>🎲</span><span><b>Think of it like this:</b> a weighted raffle. Every candidate token gets tickets in proportion to how well it fits. The <b><span class="term" data-def="Temperature is a dial for randomness when picking the next token: low = predictable (always the favourite), high = creative or chaotic.">temperature</span></b> dial sets fairness - low gives nearly all tickets to the favourite (predictable), high spreads them wide (creative, or chaotic).</span></div>
           <div class="tech-block"><span class="tb-lab">Technical layer</span>
-            <p>The final vector is projected to <span class="term" data-def="Logits are the raw, unscaled scores the model assigns to every possible next token, before softmax converts them to probabilities.">logits</span> <code>z=W_U·h</code>, then temperature-scaled before softmax:</p>
-            <span class="formula">p_i = exp(z_i/T) / Σ_j exp(z_j/T)</span>
-            <p><code>T→0</code> ≈ greedy argmax; <code>T&gt;1</code> flattens the distribution. Production adds top-k / nucleus (top-p) sampling.</p>
+            <p>The final vector is projected onto the vocabulary to produce a raw score for every possible next token, called a <span class="term" data-def="Logits are the raw, unscaled scores the model assigns to every possible next token, before softmax converts them to probabilities.">logit</span>. Those scores are scaled by the temperature, then passed through <b>softmax</b> to turn them into probabilities that add up to 100%. A very low temperature behaves like always picking the single most likely token (greedy decoding); a temperature above 1 flattens the distribution, giving less likely tokens a real chance and making output more random. Production systems typically add extra filtering on top, like top-k or nucleus (top-p) sampling, which restrict sampling to only the most plausible candidates.</p>
           </div>
           <div class="demo">
             <div class="demo-lab">Live - generate, one word at a time</div>
@@ -1230,7 +1228,7 @@ footer a{color:#C9CBD0}
           </details>
           </div>
           <br>
-          <div class="mode-note" style="display:block"><span class="tag">Fixed at inference</span> When you are <em>using</em> the model - this mode - the weights are completely frozen. Nothing you type changes them. Every request runs through the same fixed parameters the model finished training with; it is applying what it learned, not learning anything new from your input. Learning only ever happens during training.</div>
+          <div class="mode-note" style="display:block"><span class="tag">Fixed at inference</span> When you are <em>using</em> the model - this mode, called <span class="term" data-def="Inference is the term for using an already-trained model to produce output, as opposed to training it. During inference the model's weights are frozen - nothing you type changes them." role="button" tabindex="0">inference</span> - the weights are completely frozen. Nothing you type changes them. Every request runs through the same fixed parameters the model finished training with; it is applying what it learned, not learning anything new from your input. Learning only ever happens during training.</div>
           <div class="takeaway"><b>Bottom line:</b> at its core, a language model is trained to do one thing - predict the next token. Everything else - conversation, tool use, reasoning - emerges from repeating and scaffolding that one step.</div>
         </div>
 
@@ -1292,7 +1290,7 @@ footer a{color:#C9CBD0}
       <section class="station" id="assistant">
         <div class="st-head"><span class="st-num">09</span><h2>From predictor to assistant - what comes after</h2></div>
         <div class="only-infer">
-          <p class="lead-in">This stage - turning a raw predictor into an assistant via SFT, RLHF and reasoning training - is itself a further round of training. It isn't something that happens while a finished model is running, which is what Inference mode shows; it's already baked into the frozen weights of any assistant you'd actually use, including the one implied elsewhere on this page.</p>
+          <p class="lead-in">This stage - turning a raw predictor into an assistant via instruction fine-tuning, learning from human feedback, and reasoning training - is itself a further round of training. It isn't something that happens while a finished model is running, which is what Inference mode shows; it's already baked into the frozen weights of any assistant you'd actually use, including the one implied elsewhere on this page.</p>
           <button class="primary" id="assistant-to-train">Switch to Training mode to see it →</button>
         </div>
         <div class="only-train">
@@ -1301,17 +1299,17 @@ footer a{color:#C9CBD0}
         <div class="block-diagram" aria-label="Pre-training to assistant pipeline" style="max-width:360px">
           <div class="bd-item io">Pre-trained model<span class="sub">very capable text completer - no particular goal</span></div>
           <div class="bd-arrow">↓</div>
-          <div class="bd-item attn">Stage 1 · Instruction fine-tuning (SFT)<span class="sub">train on (instruction → good response) examples</span></div>
+          <div class="bd-item attn">Stage 1 · Instruction fine-tuning<span class="sub">train on (instruction → good response) examples</span></div>
           <div class="bd-arrow">↓</div>
-          <div class="bd-item ffn">Stage 2 · RLHF - learn from human feedback<span class="sub">humans rate responses; the model learns to score higher</span></div>
+          <div class="bd-item ffn">Stage 2 · Learning from human feedback<span class="sub">humans rate responses; the model learns to score higher</span></div>
           <div class="bd-arrow">↓</div>
           <div class="bd-item ffn">Stage 3 · Reasoning training<span class="sub">rewarded for working problems step by step, not just the final answer</span></div>
           <div class="bd-arrow">↓</div>
           <div class="bd-item io">Assistant<span class="sub">helpful, instruction-following, and - increasingly - able to reason</span></div>
         </div>
-        <p class="note" style="margin-top:10px">Everything from here on - SFT, RLHF, reasoning training - is collectively called <b>post-training</b>: further training on top of an already-pretrained model, with no architecture changes. ("Fine-tuning" gets used loosely for all of this too, but more precisely refers just to the supervised stage below.)</p>
+        <p class="note" style="margin-top:10px">Everything from here on - instruction fine-tuning, learning from human feedback, reasoning training - is collectively called <b>post-training</b>: further training on top of an already-pretrained model, with no architecture changes. ("Fine-tuning" gets used loosely for all of this too, but more precisely refers just to the supervised stage below.)</p>
         <details class="stage" style="margin-top:22px">
-          <summary><span class="stage-t">Stage 1 · Instruction fine-tuning (SFT)</span></summary>
+          <summary><span class="stage-t">Stage 1 · Instruction fine-tuning</span></summary>
           <div class="stage-body">
             <p>The model is shown thousands of worked examples: a prompt on one side, a high-quality human-written response on the other. It is trained on those pairs in the usual way - predict the next token, measure the loss, nudge the weights. After enough examples the model learns the format: answer questions directly, follow instructions, stay on topic. The architecture has not changed at all; the weights have simply been steered toward a new target. A model fine-tuned this way is noticeably more useful than the raw pre-trained version - it stops trying to "continue" a question and starts trying to answer it.</p>
             <div class="only-tech">
@@ -1327,10 +1325,10 @@ footer a{color:#C9CBD0}
         </details>
         <p class="max">But a model trained only on examples can still be unreliable in subtle ways: confidently wrong, inconsistently helpful, occasionally producing content nobody wanted. That's where the second stage comes in.</p>
         <details class="stage" style="margin-top:16px">
-          <summary><span class="stage-t">Stage 2 · RLHF (Reinforcement Learning from Human Feedback)</span></summary>
+          <summary><span class="stage-t">Stage 2 · Learning from human feedback</span></summary>
           <div class="stage-body">
             <p>Human raters are shown pairs of model responses to the same prompt and asked which they prefer. Those judgments are used to train a separate <b><span class="term" data-def="A reward model is a neural network trained on human preference data to predict which model response a human would rate higher. It acts as a stand-in for the human rater during reinforcement learning.">reward model</span></b> - a network that learns to predict human preferences. The language model is then fine-tuned further using reinforcement learning: it generates responses, the reward model scores them, and the weights are nudged toward higher-scoring behaviour. Iterated many times, this shapes the model's tone, reliability and values.</p>
-            <div class="analogy"><span>🎯</span><span><b>Think of it like this:</b> imagine training a new colleague in two steps. First, show them a folder of ideal responses so they understand the format. Then have a manager give feedback - "that was better, that was worse" - until good behaviour is consistent. RLHF is that feedback loop, run millions of times, with the reward model standing in for the manager.</span></div>
+            <div class="analogy"><span>🎯</span><span><b>Think of it like this:</b> imagine training a new colleague in two steps. First, show them a folder of ideal responses so they understand the format. Then have a manager give feedback - "that was better, that was worse" - until good behaviour is consistent. Learning from human feedback is that feedback loop, run millions of times, with the reward model standing in for the manager.</span></div>
             <p class="note" style="margin-top:10px">This is one common progression, not a fixed recipe - some labs skip stages, reorder them, or use other optimisation methods entirely (more in the technical layer below).</p>
           </div>
         </details>
@@ -1345,7 +1343,7 @@ footer a{color:#C9CBD0}
           <p>SFT is standard supervised learning on (prompt, completion) pairs, typically with a lower learning rate than pre-training to avoid overwriting too much. RLHF adds a second model: a reward model <code>r(x,y)</code> trained on human preference data using the Bradley-Terry objective. The language model is then optimised with <code>PPO</code> (Proximal Policy Optimisation) against <code>r</code> while a KL-divergence penalty keeps it close to the SFT checkpoint. A simpler offline variant, <code>DPO</code> (Direct Preference Optimisation), removes the RL step and frames preference learning as a classification problem directly on the language model - avoiding the need for a separate reward model. Most frontier labs now combine SFT, DPO or RLHF, and additional constitutional or rule-based filters. The model's weights after SFT serve as the starting point for RLHF; they are not reset between stages. Reasoning training differs from RLHF in one important way: because a maths or code answer can be checked automatically for correctness, this stage can reward the model directly on outcome, without needing a human-trained reward model - so it only works in these "verifiable" domains, not for open-ended writing or conversation.</p>
         </div>
         <div class="analogy"><span>⚠️</span><span><b>What none of this fixes:</b> a transformer only ever predicts text, so a few limits stay baked in regardless of training: <b>no real-time knowledge</b> past its training cut-off, <b>hallucination</b> (fluent text that's simply wrong), <b>no memory between conversations</b>, and even with sampling randomness turned off, small numerical or hardware-level differences can still cause tiny variations between runs. None of this is a bug to train away - it's what a next-token predictor is. Fixing it means building tools, memory and checks <i>around</i> the model, not training it further.</span></div>
-        <div class="takeaway"><b>Bottom line:</b> a pre-trained transformer is a text completer. Instruction fine-tuning teaches it to answer rather than continue. RLHF shapes how it answers. Reasoning training teaches some models to work through hard problems step by step. Same architecture, same next-token prediction throughout - only the training signal changes.</div>
+        <div class="takeaway"><b>Bottom line:</b> a pre-trained transformer is a text completer. Instruction fine-tuning teaches it to answer rather than continue. Learning from human feedback shapes how it answers. Reasoning training teaches some models to work through hard problems step by step. Same architecture, same next-token prediction throughout - only the training signal changes.</div>
         </div>
       </section>
 
@@ -1377,6 +1375,12 @@ footer a{color:#C9CBD0}
         <div class="tech-block"><span class="tb-lab">Technical layer</span>
           <p>RAG systems embed a document collection once (offline) into a vector store, then at query time embed the incoming question and run an approximate-nearest-neighbour search to retrieve the top-<code>k</code> chunks, often followed by a reranking step before they're inserted into the prompt. Tool use works by training (fine-tuning, back in station 9) or simply prompting the model to emit a structured call - typically JSON matching a schema you provide - which your application code parses and executes; the result is appended to the conversation and fed back in for another forward pass. Orchestrating this into a loop - reason, call a tool, observe the result, decide what's next - is often called the <code>ReAct</code> pattern, and is the core of what an "agent framework" provides.</p>
         </div>
+        <details class="qpop">
+          <summary><span>🔗</span> Learn more about RAG and agents</summary>
+          <div class="qpop-body">
+            <p>Want to go deeper on the ideas in this table? <a href="https://arxiv.org/abs/2005.11401" target="_blank" rel="noopener">Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks</a> is the original paper that introduced RAG. <a href="https://www.anthropic.com/engineering/building-effective-agents" target="_blank" rel="noopener">Building Effective Agents</a> (Anthropic) is a clear, practical guide to tool use and the reason→act→observe loop behind most real agent systems.</p>
+          </div>
+        </details>
         <div class="mode-note" style="display:block;margin-top:16px"><span class="tag">Key insight</span> None of this touches a single weight. Every enhancement in the table works by changing what's in the context window before generation, or by acting on what comes out after it - the model in the middle is exactly the same frozen assistant from the last station, every single time you use it.</div>
         <div class="takeaway"><b>Bottom line:</b> RAG, tools, memory and orchestration don't make the model smarter - they give a frozen, otherwise-limited text predictor access to real information, real actions and real memory. That's one useful way to think about the difference between an LLM and the agentic applications built on top of it.</div>
       </section>
