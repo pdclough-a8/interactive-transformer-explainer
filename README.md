@@ -35,6 +35,8 @@ Three independent controls change what you see, without changing the underlying 
 
 Worth knowing up front: **tokenisation is genuinely real** (it uses OpenAI's actual `cl100k_base` tokenizer when online, falling back to a small BPE tokenizer trained specifically for this page if it can't reach that). Almost everything downstream of it — the toy embeddings, the attention weights, the multi-head "personalities," the next-word probabilities — is a hand-written illustrative approximation running entirely in your browser, designed to demonstrate real, well-documented tendencies (semantic similarity, recency, pronoun resolution, previous-token heads, and more) without ever calling out to, or being computed by, an actual trained model. Every demo says so explicitly via its realism tag.
 
+The next-token prediction demo is a real (if tiny) trigram model, trained on a ~480-sentence corpus that mixes hand-written everyday sentences with sentences lifted verbatim from this page's own explanations — so copying a sentence from a paragraph you've just read, rather than typing something new, tends to get noticeably better predictions. When the model genuinely hasn't seen anything like your phrasing, it says so live rather than silently guessing.
+
 ## Project structure
 
 This is intentionally a single self-contained file with no build step, package manager, or dependencies to install:
@@ -42,6 +44,7 @@ This is intentionally a single self-contained file with no build step, package m
 - `index.html` — the entire site: markup, CSS, and JavaScript in one file. The only external calls are an optional live tokenizer import (`https://esm.sh/gpt-tokenizer`) and Google Fonts.
 - `.github/workflows/static.yml` — deploys straight to GitHub Pages on every push to `main`.
 - `CLAUDE.md` — guidance for AI coding agents working in this repo (code layout, editing conventions, the dense/minified style used throughout).
+- `README.md` — this file.
 
 To view changes locally, just open `index.html` in a browser, or serve the folder with any static file server if you hit `file://` restrictions on the tokenizer import (e.g. `python -m http.server`).
 
