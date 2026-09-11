@@ -429,6 +429,7 @@ footer a{color:#C9CBD0}
 /* ===== EMBED LOOKUP ===== */
 .embed-lookup{background:#F7F6F2;border:1px solid var(--border);border-radius:12px;padding:14px 17px;margin:16px 0;max-width:74ch;overflow-x:auto}
 .el-title{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;display:block}
+.aarcs-wrap{overflow-x:auto;padding-bottom:4px}
 .el-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px;font-size:13.5px}
 .el-tok{font-family:var(--mono);font-size:12.5px;background:var(--ink);color:#fff;padding:3px 9px;border-radius:6px;white-space:nowrap}
 .el-op{font-family:var(--mono);font-size:11px;color:var(--muted);white-space:nowrap}
@@ -815,6 +816,12 @@ footer a{color:#C9CBD0}
       <section class="station" id="attention">
         <div class="st-head"><span class="st-num">04</span><h2>Attention - tokens exchange information</h2></div>
         <p class="lead-in">More formally referred to as self-attention, this is a key feature of transformer and enables it to capature relationships among tokens in a sequence, so that the representation of each token is influenced by the others. The embedding represents each token's meaning, but we want to consider it within the context of the sequence. Attention helps the model with generating more accurate next word predictions. For every token the model asks: <b>which other tokens matter for understanding me?</b> - then exchanges information with those tokens, weighted by relevance. That's how <i>"she"</i> can pull meaning from whoever she refers to. One rule on this: a GPT-style model only ever looks <b>backwards</b> - a token can pull from itself and everything before it, never from what comes later (more on why, below).</p>
+        <div class="demo" style="margin:16px 0">
+          <div class="demo-lab">Live - who's attending to whom</div>
+          <p class="tierline">🔵 <b>Illustrative</b> - a simplified stand-in for real attention, computed live from your sentence (the full attention map further down has the detail).</p>
+          <div class="aarcs-wrap"><div id="attn-arcs"></div></div>
+          <p class="note" style="margin-top:8px">Each arc shows a token's strongest link to an earlier word in the sentence - darker and thicker means a stronger connection.</p>
+        </div>
         <p class="note" style="margin-top:0">"Exchange," "ask," "look" - these are analogies to make the mechanism easy to picture, not literal descriptions. Flip on the technical layer any time you want the exact maths instead of the story.</p>
         <div class="analogy"><span>🗣️</span><span><b>Think of it like this:</b> a meeting where every token interviews every other. Each asks a question (<i>query</i>), each advertises what it offers (<i>key</i>), and the best matches exchange their content (<i>value</i>). Strong matches get more airtime.</span></div>
 
@@ -1650,6 +1657,39 @@ function computeAttn(mode){
   return rows;
 }
 function shortTok(t){const s=displayTok(t).trim();return s.length>4?s.slice(0,4):s;}
+/* small live arc diagram: each token's single strongest backward link, drawn above a row of token boxes */
+function renderAttnArcs(){
+  const host=el("attn-arcs");if(!host)return;
+  const n=Math.min(S.toks.length,MAX);
+  if(n<2){host.innerHTML='<span class="note">Type a sentence with at least two words above.</span>';return;}
+  const boxW=54,boxH=26,gap=10,rowY=46;
+  const totalW=n*boxW+(n-1)*gap+16,totalH=rowY+boxH+18;
+  const palette=[["#FDE9E0","#C23A16"],["#E4EEF9","#0B5CB8"],["#EAE7DF","#4A4D52"],["#FFEFE9","#C23A16"]];
+  const cx=i=>8+i*(boxW+gap)+boxW/2;
+  const cands=[];
+  for(let i=1;i<n;i++){
+    let bestJ=-1,bestW=-1;
+    for(let j=0;j<i;j++){const w=S.attn[i]&&S.attn[i][j];if(w!==null&&w!==undefined&&w>bestW){bestW=w;bestJ=j;}}
+    if(bestJ<0)continue;
+    const uni=1/(i+1);
+    if(bestW>uni*1.3)cands.push({i,j:bestJ,w:bestW,score:bestW-uni});
+  }
+  cands.sort((a,b)=>b.score-a.score);
+  const chosen=cands.slice(0,4);
+  let svg=`<svg viewBox="0 0 ${totalW} ${totalH}" width="100%" height="${totalH}" role="img" aria-label="Diagram showing each token's strongest link to an earlier word, drawn as arcs of varying strength">`;
+  chosen.forEach(c=>{
+    const x1=cx(c.j),x2=cx(c.i),dist=Math.abs(x2-x1);
+    const peak=Math.max(6,rowY-(14+dist*0.10+c.w*20));
+    const mid=(x1+x2)/2,col=heatColor(Math.pow(c.w,.7)),sw=(1.4+c.w*3.2).toFixed(2);
+    svg+=`<path d="M${x1},${rowY} Q${mid},${peak} ${x2},${rowY}" fill="none" stroke="${col}" stroke-width="${sw}" stroke-linecap="round"/>`;
+  });
+  for(let i=0;i<n;i++){
+    const[bg,fg]=palette[i%4],x=8+i*(boxW+gap),full=esc(displayTok(S.toks[i]).trim());
+    svg+=`<g><title>${full}</title><rect x="${x}" y="${rowY}" width="${boxW}" height="${boxH}" rx="6" fill="${bg}" stroke="${fg}" stroke-width="1.3"/><text x="${x+boxW/2}" y="${rowY+boxH/2+4}" font-family="IBM Plex Mono,ui-monospace,Menlo,Consolas,monospace" font-size="10.5" fill="${fg}" text-anchor="middle">${esc(shortTok(S.toks[i]))}</text></g>`;
+  }
+  svg+="</svg>";
+  host.innerHTML=svg;
+}
 function renderHeat(hostId,attn,clickable){
   const host=el(hostId);host.innerHTML="";const n=attn.length;
   if(!n){host.innerHTML='<span class="note">Type a sentence above.</span>';host.style.gridTemplateColumns="1fr";return;}
@@ -1990,7 +2030,7 @@ function rerender(){
   S.toks=toks;S.ids=ids;
   S.embs=S.toks.slice(0,MAX).map(t=>embed(displayTok(t)));
   renderTokens();renderPosSum();
-  S.attn=computeAttn();renderHeat("attn-heat",S.attn,true);el("attn-focus").hidden=true;
+  S.attn=computeAttn();renderHeat("attn-heat",S.attn,true);el("attn-focus").hidden=true;renderAttnArcs();
   renderHeads();resetGen();
   renderMatrix();renderSizes();
   /* update handoff panels */
