@@ -1116,9 +1116,11 @@ footer a{color:#C9CBD0}
           <div class="demo">
             <div class="demo-lab">Live - generate, one word at a time</div>
             <p class="tierline tier-simplified">🟡 <b>Simplified</b> - real trigram statistics, counted from an actual training corpus (~350 sentences); same score → soften → sample mechanism as a real model, on a tiny fraction of the data.</p>
+            <p class="note" style="margin-top:0">This toy model only knows sentences about a handful of everyday topics: <b>office work</b> (reports, clients, projects), <b>weather and commuting</b> (trains, snow, delays), <b>plants and photosynthesis</b>, <b>home and family life</b>, <b>food</b>, <b>technology</b>, <b>school</b>, <b>sport</b>, <b>travel</b>, <b>health</b>, <b>shopping</b>, <b>entertainment</b> and <b>animals</b>. A sentence in one of those areas is far more likely to get a sensible-looking prediction than something further afield.</p>
             <div class="gen-line" id="gen-line"></div>
             <div class="slider-row" style="max-width:480px"><label for="temp-slider">Temperature</label><input type="range" id="temp-slider" min="0.1" max="1.5" value="0.3" step="0.1"><span class="sval" id="temp-sval">0.3</span></div>
             <p class="note" style="margin-top:2px">Candidate next words and their probabilities. This is a small <span class="term" data-def="An n-gram model predicts the next word from the previous few words by counting how often sequences appeared in its training text. This one is a trigram model - it looks at the previous two words." role="button" tabindex="0">trigram model</span> trained on a sample of ~350 sentences - tiny next to a real model (which scores ~100,000 candidates using the whole sentence), but it shows the same mechanism:</p>
+            <p class="note" id="lm-weak-note" style="margin-top:2px;color:var(--orange-deep)" hidden>⚠️ This exact phrasing hasn't been seen in the tiny training corpus, so these candidates are mostly generic word frequency, not a real contextual prediction - try a sentence closer to the topics above for a cleaner example.</p>
             <div class="prob-list" id="prob-list"></div>
             <div class="actions">
               <button class="primary" id="btn-sample">Add the next word</button>
@@ -2200,12 +2202,15 @@ function lastTwo(){
   const w=[];for(let i=S.gen.length-1;i>=0&&w.length<2;i--){const t=normW(S.gen[i]);if(t)w.unshift(t);}
   while(w.length<2)w.unshift("<s>");return w;
 }
+let lmWeakSignal=false;
 function candidatesLM(){
   const [a,b]=lastTwo();const d={};
   const tri=TRI[a+"\u0001"+b];let triHit=false;
   if(tri){triHit=true;for(const w in tri)d[w]=(d[w]||0)+tri[w]*12.0;}
   const bi=BI[b];if(bi)for(const w in bi)d[w]=(d[w]||0)+bi[w]*0.5;
-  if(Object.keys(d).length<3){for(const w in UNI)d[w]=(d[w]||0)+UNI[w]*0.008;}
+  const hadContext=Object.keys(d).length>=3;
+  lmWeakSignal=!hadContext;
+  if(!hadContext){for(const w in UNI)d[w]=(d[w]||0)+UNI[w]*0.008;}
   delete d["<s>"];
   const recent=S.gen.slice(-6).map(normW);const gl=S.gen.map(normW);
   for(const w in d){
@@ -2225,6 +2230,7 @@ function candidatesLM(){
 function labelFor(w){return w==="</s>"?"▪ end of sentence":w;}
 function renderProbs(picked){
   const c=candidatesLM();const T=Math.max(0.05,+el("temp-slider").value);
+  const weakNote=el("lm-weak-note");if(weakNote)weakNote.hidden=!lmWeakSignal;
   const sum=c.reduce((s,x)=>s+x[1],0)||1;
   let adj=c.map(x=>[x[0],Math.pow(x[1]/sum,1/T)]);
   const z=adj.reduce((s,x)=>s+x[1],0)||1;
