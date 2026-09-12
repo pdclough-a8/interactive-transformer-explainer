@@ -4,7 +4,7 @@ An interactive, client-side explainer that walks through exactly how a transform
 
 **Live site:** https://pdclough-a8.github.io/interactive-transformer-explainer/
 
-No installation, sign-up, or backend of any kind — open the link, type your own sentence into the box at the top, and watch it flow through every stage of a real transformer's forward pass.
+No installation, sign-up, or backend of any kind — open the link, type your own sentence into the box at the top, and watch it flow through every stage of a real transformer's forward pass. It's also installable as a PWA (look for "Install" / "Add to Home Screen" in your browser) and keeps working offline once you've loaded it at least once.
 
 ## What it covers
 
@@ -42,6 +42,7 @@ The next-token prediction demo is a real (if tiny) trigram model, trained on a ~
 This is intentionally a single self-contained file with no build step, package manager, or dependencies to install:
 
 - `index.html` — the entire site: markup, CSS, and JavaScript in one file. The only external calls are an optional live tokenizer import (`https://esm.sh/gpt-tokenizer`) and Google Fonts.
+- `manifest.webmanifest`, `sw.js`, `icons/` — make the page installable and usable offline (a service worker caches the page after your first visit).
 - `.github/workflows/static.yml` — deploys straight to GitHub Pages on every push to `main`.
 - `CLAUDE.md` — guidance for AI coding agents working in this repo (code layout, editing conventions, the dense/minified style used throughout).
 - `README.md` — this file.

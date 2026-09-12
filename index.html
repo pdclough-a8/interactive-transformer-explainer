@@ -7,6 +7,19 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<!-- PWA installability: manifest + icons + theme colour. The service worker
+     itself is registered from a script near the end of <body>, not linked
+     here - <link rel="manifest"> is what iOS/Android read to build the "Add
+     to Home Screen" icon/name/standalone-display, see manifest.webmanifest. -->
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#C23A16">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16.png">
+<!-- iOS ignores <link rel="manifest"> for home-screen icon/standalone
+     behaviour - these two tags are what it actually reads. -->
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Transformer">
 <style>
 :root{
   --ink:#17191C; --ink-2:#22262B; --paper:#F2F1ED; --surface:#FFFFFF;
@@ -2735,6 +2748,15 @@ setStatus();renderPosHeat();renderStack();drawMap();trReset();rerender();
   document.addEventListener("click",e=>{if(cur&&!e.target.classList.contains("term"))hide();});
   window.addEventListener("scroll",()=>{if(cur)place(cur);},{passive:true});
 })();
+</script>
+<script>
+  // Register the service worker for offline/installable PWA support. Guarded
+  // since older browsers, and non-browser contexts, don't have this API.
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js');
+    });
+  }
 </script>
 </body>
 </html>

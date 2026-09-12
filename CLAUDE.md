@@ -4,9 +4,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Repository overview
 
-This repo contains a single, self-contained HTML file:
+This repo contains a single, self-contained HTML file, plus a small set of static PWA-support files alongside it:
 
 - `index.html` - an interactive, client-side explainer ("How a transformer works") built for Analytics8. It walks through tokenization → embeddings → positional encoding → attention → multi-head attention → transformer blocks → depth/stacking → next-token generation → a toy training demo → post-training (predictor to assistant) → RAG/tools/agents. Named `index.html` (rather than something more descriptive) specifically so GitHub Pages serves it directly at the site root with no redirect stub needed - don't rename it or reintroduce a second copy of this file (that previously caused the live site to go stale - see git history around "resync index.html").
+- `manifest.webmanifest` / `sw.js` / `icons/` - make the page installable as a PWA (see "PWA support" below).
 
 There is no build system, package manager, bundler, or test suite. This directory **is** a git repo (remote: `origin` → GitHub) and pushes to `main` auto-deploy to GitHub Pages via `.github/workflows/static.yml` - so a push, not just a local save, is what makes a change visible on the live site. The page can also be opened directly in a browser (double-click, or via a simple static file server) for local testing.
 
@@ -46,6 +47,16 @@ Everything lives in one file, organized top-to-bottom as:
    - **Toy training demo** (station 8, training view): `trStep()`/`trGuess()`/`drawLoss()` simulate a loss curve and a garbled-to-correct output as "training" progresses - this is a scripted animation, not a real model being trained.
    - **Master state**: a single `S` object (`{toks, ids, embs, attn, head, gen, newN, timer, maskOff}`) holds current sentence state; `rerender()` re-tokenizes/re-embeds/re-renders every station whenever the input sentence changes (debounced via `deb`/`setTimeout`). A few small pieces of UI-only state live as plain top-level `let`s near their own wiring instead of in `S` (e.g. `pronounSwapSaved` for the Attention station's pronoun-swap button) - when adding a render/state hook that other functions need to see, prefer adding to `S` unless it's genuinely local to one demo.
    - **Tooltip system**: `.term` spans with a `data-def` attribute get a shared floating tooltip (`#tip`) wired up at the bottom of the script (hover/focus/click/keyboard accessible), bound both at load and dynamically via `window.__bindTerms` for content injected later (e.g. `renderSizes`). A `.term` span is interactive (`role="button" tabindex="0"`, has its own click handler) - never nest one inside a `<button>` or another interactive element, since that both violates the HTML content model and can cause the two click handlers to fight (this happened once with the mode-toggle button; the fix was to add the tooltip to a nearby plain-text mention instead).
+
+## PWA support
+
+The page is installable/offline-capable, following the same pattern used in the sibling `a8-ai-ethics` and `ai-data-ethics` repos, adapted for this repo having no build step:
+
+- `manifest.webmanifest` - a plain static file (those two sibling repos generate theirs at Astro build time via `withBase()`, since they're served from a project path their build needs to know about; this repo has no build step, so every path in it is written relative, e.g. `"icons/icon-192.png"` not `"/icons/icon-192.png"`, which resolves correctly under the GitHub Pages project path without hardcoding it anywhere).
+- `sw.js` - a service worker, same reasoning (plain static file, relative paths). Strategy: page navigation is network-first with a cache fallback (so online visitors always get the latest deploy, offline visitors get the last-cached version); same-origin static assets (manifest, icons) are cache-first with a background refresh. Cross-origin requests (Google Fonts, the `esm.sh` tokenizer module) are deliberately left unintercepted - the page already has a graceful offline fallback for the tokenizer (`bpeEncode()`, see below), so the service worker doesn't need to also cache or fake those responses.
+- `icons/` - the same Analytics8 "Skills" badge icon set (orange background, white infinity mark, "SKILLS" pill) used by `a8-ai-ethics` and `ai-data-ethics`, copied in as-is for visual consistency across the three as a related set of Analytics8 learning resources - not a bespoke icon for this page.
+- Registration (`navigator.serviceWorker.register('sw.js')`) lives in its own small `<script>` block right at the end of `<body>`, after the main IIFE, rather than being folded into it.
+- File size was never a concern here - `index.html` is ~300KB raw / ~110KB gzipped, trivially small for a service worker to precache regardless of how this evolves.
 
 ## Editing conventions specific to this file
 
