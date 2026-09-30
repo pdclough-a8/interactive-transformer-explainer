@@ -24,7 +24,7 @@
 // Bump CACHE_VERSION on any deploy where already-installed visitors should
 // drop their old cached content immediately, rather than waiting for it to
 // expire naturally via the logic below.
-const CACHE_VERSION = 'v1';
+const CACHE_VERSION = 'v2';
 const CACHE_NAME = 'transformer-explainer-' + CACHE_VERSION;
 const PRECACHE_URLS = [
   './',
@@ -33,6 +33,7 @@ const PRECACHE_URLS = [
   './icons/icon-192.png',
   './icons/icon-512.png',
   './icons/apple-touch-icon.png',
+  './icons/cc-by-nc-nd.svg',
 ];
 
 self.addEventListener('install', (event) => {
