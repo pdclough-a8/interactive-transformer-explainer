@@ -496,7 +496,7 @@ footer a{color:#C9CBD0}
   <div class="wrap">
     <span class="eyebrow">Data &amp; AI, explained · A8 learning tool</span>
     <h1>See how a <span class="u">transformer</span> actually works.</h1>
-    <p class="lede">Transformers are the most common architecture behind Large Language Models and applications like ChatGPT, Claude and Gemini. Take the sentence below and watch the model turn it into a prediction for whatever comes next - then follow every step it takes to get there, first as the model <b style="color:#fff">uses</b> everything it learned during training to predict the next word, then as it <b style="color:#fff">learns</b> in the first place. Start with a plain English explanation. Flip on the technical detail when you want it.</p>
+    <p class="lede">Transformers are the most common architecture behind Large Language Models and applications like ChatGPT, Claude and Gemini. This page walks through the <b style="color:#fff">decoder-only, autoregressive</b> kind those tools use - predicting one word at a time, left to right - rather than encoder-style models like BERT, which read a whole passage at once for tasks like classification. Take the sentence below and watch the model turn it into a prediction for whatever comes next - then follow every step it takes to get there, first as the model <b style="color:#fff">uses</b> everything it learned during training to predict the next word, then as it <b style="color:#fff">learns</b> in the first place. Start with a plain English explanation. Flip on the technical detail when you want it.</p>
 
     <div class="controls">
       <div class="inbox">
@@ -1453,7 +1453,8 @@ footer a{color:#C9CBD0}
         <details class="stage" style="margin-top:12px">
           <summary><span class="stage-t">Why it took off</span></summary>
           <div class="stage-body">
-            <p>That combination - <b>attention plus the ability to scale</b> - is what set off the current wave of AI. Take the same architecture, make it bigger, and train it on more text, and you get BERT, the GPT series, Claude, Gemini and almost every modern language model. They differ in size and training, but under the hood they're all transformers running the loop on this page.</p>
+            <p>That combination - <b>attention plus the ability to scale</b> - is what set off the current wave of AI. Take the decoder-only arrangement above, make it bigger, and train it on more text, and you get the GPT series, Claude, Gemini and almost every modern chat assistant - all running the same loop covered on this page. Encoder-only models like <b>BERT</b> reuse the same attention mechanism but in the original bidirectional arrangement, reading a whole passage at once rather than generating text left to right - useful for classification and search, but a different shape from everything demonstrated here.</p>
+            <p>It's also why this page focuses on the decoder-only side: the ecosystem grew around it. There are far more modern open-weight decoder-only architectures to build on than encoder-only ones like BERT, so it's the more useful shape to understand deeply.</p>
           </div>
         </details>
         <div class="takeaway"><b>The one-line history:</b> old models read token-by-token and forgot; the transformer reads everything at once and exchanges information freely - and that changed everything.</div>
